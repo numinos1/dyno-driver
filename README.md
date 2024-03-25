@@ -106,6 +106,7 @@ const doc = await docsModel.getOne({
 # DynamoDb Documentation
 
 - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.OperatorsAndFunctions.html
+- https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/dynamodb/
 - https://www.mongodb.com/docs/manual/reference/operator/query/#std-label-query-projection-operators-top
 
 # Typescript Setup

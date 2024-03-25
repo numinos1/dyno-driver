@@ -1,4 +1,12 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import {
+  DynamoDBClient,
+  DeleteTableCommand,
+  DeleteTableCommandInput,
+  DescribeTableCommand,
+  ListTablesCommand,
+  CreateTableCommand,
+  CreateTableCommandInput
+} from "@aws-sdk/client-dynamodb"; 
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import { container } from 'tsyringe';
 import { DynoModel } from '@/classes/dyno-model';
@@ -13,15 +21,15 @@ const VALID_ATTR_NAME = /^[a-zA-Z0-9_.-]{2,255}$/;
  * DynoDriver Class
  */
 export class DynoDriver {
-  private tableName: string;  
-  private endpoint?: string;
-  private region?: string;
-  private metrics: boolean;
-  private client: DynamoDBDocumentClient;
-  private models: DynoModel<any>[];
-  private subscriptions: TSubscription[];
-  private removalPolicy?: TRemovalPolicy;
-  private billingMode?: TBillingMode;
+  public tableName: string;  
+  public endpoint?: string;
+  public region?: string;
+  public metrics: boolean;
+  public client: DynamoDBClient;
+  public models: DynoModel<any>[];
+  public subscriptions: TSubscription[];
+  public removalPolicy?: TRemovalPolicy;
+  public billingMode?: TBillingMode;
 
   /**
    * Constructor
@@ -52,7 +60,7 @@ export class DynoDriver {
     this.metrics = metrics;
     this.removalPolicy = removalPolicy;
     this.billingMode = billingMode;
-    this.client = this.toClient();
+    this.client = new DynamoDBClient(prune({ endpoint, region }));
     this.subscriptions = [];
     this.models = [];
 
@@ -124,40 +132,36 @@ export class DynoDriver {
     this.subscriptions.push({ type, cb });
   }
 
-  // ----------------------------------------------------------------
-  //    Private Methods
-  // ----------------------------------------------------------------
-
   /**
    * To Document Client
    */
-  private toClient(): DynamoDBDocumentClient {
-    return DynamoDBDocumentClient.from(
-      new DynamoDBClient(
-        prune({
-          endpoint: this.endpoint,
-          region: this.region 
-        })
-      ),
-      {
-        marshallOptions: {
-          convertEmptyValues: false, // if not false explicitly, we set it to true.
-          removeUndefinedValues: false, // false, by default.
-          convertClassInstanceToMap: false, // false, by default.
-        },
-        unmarshallOptions: {
-          wrapNumbers: false, // false, by default.
-        }
-      }
-    );
-  }
+  // private toClient(): DynamoDBDocumentClient {
+  //   return DynamoDBDocumentClient.from(
+  //     new DynamoDBClient(
+  //       prune({
+  //         endpoint: this.endpoint,
+  //         region: this.region 
+  //       })
+  //     ),
+  //     {
+  //       marshallOptions: {
+  //         convertEmptyValues: false, // if not false explicitly, we set it to true.
+  //         removeUndefinedValues: false, // false, by default.
+  //         convertClassInstanceToMap: false, // false, by default.
+  //       },
+  //       unmarshallOptions: {
+  //         wrapNumbers: false, // false, by default.
+  //       }
+  //     }
+  //   );
+  // }
 
   // ----------------------------------------------------------------
   //    Public Migration Methods
   // ----------------------------------------------------------------
 
   /**
-   * Get DynamoDb Table Definitions
+   * Get Dyno Table Definitions
    */
   toTables() {
     return this.models.reduce((tables, model) => {
@@ -169,5 +173,39 @@ export class DynoDriver {
       }
       return tables;
     }, []);
+  }
+
+  /**
+   * Get DynamoDb Table Props
+   **/
+  async getDbTables() {
+    const names = await this.getDbTableNames();
+    const tables = {};
+
+    for (let i = 0; i < names.length; i++) {
+      const TableName = names[i];
+      tables[TableName] = await this.getDbTableProps(TableName);
+    }
+    return tables;
+  }
+
+  /**
+   * Get DynamoDb Table Names
+   */
+  async getDbTableNames() {
+    const result = await this.client.send(
+      new ListTablesCommand({ Limit: 100 })
+    );
+    return result.TableNames || [];
+  }
+
+  /**
+   * Get DynamoDb Table Props
+   */
+  async getDbTableProps(TableName: string) {
+    const config = await this.client.send(
+      new DescribeTableCommand({ TableName })
+    );
+    return config.Table;
   }
 }

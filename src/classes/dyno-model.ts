@@ -1,5 +1,4 @@
-import { PutItemCommand, GetItemCommand, QueryCommand } from "@aws-sdk/client-dynamodb"; // ES Modules import
-import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBClient, PutItemCommand, GetItemCommand, QueryCommand } from "@aws-sdk/client-dynamodb"; // ES Modules import
 import { singleton } from 'tsyringe';
 import { TBillingMode, TEventType, TExpression, TKeys, TOrder, TProp, TPropMap, TRemovalPolicy, TSubscription } from '@/types';
 import { TStrategy, TQueryType, toStrategy } from '@/helpers/to-strategy';
@@ -19,7 +18,7 @@ export interface GetOptions<Type> {
  */
 @singleton()
 export class DynoModel<Type> {
-  private client: DynamoDBDocumentClient;
+  private client: DynamoDBClient;
   public tableName: string;
   public tableKeys: string[][];
   public propMap: TPropMap;
@@ -48,7 +47,7 @@ export class DynoModel<Type> {
     tableName: string; 
     keys: TKeys[];
     props: TPropMap;
-    client: DynamoDBDocumentClient;
+    client: DynamoDBClient;
     removalPolicy: TRemovalPolicy,
     billingMode: TBillingMode,
     metrics: boolean;
@@ -344,7 +343,7 @@ export class DynoModel<Type> {
   // ----------------------------------------------------------------
 
   /**
-   * Get DynamoDb Table Definition
+   * Get Dyno Table Definition
    */
   toTable() {
     const [pk, sk] = this.tableKeys[0];
@@ -366,7 +365,7 @@ export class DynoModel<Type> {
   }
 
   /**
-   * Get DynamoDb Index Definitions
+   * Get Dyno Index Definitions
    */
   toIndices() {
     const indices = this.tableKeys.slice(1);
