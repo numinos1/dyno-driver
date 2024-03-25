@@ -3,7 +3,7 @@
 doc-entity.ts
 
 ```ts 
-import { DynoEntity, DynoProp } from 'dyno-drive';
+import { DynoEntity, DynoProp } from 'dyno-driver';
 
 @DynoEntity({
   keys: [
@@ -30,14 +30,14 @@ export class DocEntity {
 }
 ```
 
-drive.ts
+dyno.ts
 
 ```ts
-import { DynoDrive } from 'dyno-drive';
+import { DynoDriver } from 'dyno-driver';
 import { DocEntity } from './docs-entity';
 
 // Instantiate the Drive
-export const drive = new DynoDrive({
+export const dyno = new DynoDriver({
   tableName: 'test-table',
   endpoint: "http://localhost:8000",
   region: "local",
@@ -47,13 +47,13 @@ export const drive = new DynoDrive({
 .on('failure', event => console.log('FAILURE', event));
 
 // Instantiate the docs model
-export const docsModel = drive.entity(DocEntity);
+export const docsModel = dyno.entity(DocEntity);
 ```
 
 docs-service.ts
 
 ```ts
-import { docsModel } from './drive';
+import { docsModel } from './dyno';
 
 // Get a document using table scan
 const doc = await docsModel.getOne({

@@ -52,7 +52,8 @@ describe('toKeys()', () => {
       type: 'string',
       token: TPropTokens.string,
       isRequired: true,
-      isKey: true
+      isKey: true,
+      index: 0
     });
     expect(props[props.length - 1]).toEqual({
       name: 'repoId',
@@ -61,7 +62,8 @@ describe('toKeys()', () => {
       type: 'string',
       token: TPropTokens.string,
       isRequired: true,
-      isKey: true
+      isKey: true,
+      index: 0
     });
   });
 
@@ -76,7 +78,8 @@ describe('toKeys()', () => {
       type: 'string',
       token: TPropTokens.string,
       isRequired: true,
-      isKey: true
+      isKey: true,
+      index: 0
     });
     expect(props[props.length - 1]).toEqual({
       name: 'repoId',
@@ -85,7 +88,8 @@ describe('toKeys()', () => {
       type: 'string',
       token: TPropTokens.string,
       isRequired: true,
-      isKey: true
+      isKey: true,
+      index: 0
     });
   });
 
@@ -104,7 +108,8 @@ describe('toKeys()', () => {
       type: 'string',
       token: TPropTokens.string,
       isRequired: true,
-      isKey: true
+      isKey: true,
+      index: 0
     });
     expect(props[props.length - 1]).toEqual({
       name: '',
@@ -113,7 +118,8 @@ describe('toKeys()', () => {
       type: 'string',
       token: TPropTokens.string,
       isRequired: false,
-      isKey: true
+      isKey: true,
+      index: 0
     });
   });
 
@@ -128,7 +134,8 @@ describe('toKeys()', () => {
       type: 'string',
       token: TPropTokens.string,
       isRequired: false,
-      isKey: true
+      isKey: true,
+      index: 0
     });
     expect(props.find(p => p.name === 'repoId')).toEqual({
       name: 'repoId',
@@ -137,7 +144,8 @@ describe('toKeys()', () => {
       type: 'string',
       token: TPropTokens.string,
       isRequired: true,
-      isKey: true
+      isKey: true,
+      index: 0
     });
   });
 
@@ -156,7 +164,8 @@ describe('toKeys()', () => {
       type: 'string',
       token: TPropTokens.string,
       isRequired: true,
-      isKey: true
+      isKey: true,
+      index: 0
     });
     expect(props.find(p => p.name === 'id')).toEqual({
       name: 'id',
@@ -165,7 +174,8 @@ describe('toKeys()', () => {
       type: 'string',
       token: TPropTokens.string,
       isRequired: true,
-      isKey: true
+      isKey: true,
+      index: 0
     });
   });
 
@@ -184,7 +194,8 @@ describe('toKeys()', () => {
       type: 'string',
       token: TPropTokens.string,
       isRequired: true,
-      isKey: true
+      isKey: true,
+      index: 0
     });
     expect(props.find(p => p.name === 'id')).toEqual({
       name: 'id',
@@ -193,7 +204,8 @@ describe('toKeys()', () => {
       type: 'string',
       token: TPropTokens.string,
       isRequired: true,
-      isKey: true
+      isKey: true,
+      index: 0
     });
     expect(props[props.length - 2]).toEqual({
       name: 'id',
@@ -202,7 +214,8 @@ describe('toKeys()', () => {
       type: 'string',
       token: TPropTokens.string,
       isRequired: false,
-      isKey: true
+      isKey: true,
+      index: 1
     });
     expect(props[props.length - 1]).toEqual({
       name: 'repoId',
@@ -211,7 +224,8 @@ describe('toKeys()', () => {
       type: 'string',
       token: TPropTokens.string,
       isRequired: false,
-      isKey: true
+      isKey: true,
+      index: 1
     });
 
   });

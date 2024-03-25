@@ -1,22 +1,22 @@
 import "reflect-metadata";
 import { describe, expect, it } from '@jest/globals';
-import { DynoDrive } from '../../src/classes/dyno-drive';
+import { DynoDriver } from '../../src/classes/dyno-driver';
 import { EntityMock } from '../mocks/entity.mock';
 import { Entity2Mock } from '../mocks/entity-2.mock';
 
-describe('DynoDrive()', () => {
+describe('DynoDriver()', () => {
 
   // ------------------------------------------------------
 
   it('is a constructor', () => {
-    expect(typeof DynoDrive)
+    expect(typeof DynoDriver)
       .toEqual('function');
   });
 
   // ------------------------------------------------------
 
   it('constructs without entities', () => {
-    const drive = new DynoDrive({
+    const drive = new DynoDriver({
       tableName: 'test-table',
       endpoint: "http://localhost:8000",
       region: "local",
@@ -29,7 +29,7 @@ describe('DynoDrive()', () => {
   // ------------------------------------------------------
 
   it('constructs with an entity', () => {
-    const drive = new DynoDrive({
+    const drive = new DynoDriver({
       tableName: 'test-table',
       metrics: true,
       entities: [EntityMock]
@@ -68,7 +68,7 @@ describe('DynoDrive()', () => {
   // ------------------------------------------------------
 
   it('constructs with an entity', () => {
-    const drive = new DynoDrive({
+    const drive = new DynoDriver({
       tableName: 'test-table',
       metrics: true,
       entities: [EntityMock, Entity2Mock]

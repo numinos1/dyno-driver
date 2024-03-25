@@ -10,9 +10,9 @@ const VALID_TABLE_NAME = /^[a-zA-Z0-9_.-]{3,255}$/;
 const VALID_ATTR_NAME = /^[a-zA-Z0-9_.-]{2,255}$/;
 
 /**
- * DynoDrive Class
+ * DynoDriver Class
  */
-export class DynoDrive {
+export class DynoDriver {
   private tableName: string;  
   private endpoint?: string;
   private region?: string;

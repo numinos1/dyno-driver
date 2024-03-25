@@ -1,4 +1,4 @@
-export * from '@/classes/dyno-drive';
+export * from '@/classes/dyno-driver';
 export * from '@/classes/dyno-model';
 export * from '@/decorators/dyno-entity';
 export * from '@/decorators/dyno-prop';
