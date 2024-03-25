@@ -1,0 +1,48 @@
+{
+  "display": "Node 18",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "rootDir": "src",
+    "outDir": "lib",
+    "module": "NodeNext",
+    "target": "es2022",
+    "moduleResolution": "NodeNext",
+    "moduleDetection": "force",
+    "lib": ["es2022"],
+    "declaration": true,
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "noImplicitAny": false,
+    "noUnusedLocals": false,
+    "noLib": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "useUnknownInCatchVariables": false,
+    "sourceMap": true,
+    "strict": true,
+    "strictNullChecks": false,
+    "allowJs": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noUnusedParameters": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": false,
+    "noUncheckedIndexedAccess": true,
+    "strictPropertyInitialization": false
+  },
+  "exclude": [
+    "node_modules", 
+    "lib", 
+    "tests/**/*", 
+    "**/*.spec.ts",
+    "jest.config.js"
+  ]
+}
+ 
