@@ -1,8 +1,18 @@
 import { newPropList } from '../mocks/props.mock';
 import { describe, expect, it } from '@jest/globals';
 import { toKeys } from '../../src/helpers/to-keys';
-import { TPropTokens } from '../../src/types';
+import { TProp, TPropTokens } from '../../src/types';
 
+/**
+ * Helper to convert TProp to string[][]
+ */
+function toNames(keys: TProp[][]): string[][] {
+  return keys.map(key => key.map(k => k.name));
+}
+
+/**
+ * Tests
+ */
 describe('toKeys()', () => {
 
   it('is a function', () => {
@@ -43,7 +53,8 @@ describe('toKeys()', () => {
 
   it('should handle a single key', () => {
     const props = newPropList();
-    expect(toKeys([['repoId']], props)).toEqual([['repoId', 'repoId']]);
+    expect(toNames(toKeys([['repoId']], props)))
+      .toEqual([['repoId', 'repoId']]);
 
     expect(props.find(p => p.name === 'repoId')).toEqual({
       name: 'repoId',
@@ -69,7 +80,8 @@ describe('toKeys()', () => {
 
   it('should handle a single key with a prefix', () => {
     const props = newPropList();
-    expect(toKeys([['DOC#repoId']], props)).toEqual([['repoId', 'repoId']]);
+    expect(toNames(toKeys([['DOC#repoId']], props)))
+      .toEqual([['repoId', 'repoId']]);
 
     expect(props.find(p => p.name === 'repoId')).toEqual({
       name: 'repoId',
@@ -99,7 +111,8 @@ describe('toKeys()', () => {
 
   it('should handle a prop pk with a static sk', () => {
     const props = newPropList();
-    expect(toKeys([['repoId', 'DOC#']], props)).toEqual([['repoId', '']]);
+    expect(toNames(toKeys([['repoId', 'DOC#']], props)))
+      .toEqual([['repoId', '']]);
 
     expect(props.find(p => p.name === 'repoId')).toEqual({
       name: 'repoId',
@@ -125,7 +138,8 @@ describe('toKeys()', () => {
 
   it('should handle a static sk with a prop sk', () => {
     const props = newPropList();
-    expect(toKeys([['DOC#', 'repoId']], props)).toEqual([['', 'repoId']]);
+    expect(toNames(toKeys([['DOC#', 'repoId']], props)))
+      .toEqual([['', 'repoId']]);
 
     expect(props[props.length - 1]).toEqual({
       name: '',
@@ -155,7 +169,8 @@ describe('toKeys()', () => {
 
   it('should handle single keys', () => {
     const props = newPropList();
-    expect(toKeys([['repoId','id']], props)).toEqual([['repoId', 'id']]);
+    expect(toNames(toKeys([['repoId', 'id']], props)))
+      .toEqual([['repoId', 'id']]);
 
     expect(props.find(p => p.name === 'repoId')).toEqual({
       name: 'repoId',
@@ -185,7 +200,8 @@ describe('toKeys()', () => {
 
   it('should handle compound GSI Keys', () => {
     const props = newPropList();
-    expect(toKeys([['repoId','id'], ['id', 'repoId']], props)).toEqual([['repoId', 'id'], ['id', 'repoId']]);
+    expect(toNames(toKeys([['repoId', 'id'], ['id', 'repoId']], props)))
+      .toEqual([['repoId', 'id'], ['id', 'repoId']]);
 
     expect(props.find(p => p.name === 'repoId')).toEqual({
       name: 'repoId',

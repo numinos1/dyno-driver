@@ -45,7 +45,7 @@ export function toStrategy<Type>(
   
   // Split where into query & filter
   for (let key in where) {
-    keys.includes(key)
+    keys.find(k => k.name === key)
       ? (query[key] = where[key])
       : (filter[key] = where[key]);
   }

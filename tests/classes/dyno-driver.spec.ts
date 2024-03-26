@@ -23,7 +23,7 @@ describe('DynoDriver()', () => {
       metrics: true
     });
 
-    expect(drive.toTables()).toEqual([]);
+    expect(drive.toCdkTables()).toEqual([]);
   });
 
   // ------------------------------------------------------
@@ -35,7 +35,7 @@ describe('DynoDriver()', () => {
       entities: [EntityMock]
     });
 
-    expect(drive.toTables()).toEqual([{
+    expect(drive.toCdkTables()).toEqual([{
       table: {
         tableName: "test-table",
         removalPolicy: "destroy",
@@ -74,7 +74,7 @@ describe('DynoDriver()', () => {
       entities: [EntityMock, Entity2Mock]
     });
 
-    expect(drive.toTables()).toEqual([{
+    expect(drive.toCdkTables()).toEqual([{
       table: {
         tableName: "test-table",
         removalPolicy: "destroy",

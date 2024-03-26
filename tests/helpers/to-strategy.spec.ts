@@ -1,7 +1,19 @@
-import { EntityMock } from './../mocks/entity.mock';
+import { EntityMock } from '../mocks/entity.mock';
+import { propsMock } from '../mocks/props.mock';
+import { TProp } from '../../src/types';
 import { describe, expect, it } from '@jest/globals';
 import { TQueryType, toStrategy } from '../../src/helpers/to-strategy';
 
+/**
+ * Helper to convert TProp to string[][]
+ */
+function toNames(keys: TProp[][]): string[][] {
+  return keys.map(key => key.map(k => k.name));
+}
+
+/**
+ * Tests
+ */
 describe('toStrategy()', () => {
 
   it('is a function', () => {
@@ -18,7 +30,12 @@ describe('toStrategy()', () => {
     it('no expression', () => {
       expect(toStrategy<EntityMock>(
         {},
-        [['repoId', 'id']],
+        [
+          [
+            propsMock.get('repoId'),
+            propsMock.get('id')
+          ]
+        ],
         'testTable'
       )).toEqual({
         filter: {},
@@ -37,7 +54,12 @@ describe('toStrategy()', () => {
         {
           id: '1234abcd'
         },
-        [['repoId', 'id']],
+        [
+          [
+            propsMock.get('repoId'),
+            propsMock.get('id')
+          ]
+        ],
         'testTable'
       )).toEqual({
         filter: {
@@ -66,7 +88,12 @@ describe('toStrategy()', () => {
           deleteOn: 1231232131,
           body: 'xxxxxxx'
         },
-        [['repoId', 'id']],
+        [
+          [
+            propsMock.get('repoId'),
+            propsMock.get('id')
+          ]
+        ],
         'testTable'
       )).toEqual({
         filter: {
@@ -93,7 +120,20 @@ describe('toStrategy()', () => {
     it('no props + GSIs', () => {
       expect(toStrategy<EntityMock>(
         {},
-        [['repoId', 'id'], ['id', 'repoId'], ['version', 'id']],
+        [
+          [
+            propsMock.get('repoId'),
+            propsMock.get('id')
+          ],
+          [
+            propsMock.get('id'),
+            propsMock.get('repoId')
+          ],
+          [
+            propsMock.get('version'),
+            propsMock.get('id')
+          ]
+        ],
         'testTable'
       )).toEqual({
         filter: {},
@@ -118,11 +158,18 @@ describe('toStrategy()', () => {
         {
           repoId: 'abcd1234'
         },
-        [['repoId', 'id']],
+        [
+          [
+            propsMock.get('repoId'),
+            propsMock.get('id')
+          ]
+        ],
         'testTable'
       )).toEqual({
         type: TQueryType.pkQuery,
-        keys: ['repoId'],
+        keys: [
+          propsMock.get('repoId')
+        ],
         table: 'testTable',
         index: undefined,
         query: {
@@ -142,11 +189,18 @@ describe('toStrategy()', () => {
           status: 'active',
           repoId: 'abcd1234'
         },
-        [['repoId', 'id']],
+        [
+          [
+            propsMock.get('repoId'),
+            propsMock.get('id')
+          ]
+        ],
         'testTable'
       )).toEqual({
         type: TQueryType.pkQuery,
-        keys: ['repoId'],
+        keys: [
+          propsMock.get('repoId')
+        ],
         table: 'testTable',
         index: undefined,
         query: {
@@ -170,11 +224,26 @@ describe('toStrategy()', () => {
           encoding: 'JSON',
           status: 'active',
         },
-        [['repoId', 'id'], ['id', 'repoId'], ['version', 'id']],
+        [
+          [
+            propsMock.get('repoId'),
+            propsMock.get('id')
+          ],
+          [
+            propsMock.get('id'),
+            propsMock.get('repoId')
+          ],
+          [
+            propsMock.get('version'),
+            propsMock.get('id')
+          ]
+        ],
         'testTable'
       )).toEqual({
         type: TQueryType.pkQuery,
-        keys: ['version'],
+        keys: [
+          propsMock.get('version')
+        ],
         table: 'testTable',
         index: 'testTable-gsi-2',
         query: {
@@ -196,11 +265,26 @@ describe('toStrategy()', () => {
           id: 'abcd1234',
           createdOn: 1232423452
         },
-        [['repoId', 'id'], ['id', 'repoId'], ['version', 'id']],
+        [
+          [
+            propsMock.get('repoId'),
+            propsMock.get('id')
+          ],
+          [
+            propsMock.get('id'),
+            propsMock.get('repoId')
+          ],
+          [
+            propsMock.get('version'),
+            propsMock.get('id')
+          ]
+        ],
         'testTable'
       )).toEqual({
         type: TQueryType.pkQuery,
-        keys: ['id'],
+        keys: [
+          propsMock.get('id')
+        ],
         table: 'testTable',
         index: 'testTable-gsi-1',
         query: {
@@ -226,11 +310,19 @@ describe('toStrategy()', () => {
           repoId: 'abcd1234',
           id: { $gt: 'efgh5678' }
         },
-        [['repoId', 'id']],
+        [
+          [
+            propsMock.get('repoId'),
+            propsMock.get('id')
+          ]
+        ],
         'testTable'
       )).toEqual({
         type: TQueryType.skQuery,
-        keys: ['repoId', 'id'],
+        keys: [
+          propsMock.get('repoId'),
+          propsMock.get('id')
+        ],
         table: 'testTable',
         index: undefined,
         query: {
@@ -252,11 +344,19 @@ describe('toStrategy()', () => {
           encoding: 'JSON',
           status: 'active',
         },
-        [['repoId', 'id']],
+        [
+          [
+            propsMock.get('repoId'),
+            propsMock.get('id')
+          ]
+        ],
         'testTable'
       )).toEqual({
         type: TQueryType.skQuery,
-        keys: ['repoId', 'id'],
+        keys: [
+          propsMock.get('repoId'),
+          propsMock.get('id')
+        ],
         table: 'testTable',
         index: undefined,
         query: {
@@ -281,11 +381,26 @@ describe('toStrategy()', () => {
           encoding: 'JSON',
           status: 'active',
         },
-        [['repoId', 'id'], ['id', 'repoId'], ['version', 'id']],
+        [
+          [
+            propsMock.get('repoId'),
+            propsMock.get('id')
+          ],
+          [
+            propsMock.get('id'),
+            propsMock.get('repoId')
+          ], [
+            propsMock.get('version'),
+            propsMock.get('id')
+          ]
+        ],
         'testTable'
       )).toEqual({
         type: TQueryType.skQuery,
-        keys: ['version', 'id'],
+        keys: [
+          propsMock.get('version'),
+          propsMock.get('id')
+        ],
         table: 'testTable',
         index: 'testTable-gsi-2',
         query: {
@@ -308,11 +423,25 @@ describe('toStrategy()', () => {
           repoId: { $gt: 'efg567' },
           createdOn: 1232423452
         },
-        [['repoId', 'id'], ['id', 'repoId'], ['version', 'id']],
+        [
+          [
+            propsMock.get('repoId'),
+            propsMock.get('id')
+          ], [
+            propsMock.get('id'),
+            propsMock.get('repoId')
+          ], [
+            propsMock.get('version'),
+            propsMock.get('id')
+          ]
+        ],
         'testTable'
       )).toEqual({
         type: TQueryType.skQuery,
-        keys: ['id', 'repoId'],
+        keys: [
+          propsMock.get('id'),
+          propsMock.get('repoId')
+        ],
         table: 'testTable',
         index: 'testTable-gsi-1',
         query: {
@@ -339,11 +468,19 @@ describe('toStrategy()', () => {
           repoId: 'abcd1234',
           id: 'efgh5678'
         },
-        [['repoId', 'id']],
+        [
+          [
+            propsMock.get('repoId'),
+            propsMock.get('id')
+          ]
+        ],
         'testTable'
       )).toEqual({
         type: TQueryType.get,
-        keys: ['repoId', 'id'],
+        keys: [
+          propsMock.get('repoId'),
+          propsMock.get('id')
+        ],
         table: 'testTable',
         index: undefined,
         query: {
@@ -365,11 +502,19 @@ describe('toStrategy()', () => {
           encoding: 'JSON',
           status: 'active',
         },
-        [['repoId', 'id']],
+        [
+          [
+            propsMock.get('repoId'),
+            propsMock.get('id')
+          ]
+        ],
         'testTable'
       )).toEqual({
         type: TQueryType.get,
-        keys: ['repoId', 'id'],
+        keys: [
+          propsMock.get('repoId'),
+          propsMock.get('id')
+        ],
         table: 'testTable',
         index: undefined,
         query: {
@@ -392,11 +537,26 @@ describe('toStrategy()', () => {
           repoId: 'abcd1234',
           id: 'efgh5678'
         },
-        [['repoId', 'id'], ['id', 'repoId'], ['version', 'id']],
+        [
+          [
+            propsMock.get('repoId'),
+            propsMock.get('id')
+          ], [
+            propsMock.get('id'),
+            propsMock.get('repoId')
+          ],
+          [
+            propsMock.get('version'),
+            propsMock.get('id')
+          ]
+        ],
         'testTable'
       )).toEqual({
         type: TQueryType.get,
-        keys: ['repoId', 'id'],
+        keys: [
+          propsMock.get('repoId'),
+          propsMock.get('id')
+        ],
         table: 'testTable',
         index: undefined,
         query: {
@@ -415,11 +575,25 @@ describe('toStrategy()', () => {
           id: 'efgh5678',
           repoId: 'abcd1234',
         },
-        [['repoId', 'id'], ['id', 'repoId'], ['version', 'id']],
+        [
+          [
+            propsMock.get('repoId'),
+            propsMock.get('id')
+          ], [
+            propsMock.get('id'),
+            propsMock.get('repoId')
+          ], [
+            propsMock.get('version'),
+            propsMock.get('id')
+          ]
+        ],
         'testTable'
       )).toEqual({
         type: TQueryType.get,
-        keys: ['repoId', 'id'],
+        keys: [
+          propsMock.get('repoId'),
+          propsMock.get('id')
+        ],
         table: 'testTable',
         index: undefined,
         query: {
@@ -438,11 +612,25 @@ describe('toStrategy()', () => {
           id: 'efgh5678',
           version: 'abcd1234',
         },
-        [['repoId', 'id'], ['id', 'repoId'], ['version', 'id']],
+        [
+          [
+            propsMock.get('repoId'),
+            propsMock.get('id')
+          ], [
+            propsMock.get('id'),
+            propsMock.get('repoId')
+          ], [
+            propsMock.get('version'),
+            propsMock.get('id')
+          ]
+        ],
         'testTable'
       )).toEqual({
         type: TQueryType.get,
-        keys: ['version', 'id'],
+        keys: [
+          propsMock.get('version'),
+          propsMock.get('id')
+        ],
         table: 'testTable',
         index: 'testTable-gsi-2',
         query: {
@@ -462,11 +650,27 @@ describe('toStrategy()', () => {
           version: { $gt: 'efg567' },
           createdOn: 1232423452
         },
-        [['repoId', 'id'], ['repoId', 'version'], ['repoId', 'createdOn']],
+        [
+          [
+            propsMock.get('repoId'),
+            propsMock.get('id')
+          ],
+          [
+            propsMock.get('repoId'),
+            propsMock.get('version')
+          ],
+          [
+            propsMock.get('repoId'),
+            propsMock.get('createdOn')
+          ]
+        ],
         'testTable'
       )).toEqual({
         type: TQueryType.get,
-        keys: ['repoId', 'createdOn'],
+        keys: [
+          propsMock.get('repoId'),
+          propsMock.get('createdOn')
+        ],
         table: 'testTable',
         index: 'testTable-gsi-2',
         query: {
