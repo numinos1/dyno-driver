@@ -1,4 +1,4 @@
-import { TExpression } from '@/types';
+import { TExpression, TProp } from '@/types';
 
 // ------------------------------------------------------------------
 //                             Types
@@ -6,7 +6,7 @@ import { TExpression } from '@/types';
 
 export interface TStrategy<Type> {
   type: TQueryType;
-  keys: string[];
+  keys: TProp[];
   table: string;
   index?: string;
   query: TExpression<Type>;
@@ -15,7 +15,7 @@ export interface TStrategy<Type> {
 
 interface TTheory {
   type: TQueryType;
-  keys: string[];
+  keys: TProp[];
   index: number;
 }
 
@@ -37,7 +37,7 @@ export enum TQueryType {
  */
 export function toStrategy<Type>(
   where: TExpression<Type>,
-  tableKeys: string[][],
+  tableKeys: TProp[][],
   table: string
 ): TStrategy<Type> {
   const { keys, type, index } = toTheory(where, tableKeys);
@@ -67,7 +67,7 @@ export function toStrategy<Type>(
  */
 export function toTheory<Type>(
   where: TExpression<Type>,
-  tableKeys: string[][],
+  tableKeys: TProp[][],
 ): TTheory {
 
   // Default theory (full table scan)
@@ -82,12 +82,12 @@ export function toTheory<Type>(
     const [pk, sk] = tableKeys[index];
 
     // Partition key is defined as a value
-    if (toKeyType(pk, where) !== 'value') {
+    if (toKeyType(pk.name, where) !== 'value') {
       continue;
     }
 
     // Sort key is defined as ???
-    switch (toKeyType(sk, where)) {
+    switch (toKeyType(sk.name, where)) {
 
       // Sort key is a value
       case 'value': {

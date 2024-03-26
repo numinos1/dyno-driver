@@ -5,7 +5,8 @@ import {
   DescribeTableCommand,
   ListTablesCommand,
   CreateTableCommand,
-  CreateTableCommandInput
+  CreateTableCommandInput,
+  TableDescription
 } from "@aws-sdk/client-dynamodb"; 
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import { container } from 'tsyringe';
@@ -126,7 +127,7 @@ export class DynoDriver {
   }
 
   /**
-   * Subscriptions
+   * Middleware Events
    */
   on(type: TEventType, cb: Function) {
     this.subscriptions.push({ type, cb });
@@ -161,14 +162,14 @@ export class DynoDriver {
   // ----------------------------------------------------------------
 
   /**
-   * Get Dyno Table Definitions
+   * Get CDK Table Definitions from models
    */
-  toTables() {
+  toCdkTables() {
     return this.models.reduce((tables, model) => {
       if (!tables.includes(model.tableName)) {
         tables.push({
-          table: model.toTable(),
-          indices: model.toIndices()
+          table: model.toCdkTable(),
+          indices: model.toCdkIndices()
         });
       }
       return tables;
@@ -176,23 +177,49 @@ export class DynoDriver {
   }
 
   /**
-   * Get DynamoDb Table Props
+   * Extract Stats from Dynamo Db Schemas
+   */
+  toDdbStats(tables: TableDescription[]) {
+    return tables.reduce((out, table) => {
+      out.push({
+        table: table.TableName,
+        size: table.TableSizeBytes,
+        docs: table.ItemCount,
+        rcu: table.ProvisionedThroughput.ReadCapacityUnits,
+        wcu: table.ProvisionedThroughput.WriteCapacityUnits
+      });
+      table.GlobalSecondaryIndexes.forEach(index => {
+        out.push({
+          table: table.TableName,
+          index: index.IndexName,
+          size: index.IndexSizeBytes,
+          docs: index.ItemCount,
+          rcu: index.ProvisionedThroughput.ReadCapacityUnits,
+          wcu: index.ProvisionedThroughput.WriteCapacityUnits
+        });
+      });
+      return out;
+    }, []);
+  }
+
+  /**
+   * Get Dynamo Db Table Props
    **/
-  async getDbTables() {
-    const names = await this.getDbTableNames();
+  async getDdbTables(): Promise<Record<string, TableDescription>> {
+    const names = await this.getDdbTableNames();
     const tables = {};
 
     for (let i = 0; i < names.length; i++) {
       const TableName = names[i];
-      tables[TableName] = await this.getDbTableProps(TableName);
+      tables[TableName] = await this.getDdbTableProps(TableName);
     }
     return tables;
   }
 
   /**
-   * Get DynamoDb Table Names
+   * Get Dynamo Db Table Names
    */
-  async getDbTableNames() {
+  async getDdbTableNames(): Promise<string[]> {
     const result = await this.client.send(
       new ListTablesCommand({ Limit: 100 })
     );
@@ -200,9 +227,9 @@ export class DynoDriver {
   }
 
   /**
-   * Get DynamoDb Table Props
+   * Get Dynamo Db Table Props
    */
-  async getDbTableProps(TableName: string) {
+  async getDdbTableProps(TableName: string): Promise<TableDescription> {
     const config = await this.client.send(
       new DescribeTableCommand({ TableName })
     );

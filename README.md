@@ -112,3 +112,85 @@ const doc = await docsModel.getOne({
 # Typescript Setup
 
 https://www.totaltypescript.com/tsconfig-cheat-sheet
+
+# Schema
+
+Create Table Schema & CDK Template JSON
+
+```json
+{
+  "delta-sync-main-table": {
+    "AttributeDefinitions": [
+      {
+        "AttributeName": "pk",
+        "AttributeType": "S"
+      },
+      {
+        "AttributeName": "sk",
+        "AttributeType": "S"
+      },
+      {
+        "AttributeName": "gpk",
+        "AttributeType": "S"
+      },
+      {
+        "AttributeName": "gsk",
+        "AttributeType": "S"
+      }
+    ],
+    "BillingModeSummary": {
+      "BillingMode": "PAY_PER_REQUEST",
+      "LastUpdateToPayPerRequestDateTime": 2024-02-18T04: 50: 23.648Z
+    },
+    "CreationDateTime": 2024-02-18T04: 50: 23.648Z,
+    "GlobalSecondaryIndexes": [
+      {
+        "IndexArn": "arn:aws:dynamodb:ddblocal:000000000000:table/delta-sync-main-table/index/gsi",
+        "IndexName": "gsi",
+        "IndexSizeBytes": 15726656,
+        "IndexStatus": "ACTIVE",
+        "ItemCount": 9708,
+        "KeySchema": [
+          {
+            "AttributeName": "gpk",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "gsk",
+            "KeyType": "RANGE"
+          }
+        ],
+        "Projection": {
+          "ProjectionType": "ALL"
+        },
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 0,
+          "WriteCapacityUnits": 0
+        }
+      }
+    ],
+    "ItemCount": 9756,
+    "KeySchema": [
+      {
+        "AttributeName": "pk",
+        "KeyType": "HASH"
+      },
+      {
+        "AttributeName": "sk",
+        "KeyType": "RANGE"
+      }
+    ],
+    "ProvisionedThroughput": {
+      "LastDecreaseDateTime": 1970-01-01T00: 00: 00.000Z,
+      "LastIncreaseDateTime": 1970-01-01T00: 00: 00.000Z,
+      "NumberOfDecreasesToday": 0,
+      "ReadCapacityUnits": 0,
+      "WriteCapacityUnits": 0
+    },
+    "TableArn": "arn:aws:dynamodb:ddblocal:000000000000:table/delta-sync-main-table",
+    "TableName": "delta-sync-main-table",
+    "TableSizeBytes": 15737213,
+    "TableStatus": "ACTIVE"
+  }
+}
+```

@@ -5,7 +5,7 @@ import { TKeys, TProp, TPropTokens, TPropTypes } from '@/types';
 export function toKeys(
   keys: TKeys[],
   propStack: TProp[]
-) {
+): TProp[][] {
   if (!keys.length) {
     throw new Error(`missing keys`);
   }
@@ -23,7 +23,7 @@ function toKey(
   keyName: string,
   index: number,
   propStack: TProp[]
-) {
+): TProp {
   const alias = keyName + (index ? index : '');
   let prop: TProp | undefined;
 
@@ -88,5 +88,5 @@ function toKey(
       prop.index = index;
     }
   }
-  return prop.name;
+  return prop;
 }
