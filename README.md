@@ -113,9 +113,54 @@ const doc = await docsModel.getOne({
 
 https://www.totaltypescript.com/tsconfig-cheat-sheet
 
-# Schema
+# Convert Model into CDK Table Schema
 
-Create Table Schema & CDK Template JSON
+```ts
+const tables = await docsModel.toCdkTables();
+```
+
+```json
+[
+  {
+    "table": {
+      "tableName": "dyno-test",
+      "removalPolicy": "destroy",
+      "billingMode": "PAY_PER_REQUEST",
+      "partitionKey": {
+        "name": "pk",
+        "type": "S"
+      },
+      "sortKey": {
+        "name": "sk",
+        "type": "S"
+      },
+      "timeToLiveAttribute": "ttl"
+    },
+    "indices": [
+      {
+        "indexName": "dyno-test-gsi-1",
+        "partitionKey": {
+          "name": "pk1",
+          "type": "S"
+        },
+        "sortKey": {
+          "name": "sk1",
+          "type": "S"
+        },
+        "projectionType": "ALL"
+      }
+    ]
+  }
+]
+```
+
+# Get Dynamo Table Schemas from a living DynamoDB instance
+
+Use the getDbTables method to fetch ALL the table schemas from a live DynamoDB instance. These can then be compared with 
+
+```ts
+const tables = await docsModel.getDbTables();
+```
 
 ```json
 {
@@ -192,5 +237,76 @@ Create Table Schema & CDK Template JSON
     "TableSizeBytes": 15737213,
     "TableStatus": "ACTIVE"
   }
+}
+```
+
+Four sections of the table schema are relevant for migrations:
+
+```ts
+const COMPARE_TABLE_PROPS = [
+  'AttributeDefinitions',
+  'GlobalSecondaryIndexes',
+  'KeySchema',
+  'TableName'
+];
+```
+
+# Get Model Schemas
+
+```ts
+const schema = await docsModel.toModelSchemas();
+```
+
+```json
+{
+  "tableName": "test-table",
+  "billingMode": "PAY_PER_REQUEST",
+  "removalPolicy": "destroy",
+  "tableKeys": [
+    [
+      {
+        "name": "id",
+        "alias": "pk",
+        "type": "string",
+        "token": "S",
+        "prefix": "DOC#",
+        "isRequired": true,
+        "isKey": true,
+        "index": 0
+      },
+      {
+        "name": "repoId",
+        "alias": "sk",
+        "type": "string",
+        "token": "S",
+        "prefix": "REP#",
+        "isRequired": true,
+        "isKey": true,
+        "index": 0
+      }
+    ],
+    [
+      {
+        "name": "repoId",
+        "alias": "pk1",
+        "prefix": "REP#",
+        "type": "string",
+        "token": "S",
+        "isRequired": false,
+        "isKey": true,
+        "index": 1
+      },
+      {
+        "name": "version",
+        "alias": "sk1",
+        "type": "string",
+        "token": "S",
+        "prefix": "VER#",
+        "isRequired": false,
+        "isKey": true,
+        "index": 1
+      }
+    ]
+  ]
 }
 ```

@@ -3,8 +3,8 @@ import { DynoProp } from '../../src/decorators/dyno-prop';
 
 @DynoEntity({
   keys: [
-    ['DOC#id', 'REP#repoId'],
-    ['REP#repoId', 'VER#version']
+    ['DOC1#id', 'REP#repoId'],
+    ['REP1#repoId', 'VER#version']
   ]
 })
 export class EntityMock {

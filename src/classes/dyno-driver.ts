@@ -11,9 +11,11 @@ import {
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import { container } from 'tsyringe';
 import { DynoModel } from '@/classes/dyno-model';
-import { prune } from '@/utils';
-import { entitiesMap } from '@/utils';
+import { entitiesMap, pruneObject } from '@/utils';
 import { TBillingMode, TEventType, TRemovalPolicy, TSubscription } from '@/types';
+import { mergeSchemas } from "@/helpers/merge-schemas";
+import { toCdkSchemas } from "@/helpers/to-cdk-schemas";
+import { toDynamoSchemas } from '@/helpers/to-dynamo-schemas';
 
 const VALID_TABLE_NAME = /^[a-zA-Z0-9_.-]{3,255}$/;
 const VALID_ATTR_NAME = /^[a-zA-Z0-9_.-]{2,255}$/;
@@ -61,7 +63,7 @@ export class DynoDriver {
     this.metrics = metrics;
     this.removalPolicy = removalPolicy;
     this.billingMode = billingMode;
-    this.client = new DynamoDBClient(prune({ endpoint, region }));
+    this.client = new DynamoDBClient(pruneObject({ endpoint, region }));
     this.subscriptions = [];
     this.models = [];
 
@@ -139,9 +141,9 @@ export class DynoDriver {
   // private toClient(): DynamoDBDocumentClient {
   //   return DynamoDBDocumentClient.from(
   //     new DynamoDBClient(
-  //       prune({
+  //       pruneObject({
   //         endpoint: this.endpoint,
-  //         region: this.region 
+  //         region: this.region
   //       })
   //     ),
   //     {
@@ -158,81 +160,71 @@ export class DynoDriver {
   // }
 
   // ----------------------------------------------------------------
-  //    Public Migration Methods
+  //    Migration Methods
   // ----------------------------------------------------------------
 
   /**
-   * Get CDK Table Definitions from models
+   * Expoert Model Schemas
    */
-  toCdkTables() {
-    return this.models.reduce((tables, model) => {
-      if (!tables.includes(model.tableName)) {
-        tables.push({
-          table: model.toCdkTable(),
-          indices: model.toCdkIndices()
-        });
-      }
-      return tables;
-    }, []);
+  toModelSchemas() {
+    return mergeSchemas(
+      this.models.map(model =>
+        model.toModelSchema()
+      )
+    );
   }
 
   /**
-   * Extract Stats from Dynamo Db Schemas
+   * Export CDK Schemas
    */
-  toDdbStats(tables: TableDescription[]) {
-    return tables.reduce((out, table) => {
-      out.push({
-        table: table.TableName,
-        size: table.TableSizeBytes,
-        docs: table.ItemCount,
-        rcu: table.ProvisionedThroughput.ReadCapacityUnits,
-        wcu: table.ProvisionedThroughput.WriteCapacityUnits
-      });
-      table.GlobalSecondaryIndexes.forEach(index => {
-        out.push({
-          table: table.TableName,
-          index: index.IndexName,
-          size: index.IndexSizeBytes,
-          docs: index.ItemCount,
-          rcu: index.ProvisionedThroughput.ReadCapacityUnits,
-          wcu: index.ProvisionedThroughput.WriteCapacityUnits
-        });
-      });
-      return out;
-    }, []);
+  toCdkSchemas() {
+    return toCdkSchemas(
+      this.toModelSchemas()
+    );
+  }
+
+  /**
+   * Export Dynamo Schemas
+   */
+  toDynamoSchemas() {
+    return toDynamoSchemas(
+      this.toModelSchemas()
+    );
   }
 
   /**
    * Get Dynamo Db Table Props
    **/
-  async getDdbTables(): Promise<Record<string, TableDescription>> {
-    const names = await this.getDdbTableNames();
+  async getDynamoTableSchemas(): Promise<Record<string, TableDescription>> {
+    const names = await this.getDynamoTableNames();
     const tables = {};
 
     for (let i = 0; i < names.length; i++) {
       const TableName = names[i];
-      tables[TableName] = await this.getDdbTableProps(TableName);
+      tables[TableName] = await this.getDynamoTableSchema(TableName);
     }
     return tables;
   }
 
   /**
+   * Get Dynamo Db Table Schema
+   */
+  async getDynamoTableSchema(TableName: string): Promise<TableDescription> {
+    const config = await this.client.send(
+      new DescribeTableCommand({ TableName })
+    );
+    return config.Table;
+  }
+
+  /**
    * Get Dynamo Db Table Names
    */
-  async getDdbTableNames(): Promise<string[]> {
+  async getDynamoTableNames(): Promise<string[]> {
     const result = await this.client.send(
       new ListTablesCommand({ Limit: 100 })
     );
     return result.TableNames || [];
   }
 
-  /**
-   * Get Dynamo Db Table Props
-   */
-  async getDdbTableProps(TableName: string): Promise<TableDescription> {
-    const config = await this.client.send(
-      new DescribeTableCommand({ TableName })
-    );
-    return config.Table;
-  }
+ 
 }

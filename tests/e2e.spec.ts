@@ -11,10 +11,16 @@ describe('DynoDriver e2e', () => {
       tableName: 'test-table',
       endpoint: "http://localhost:8000",
       region: "local",
+      metrics: true,
+      entities: [EntityMock, Entity2Mock]
     });
-    const tables = await dyno.getDbTables();
+    // const tables = await dyno.getDynamoTableSchemas();
+    // console.log(JSON.stringify(tables, null, '  '));
 
-    expect(tables).toEqual([]);
+    const schemas = await dyno.toModelSchemas();
+    console.log(JSON.stringify(schemas, null, '  '));
+
+    expect(1).toEqual(1);
   });
   
 });

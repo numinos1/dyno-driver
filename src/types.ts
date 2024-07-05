@@ -33,14 +33,14 @@ export type TKeys = [string, string?];
 export type TPropMap = Map<string, TProp>;
 
 export interface TProp {
-  name: string;
-  alias: string;
-  prefix: string;
-  type: TPropTypes;
-  token: TPropTokens;
-  isRequired: boolean;
-  isKey: boolean;
-  index: number;
+  name: string;           // Model prop name
+  alias: string;          // Table prop name
+  prefix: string;         // Table prop value prefix
+  type: TPropTypes;       // Model prop value type
+  token: TPropTokens;     // Table prop value type
+  isRequired: boolean;    // Is the prop required?
+  isKey: boolean;         // Is the prop a key?
+  index: number;          // Index index
 }
 
 export type TOrder = 'asc' | 'desc';
@@ -113,3 +113,26 @@ export type TComparison<P> = {
 export type TSize<P> = {
   $size?: TComparison<P>;
 };
+
+// --------------------------------------------------
+//                Dynamo Stats
+// --------------------------------------------------
+
+export interface TDynamoStats {
+  table: string; 
+  size: number; 
+  docs: number; 
+  rcu: number; 
+  wcu: number; 
+};
+
+// --------------------------------------------------
+//              Exported Model Schema
+// --------------------------------------------------
+
+export interface TModelSchema {
+  tableName: string;
+  billingMode: TBillingMode;
+  removalPolicy: TRemovalPolicy;
+  tableKeys: TProp[][];
+}

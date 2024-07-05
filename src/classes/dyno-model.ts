@@ -1,6 +1,6 @@
 import { DynamoDBClient, PutItemCommand, GetItemCommand, QueryCommand } from "@aws-sdk/client-dynamodb"; // ES Modules import
 import { singleton } from 'tsyringe';
-import { TBillingMode, TEventType, TExpression, TKeys, TOrder, TProp, TPropMap, TRemovalPolicy, TSubscription } from '@/types';
+import { TBillingMode, TEventType, TExpression, TKeys, TModelSchema, TOrder, TProp, TPropMap, TRemovalPolicy, TSubscription } from '@/types';
 import { TStrategy, TQueryType, toStrategy } from '@/helpers/to-strategy';
 import { toItem } from '@/helpers/to-item';
 import { toExpression } from '@/helpers/to-expression';
@@ -342,87 +342,17 @@ export class DynoModel<Type> {
   //    Public Migration Methods
   // ----------------------------------------------------------------
 
-  toDynamoSchema() {
-    return {
-      TableName: this.tableName,
-      BillingMode: this.billingMode,
-      TimeToLiveSpecification: {
-        AttributeName: 'ttl',
-        Enabled: true
-      },
-      DeletionPolicy: this.removalPolicy,
-      // UpdateReplacePolicy: string;
-      AttributeDefinitions: this.tableKeys
-        .flat()
-        .map(prop => ({
-          AttributeName: prop.alias,
-          AttributeType: prop.token
-        })),
-      KeySchema: this.tableKeys[0]
-        .map(prop => ({
-          AttributeName: prop.name,
-          KeyType: prop.name === 'pk'
-            ? 'HASH'
-            : 'RANGE'
-        })),
-      // LocalSecondaryIndexes?: LocalSecondaryIndex[];
-      GlobalSecondaryIndexes: this.tableKeys
-        .slice(1)
-        .map((props, i) => ({
-          IndexName: this.toIndexName(i),
-          KeySchema: props.map(prop => ({
-            AttributeName: prop.name,
-            KeyType: prop.name === 'pk'
-              ? 'HASH'
-              : 'RANGE'
-          }))
-        }))
-    };
-  }
-
   /**
-   * Get Dyno Table Definition
+   * Export the model schema 
+   * 
+   * - Used to check for single-table collisions
    */
-  toCdkTable() {
-    const [pk, sk] = this.tableKeys[0];
-
+  toModelSchema(): TModelSchema {
     return {
       tableName: this.tableName,
-      removalPolicy: this.removalPolicy,
       billingMode: this.billingMode,
-      partitionKey: {
-        name: 'pk',
-        type: pk.token
-      },
-      sortKey: {
-        name: 'sk',
-        type: sk.token
-      },
-      timeToLiveAttribute: 'ttl'
+      removalPolicy: this.removalPolicy,
+      tableKeys: this.tableKeys
     };
-  }
-
-  /**
-   * Get Dyno Index Definitions
-   */
-  toCdkIndices() {
-    const indices = this.tableKeys.slice(1);
-    
-    return indices.map(([pk, sk], i) => ({
-      indexName: this.toIndexName(i),
-      partitionKey: {
-        name: `pk${i + 1}`,
-        type: pk.token
-      },
-      sortKey: {
-        name: `sk${i + 1}`,
-        type: sk.token
-      },
-      projectionType: 'ALL'
-    }));
-  }
-    
-  toIndexName(index: number) {
-    return `${this.tableName}-gsi-${index + 1}`;
   }
 }
