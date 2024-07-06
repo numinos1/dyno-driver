@@ -1,9 +1,10 @@
 import { TModelSchema } from "@/types";
+import { BillingMode, ProjectionType } from "@aws-sdk/client-dynamodb";
 
 /**
  * Export the CDK table & index definitions
  */
-export function toCdkSchemas(schemas: TModelSchema[]) {
+export function exportCdkSchemas(schemas: TModelSchema[]) {
   return schemas.map(schema => ({
     table: toCdkTable(schema),
     indices: toCdkIndices(schema)
@@ -14,12 +15,20 @@ export function toCdkSchemas(schemas: TModelSchema[]) {
  * Export the CDK table definitions
  */
 export function toCdkTable(schema: TModelSchema) {
-  const [pk, sk] = schema.tableKeys[0];
+  const { pk, sk, wcu, rcu } = schema.tableIndex[0];
 
   return {
     tableName: schema.tableName,
     removalPolicy: schema.removalPolicy,
-    billingMode: schema.billingMode,
+    billingMode: (wcu || rcu) 
+      ? BillingMode.PROVISIONED
+      : BillingMode.PAY_PER_REQUEST,
+    provisionedThroughput: (wcu || rcu) 
+      ? {
+          ReadCapacityUnits: rcu,
+          WriteCapacityUnits: wcu
+        }
+      : undefined,
     partitionKey: {
       name: 'pk',
       type: pk.token
@@ -36,10 +45,25 @@ export function toCdkTable(schema: TModelSchema) {
  * Export the CDK index definitions
  */
 export function toCdkIndices(schema: TModelSchema) {
-  const indices = schema.tableKeys.slice(1);
+  const indices = schema.tableIndex.slice(1);
   
-  return indices.map(([pk, sk], i) => ({
+  return indices.map(({ pk, sk, wcu, rcu, project }, i) => ({
     indexName: toIndexName(schema, i),
+    billingMode: (wcu || rcu) 
+      ? BillingMode.PROVISIONED
+      : BillingMode.PAY_PER_REQUEST,
+    ProvisionedThroughput: (wcu || rcu) 
+      ? {
+          ReadCapacityUnits: rcu,
+          WriteCapacityUnits: wcu
+        }
+      : undefined,
+    projection: {
+      ProjectionType: project.length
+        ? ProjectionType.INCLUDE
+        : ProjectionType.ALL,
+      NonKeyAttributes: project
+    },
     partitionKey: {
       name: `pk${i + 1}`,
       type: pk.token

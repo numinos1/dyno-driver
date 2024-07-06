@@ -2,13 +2,13 @@ import { DynoEntity } from '../../src/decorators/dyno-entity';
 import { DynoProp } from '../../src/decorators/dyno-prop';
 
 @DynoEntity({
-  keys: [
-    ['DOC#id', 'REP#repoId'],
-    ['REP#repoId', 'VER#version'],
-    ['createdOn', 'status'],
-    ['USER#', 'createdBy'],
-    ['createdBy', 'USER#'],
-    ['repoId']
+  index: [
+    { pk: 'DOC#id', sk: 'REP#repoId' },
+    { pk: 'REP#repoId', sk: 'VER#version' },
+    { pk: 'createdOn', sk: 'status' },
+    { pk: 'USER#', sk: 'createdBy' },
+    { pk: 'createdBy', sk: 'USER#' },
+    { pk: 'repoId' }
   ]
 })
 export class Entity2Mock {

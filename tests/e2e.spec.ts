@@ -3,55 +3,51 @@ import { describe, expect, it } from '@jest/globals';
 import { DynoDriver } from '../src/classes/dyno-driver';
 import { EntityMock } from './mocks/entity.mock';
 import { Entity2Mock } from './mocks/entity-2.mock';
-import { copyProps, diffObjects } from '../src/utils';
-import { normalizeDynamoSchema } from '../src/helpers/to-dynamo-schemas';
+import { normalizeDynamoSchema } from '../src/helpers/schemas/normalize-dynamo-schema';
+import { compareSchemas } from '../src/helpers/schemas/compare-schemas';
 
 describe('DynoDriver e2e', () => {
+  const dyno = new DynoDriver({
+    tableName: 'test-table',
+    endpoint: "http://localhost:8000",
+    region: "local",
+    metrics: true,
+    entities: [EntityMock, Entity2Mock]
+  });
 
-  it('gets table definitions', async () => {
-    const dyno = new DynoDriver({
-      tableName: 'test-table',
-      endpoint: "http://localhost:8000",
-      region: "local",
-      metrics: true,
-      entities: [EntityMock, Entity2Mock]
-    });
-    // const tables = await dyno.getDynamoTableSchemas();
-    // console.log(JSON.stringify(tables, null, '  '));
+  // ----------------------------------------------------------------
 
-    const modelSchemas = dyno.toDynamoSchemas();
-    //console.log("-".repeat(70));
-    //console.log(JSON.stringify(modelSchemas, null, '  '));
+  beforeEach(async () => {
+    const names = await dyno.getDynamoTableNames();
+    console.log('BEFORE_EACH', names);
+  });
 
-    const dynamoSchemas = await dyno.getDynamoTableSchemas();
-    //console.log("-".repeat(70));
-    //console.log(JSON.stringify(dynamoSchemas, null, '  '));
+  // ----------------------------------------------------------------
 
-    const dynamoCore = Object.values(dynamoSchemas).map(normalizeDynamoSchema);
-    // console.log("-".repeat(70));
-    // console.log('DYNAMO_CORE', JSON.stringify(dynamoCore, null, '  '));
+  it('generates a CREATE migration schema', async () => {
+    const schemas = await dyno.exportMigrationSchemas();
 
-    const modelCore = modelSchemas.map(normalizeDynamoSchema);
-    // console.log("-".repeat(70));
-    // console.log('DYNAMO_CORE', JSON.stringify(modelCore, null, '  '));
+    expect(
+      schemas.map(schema => schema.diffStatus)
+    ).toEqual([
+     'CREATE' 
+    ]);
+  });
 
-    for (let i = 0; i < modelCore.length; i++)
-    modelCore.forEach((modelSchema => {
-      const diffCore = diffObjects(modelCore, dynamoCore);
+  // ----------------------------------------------------------------
 
-      console.log("-".repeat(70));
-      console.log('SCHEMA', modelSchema.TableName);
-      console.log('DIFF', JSON.stringify(diffCore, null, '  '));
-    });
+  it('creates a new table from a migration schema', async () => {
+    const schemas = await dyno.exportMigrationSchemas();
 
-    // DELETE TABLES
-    //const out = await dyno.deleteTables(Object.keys(dynamoSchemas));
+    await dyno.createTables(
+      schemas
+        .filter(schema => schema.diffStatus === 'CREATE')
+        .map(schema => schema.modelSchema)
+    );
+    
+    const names = await dyno.getDynamoTableNames();
 
-    // const out = await dyno.createTables(dyno.toDynamoSchemas());
-
-    // console.log('OUT', out);
-
-    expect(1).toEqual(1);
+    expect(names).toEqual(['test-table']);
   });
   
 });

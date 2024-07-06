@@ -1,3 +1,5 @@
+import { CreateTableCommandInput } from "@aws-sdk/client-dynamodb";
+
 export type TRemovalPolicy = 'destroy' | 'retain' | 'snapshot';
 export type TBillingMode = 'PAY_PER_REQUEST' | 'PROVISIONED';
 export type TProjectionType = 'KEYS_ONLY' | 'INCLUDE' | 'ALL';
@@ -9,9 +11,17 @@ export type TProjectionType = 'KEYS_ONLY' | 'INCLUDE' | 'ALL';
 export interface TEntity {
   entityName?: string;
   tableName?: string;
-  keys: TKeys[];
+  index: TEntityIndex[];
   props: Map<string, TProp>
 }
+
+export interface TEntityIndex {
+  pk: string;
+  sk?: string;
+  wcu?: number;
+  rcu?: number;
+  project?: string[];
+};
 
 // --------------------------------------------------
 //                    Events
@@ -28,9 +38,15 @@ export type TEventType = 'success' | 'failure';
 //                    Model
 // --------------------------------------------------
 
-export type TKeys = [string, string?];
-
 export type TPropMap = Map<string, TProp>;
+
+export interface TIndex {
+  pk: TProp;
+  sk?: TProp;
+  wcu?: number;
+  rcu?: number;
+  project?: string[];
+};
 
 export interface TProp {
   name: string;           // Model prop name
@@ -132,7 +148,19 @@ export interface TDynamoStats {
 
 export interface TModelSchema {
   tableName: string;
-  billingMode: TBillingMode;
   removalPolicy: TRemovalPolicy;
-  tableKeys: TProp[][];
+  tableIndex: TIndex[];
 }
+
+// --------------------------------------------------
+//              Exported Migration Schema
+// --------------------------------------------------
+
+export type TMigrationType = 'CREATE' | 'UPDATE' | 'DELETE' | '';
+
+export interface TMigrationSchema {
+  tableName: string;
+  diffStatus: TMigrationType;
+  modelSchema: CreateTableCommandInput,
+  dynamoSchema: CreateTableCommandInput
+};

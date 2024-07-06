@@ -1,4 +1,4 @@
-import { TKeys, TProp } from "@/types";
+import { TEntityIndex, TProp } from "@/types";
 import { entitiesMap } from "@/utils";
 
 /**
@@ -6,10 +6,10 @@ import { entitiesMap } from "@/utils";
  */
 export function DynoEntity({
   tableName,
-  keys
+  index
 }: {
   tableName?: string,
-  keys: TKeys[]
+  index: TEntityIndex[]
 }): Function {
   return (entity: Function) => {
     const className = entity.toString().match(/class (\S+)/)[1];
@@ -19,12 +19,12 @@ export function DynoEntity({
       entitiesMap.set(entity, entry = {
         entityName: '',
         tableName: '',
-        keys: [],
+        index: [],
         props: new Map<string, TProp>()
       });
     }
     entry.entityName = className;
     entry.tableName = tableName || '';
-    entry.keys = keys;
+    entry.index = index;
   };
 }

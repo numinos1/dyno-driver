@@ -1,18 +1,33 @@
-import { TKeys, TProp, TPropTokens, TPropTypes } from '@/types';
+import { TEntityIndex, TIndex, TProp, TPropTokens, TPropTypes } from '@/types';
 /**
- * Create table keys for model
+ * Create table index from entity index for model
  */
-export function toKeys(
-  keys: TKeys[],
+export function toIndex(
+  index: TEntityIndex[],
   propStack: TProp[]
-): TProp[][] {
-  if (!keys.length) {
-    throw new Error(`missing keys`);
-  }
-  return keys.map(([pk, sk], index) => [
-    toKey(pk, 'pk', index, propStack),
-    toKey(sk == null ? pk : sk, 'sk', index, propStack)
-  ]);
+): TIndex[] {
+  return index.map(({ pk, sk, wcu, rcu, project }, i) => {
+    if (wcu && !rcu) {
+      throw new Error(`key[${i}] missing rcu`);
+    }
+    if (!wcu && rcu) {
+      throw new Error(`key[${i}] missing wcu`);
+    }
+    if (Array.isArray(project)) {
+      project.forEach(name => {
+        if (!propStack.find(prop => prop.name === name)) {
+          throw new Error(`key[${i}] invalid projection prop "${name}"`);
+        }
+      });
+    }
+    return {
+      pk: toKey(pk, 'pk', i, propStack),
+      sk: toKey(sk == null ? pk : sk, 'sk', i, propStack),
+      wcu: wcu || 0,
+      rcu: rcu || 0,
+      project: project || []
+    };
+  });
 }
 
 /**

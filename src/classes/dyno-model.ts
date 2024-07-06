@@ -1,10 +1,10 @@
 import { DynamoDBClient, PutItemCommand, GetItemCommand, QueryCommand } from "@aws-sdk/client-dynamodb"; // ES Modules import
 import { singleton } from 'tsyringe';
-import { TBillingMode, TEventType, TExpression, TKeys, TModelSchema, TOrder, TProp, TPropMap, TRemovalPolicy, TSubscription } from '@/types';
+import { TBillingMode, TEntityIndex, TEventType, TExpression, TIndex, TModelSchema, TOrder, TProp, TPropMap, TRemovalPolicy, TSubscription } from '@/types';
 import { TStrategy, TQueryType, toStrategy } from '@/helpers/to-strategy';
 import { toItem } from '@/helpers/to-item';
 import { toExpression } from '@/helpers/to-expression';
-import { toKeys } from '@/helpers/to-keys';
+import { toIndex } from '@/helpers/to-index';
 import { Timer } from "@/utils";
 
 export interface GetOptions<Type> {
@@ -20,7 +20,7 @@ export interface GetOptions<Type> {
 export class DynoModel<Type> {
   private client: DynamoDBClient;
   public tableName: string;
-  public tableKeys: TProp[][];
+  public tableIndex: TIndex[];
   public propMap: TPropMap;
   public propStack: TProp[];
   private propCount: number;
@@ -35,21 +35,19 @@ export class DynoModel<Type> {
   constructor({
     entityName,
     tableName,
-    keys,
+    index,
     props,
     client,
     removalPolicy,
-    billingMode,
     metrics,
     subscriptions
   }: {
     entityName: string; 
     tableName: string; 
-    keys: TKeys[];
+    index: TEntityIndex[];
     props: TPropMap;
     client: DynamoDBClient;
     removalPolicy: TRemovalPolicy,
-    billingMode: TBillingMode,
     metrics: boolean;
     subscriptions: TSubscription[];
   }) {
@@ -58,13 +56,11 @@ export class DynoModel<Type> {
       this.tableName = tableName;
       this.metrics = metrics;
       this.removalPolicy = removalPolicy;
-      this.billingMode = billingMode;
-      this.tableKeys = [];
       this.subscriptions = [];
       this.propMap = props;
       this.propStack = [...props.values()];
       this.propCount = props.size;
-      this.tableKeys = toKeys(keys, this.propStack);
+      this.tableIndex = toIndex(index, this.propStack);
     }
     catch (err) {
       err.message = `Entity "${entityName}" ${err.message}`;
@@ -176,7 +172,7 @@ export class DynoModel<Type> {
   ): Promise<Type | undefined> {
     const strategy = toStrategy(
       options.where,
-      this.tableKeys,
+      this.tableIndex,
       this.tableName
     );
     switch (strategy.type) {
@@ -350,9 +346,8 @@ export class DynoModel<Type> {
   toModelSchema(): TModelSchema {
     return {
       tableName: this.tableName,
-      billingMode: this.billingMode,
       removalPolicy: this.removalPolicy,
-      tableKeys: this.tableKeys
+      tableIndex: this.tableIndex
     };
   }
 }

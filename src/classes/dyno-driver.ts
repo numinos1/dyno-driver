@@ -12,10 +12,12 @@ import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import { container } from 'tsyringe';
 import { DynoModel } from '@/classes/dyno-model';
 import { entitiesMap, pruneObject } from '@/utils';
-import { TBillingMode, TEventType, TRemovalPolicy, TSubscription } from '@/types';
-import { mergeSchemas } from "@/helpers/merge-schemas";
-import { toCdkSchemas } from "@/helpers/to-cdk-schemas";
-import { toDynamoSchemas } from '@/helpers/to-dynamo-schemas';
+import { TBillingMode, TEventType, TMigrationSchema, TRemovalPolicy, TSubscription } from '@/types';
+import { mergeSchemas } from "@/helpers/schemas/merge-schemas";
+import { exportCdkSchemas } from "@/helpers/schemas/export-cdk-schemas";
+import { exportDynamoSchemas } from '@/helpers/schemas/export-dynamo-schemas';
+import { normalizeDynamoSchema } from "@/helpers/schemas/normalize-dynamo-schema";
+import { compareSchemas } from "@/helpers/schemas/compare-schemas";
 
 const VALID_TABLE_NAME = /^[a-zA-Z0-9_.-]{3,255}$/;
 const VALID_ATTR_NAME = /^[a-zA-Z0-9_.-]{2,255}$/;
@@ -44,13 +46,11 @@ export class DynoDriver {
     entities,
     metrics = false,
     removalPolicy = 'destroy',
-    billingMode = 'PAY_PER_REQUEST'
   }: {
     tableName: string;
     endpoint?: string;
     region?: string;
     removalPolicy?: TRemovalPolicy,
-    billingMode?: TBillingMode,
     entities?: Function[];
     metrics?: boolean;    
   }) {
@@ -62,7 +62,6 @@ export class DynoDriver {
     this.region = region;
     this.metrics = metrics;
     this.removalPolicy = removalPolicy;
-    this.billingMode = billingMode;
     this.client = new DynamoDBClient(pruneObject({ endpoint, region }));
     this.subscriptions = [];
     this.models = [];
@@ -86,7 +85,7 @@ export class DynoDriver {
     if (!entry) {
       throw new Error(`not an Entity: ${entity}`);
     }
-    let { entityName, tableName, keys, props } = entry;
+    let { entityName, tableName, index, props } = entry;
 
     // Validate entity name
     if (!entityName) {
@@ -110,10 +109,9 @@ export class DynoDriver {
       metrics: this.metrics,
       subscriptions: this.subscriptions,
       removalPolicy: this.removalPolicy,
-      billingMode: this.billingMode,
       entityName: entityName,
       tableName: tableName,
-      keys: keys,
+      index: index,
       props: props,
     });
 
@@ -163,12 +161,23 @@ export class DynoDriver {
   //    Migration Methods
   // ----------------------------------------------------------------
 
-  
+  /**
+   * Export Migration Schemas
+   */
+  async exportMigrationSchemas(): Promise<TMigrationSchema[]> {
+    const modelSchemas = this.exportDynamoSchemas();
+    const dynamoSchemas = await this.getDynamoTableSchemas();
+
+    const dynamoCore = Object.values(dynamoSchemas).map(normalizeDynamoSchema);
+    const modelCore = modelSchemas.map(normalizeDynamoSchema);
+
+    return compareSchemas(modelCore, dynamoCore);
+  }
 
   /**
-   * Expoert Model Schemas
+   * Export Model Schemas
    */
-  toModelSchemas() {
+  exportModelSchemas() {
     return mergeSchemas(
       this.models.map(model =>
         model.toModelSchema()
@@ -179,18 +188,18 @@ export class DynoDriver {
   /**
    * Export CDK Schemas
    */
-  toCdkSchemas() {
-    return toCdkSchemas(
-      this.toModelSchemas()
+  exportCdkSchemas() {
+    return exportCdkSchemas(
+      this.exportModelSchemas()
     );
   }
 
   /**
    * Export Dynamo Schemas
    */
-  toDynamoSchemas(): CreateTableCommandInput[] {
-    return toDynamoSchemas(
-      this.toModelSchemas()
+  exportDynamoSchemas(): CreateTableCommandInput[] {
+    return exportDynamoSchemas(
+      this.exportModelSchemas()
     );
   }
 

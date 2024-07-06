@@ -1,4 +1,4 @@
-import { TExpression, TProp } from '@/types';
+import { TExpression, TIndex, TProp } from '@/types';
 
 // ------------------------------------------------------------------
 //                             Types
@@ -37,10 +37,10 @@ export enum TQueryType {
  */
 export function toStrategy<Type>(
   where: TExpression<Type>,
-  tableKeys: TProp[][],
+  tableIndex: TIndex[],
   table: string
 ): TStrategy<Type> {
-  const { keys, type, index } = toTheory(where, tableKeys);
+  const { keys, type, index } = toTheory(where, tableIndex);
   const query = {}, filter = {};
   
   // Split where into query & filter
@@ -67,7 +67,7 @@ export function toStrategy<Type>(
  */
 export function toTheory<Type>(
   where: TExpression<Type>,
-  tableKeys: TProp[][],
+  tableIndex: TIndex[],
 ): TTheory {
 
   // Default theory (full table scan)
@@ -78,8 +78,8 @@ export function toTheory<Type>(
   };
 
   // Iterate through the key-sets defined on the model
-  for (let index = 0; index < tableKeys.length; ++index) {
-    const [pk, sk] = tableKeys[index];
+  for (let index = 0; index < tableIndex.length; ++index) {
+    const { pk, sk } = tableIndex[index];
 
     // Partition key is defined as a value
     if (toKeyType(pk.name, where) !== 'value') {

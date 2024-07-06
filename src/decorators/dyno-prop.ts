@@ -20,7 +20,7 @@ export function DynoProp({
       entitiesMap.set(proto, entry = {
         entityName: '',
         tableName: '',
-        keys: [],
+        index: [],
         props: new Map<string, TProp>()
       });
     }
