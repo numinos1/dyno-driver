@@ -45,6 +45,13 @@ function toKey(
   // default type
   let type: TPropTypes = 'string';
 
+  // Key type (aka token)
+  const token = TPropTokens[type];
+
+  if (token !== 'S' && token !== 'N' && token !== 'B') {
+    throw new Error(`key[${index}] invalid type "${token}"`);
+  }
+
   // if prefix but no name
   if (!name) {
     propStack.push(prop = {
@@ -52,7 +59,7 @@ function toKey(
       alias: alias,
       prefix: prefix,
       type: type,
-      token: TPropTokens[type],
+      token: token,
       isRequired: false,
       isKey: true,
       index: index

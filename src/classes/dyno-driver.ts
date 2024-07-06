@@ -163,6 +163,8 @@ export class DynoDriver {
   //    Migration Methods
   // ----------------------------------------------------------------
 
+  
+
   /**
    * Expoert Model Schemas
    */
@@ -186,7 +188,7 @@ export class DynoDriver {
   /**
    * Export Dynamo Schemas
    */
-  toDynamoSchemas() {
+  toDynamoSchemas(): CreateTableCommandInput[] {
     return toDynamoSchemas(
       this.toModelSchemas()
     );
@@ -226,5 +228,26 @@ export class DynoDriver {
     return result.TableNames || [];
   }
 
+  /**
+   * Delete Dynamo Db Tables by Name
+   */
+  async deleteTables(TableNames: string[]) {
+    for (let TableName of TableNames) {
+      await this.client.send(
+        new DeleteTableCommand({ TableName })
+      );
+    }
+  }
+
+  /**
+   * Create Dynamo Db Tables
+   */
+  async createTables(schemas: CreateTableCommandInput[]) {
+    for (let schema of schemas) {
+      await this.client.send(
+        new CreateTableCommand(schema)
+      );
+    }
+  }
  
 }

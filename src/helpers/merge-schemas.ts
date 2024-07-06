@@ -2,7 +2,17 @@ import { TModelSchema, TProp } from "@/types";
 import { copyObject } from "@/utils";
 
 /**
- * Merge model schemas to create migrations
+ * Merge all model schemas to create migrations
+ * 
+ * When models map to unique tables then no merging is necessary. But when
+ * two or more models map to the same DynamoDB table it's critical that their
+ * keys map to the same indices and data-types. Additinoally, if two models 
+ * are going to share the same table then they need to have unique value prefixes.
+ * 
+ * The mereged model schemas are used to generate the DynamoDB tables using
+ * both the CDK and the direct DynamoDB API calls. The CDK is used to instantiate
+ * DynamoDB in the cloud and the direct API is used to instantiate it in the 
+ * local DynamoDB instace running in Docker (used for testing).
  */
 export function mergeSchemas(schemas: TModelSchema[]): TModelSchema[] {
   return schemas.reduce((merged, schema) => {

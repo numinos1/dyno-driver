@@ -47,20 +47,6 @@ export function pruneObject<Type>(value: Record<string, Type>): Record<string, T
 }
 
 /**
- * Copy props from an object
- **/
-export function copyProps(obj: any, propNames: string[]) {
-  const src = (obj && typeof obj === 'object')
-    ? obj 
-    : {};
-
-  return propNames.reduce((out, key) => {
-    out[key] = src[key];
-    return out;
-  }, {});
-}
-
-/**
  * Recursively diff two objects
  **/
 export function diffObjects(canonical: any, copy: any) {
@@ -91,5 +77,5 @@ export function diffObjects(canonical: any, copy: any) {
       true
     );
   }
-  return false;
+  return (canonical === copy);
 }
