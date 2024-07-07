@@ -19,7 +19,7 @@ describe('DynoDriver e2e', () => {
 
   beforeEach(async () => {
     const names = await dyno.getDynamoTableNames();
-    console.log('BEFORE_EACH', names);
+    await dyno.deleteTables(names);
   });
 
   // ----------------------------------------------------------------

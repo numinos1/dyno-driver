@@ -1,8 +1,8 @@
 import { copyObject } from '../../src/utils';
 import { ModelSchemaMock } from './../mocks/model-schema.mock';
 import { describe, expect, it } from '@jest/globals';
-import { mergeSchemas } from '../../src/helpers/merge-schemas';
-import { TProp, TPropTokens } from '../../src/types';
+import { mergeSchemas } from '../../src/helpers/schemas/merge-schemas';
+import { TIndex, TProp, TPropTokens } from '../../src/types';
 
 describe('mergeSchemas()', () => {
 
@@ -19,8 +19,8 @@ describe('mergeSchemas()', () => {
     const schema1 = copyObject(ModelSchemaMock);
     const schema2 = copyObject(ModelSchemaMock);
 
-    schema1.tableKeys[0][0].prefix = 'TEST#';
-    schema1.tableKeys[1][0].prefix = 'TEST#';
+    schema1.tableIndex[0].pk.prefix = 'TEST#';
+    schema1.tableIndex[1].pk.prefix = 'TEST#';
 
     const schema3 = mergeSchemas([schema1, schema2]);
 
@@ -33,54 +33,87 @@ describe('mergeSchemas()', () => {
     const schema1 = copyObject(ModelSchemaMock);
     const schema2 = copyObject(ModelSchemaMock);
 
-    const extraProp: TProp[] = [
-      {
-        "name": "userId",
-        "alias": "pk2",
-        "prefix": "USER#",
-        "type": "string",
-        "token": TPropTokens.string,
-        "isRequired": false,
-        "isKey": true,
-        "index": 2
-      },
-      {
-        "name": "version",
-        "alias": "sk2",
-        "type": "string",
-        "token": TPropTokens.string,
-        "prefix": "",
-        "isRequired": false,
-        "isKey": true,
-        "index": 2
-      }
-    ];
+     const extraProp: TIndex = {
+       wcu: 0,
+       rcu: 0,
+       project: [],
+       pk: {
+         "name": "userId",
+         "alias": "pk2",
+         "prefix": "USER#",
+         "type": "string",
+         "token": TPropTokens.string,
+         "isRequired": false,
+         "isKey": true,
+         "index": 2
+       },
+       sk: {
+         "name": "version",
+         "alias": "sk2",
+         "type": "string",
+         "token": TPropTokens.string,
+         "prefix": "",
+         "isRequired": false,
+         "isKey": true,
+         "index": 2
+       }
+     };
      
-    schema1.tableKeys[0][0].prefix = 'TEST#';
-    schema1.tableKeys[1][0].prefix = 'TEST#';
-    schema2.tableKeys.push(extraProp);
+    schema1.tableIndex[0].pk.prefix = 'TEST#';
+    schema1.tableIndex[1].pk.prefix = 'TEST#';
+    schema2.tableIndex.push(extraProp);
 
     const schema3 = mergeSchemas([schema1, schema2]);
      
     const merged = copyObject(schema1);
-    merged.tableKeys.push(extraProp);
+    merged.tableIndex.push(extraProp);
 
     expect(schema3).toEqual([merged]);
   });
 
   // ----------------------------------------------------------------
 
-  it('throws on conflicting billing modes', () => {
+  it('throws on conflicting wcu', () => {
     const schema1 = copyObject(ModelSchemaMock);
     const schema2 = copyObject(ModelSchemaMock);
 
-    schema1.tableKeys[0][0].prefix = 'TEST#';
-    schema1.tableKeys[1][0].prefix = 'TEST#';
-    schema1.billingMode = 'PROVISIONED';
+    schema1.tableIndex[0].pk.prefix = 'TEST#';
+    schema1.tableIndex[1].pk.prefix = 'TEST#';
+    schema1.tableIndex[0].wcu = 10;
 
     expect(() => {
       mergeSchemas([schema1, schema2])
-    }).toThrow(`Billing Mismatch "PROVISIONED" != "PAY_PER_REQUEST" on table "test-table"`);
+    }).toThrow(`WCU mismatch 10 !== 0 on table "test-table" at key[0]`);
+  });
+
+  // ----------------------------------------------------------------
+
+  it('throws on conflicting rcu', () => {
+    const schema1 = copyObject(ModelSchemaMock);
+    const schema2 = copyObject(ModelSchemaMock);
+
+    schema1.tableIndex[0].pk.prefix = 'TEST#';
+    schema1.tableIndex[1].pk.prefix = 'TEST#';
+    schema1.tableIndex[0].rcu = 10;
+
+    expect(() => {
+      mergeSchemas([schema1, schema2])
+    }).toThrow(`RCU mismatch 10 !== 0 on table "test-table" at key[0]`);
+  });
+
+  // ----------------------------------------------------------------
+
+  it('throws on conflicting projection', () => {
+    const schema1 = copyObject(ModelSchemaMock);
+    const schema2 = copyObject(ModelSchemaMock);
+
+    schema1.tableIndex[0].pk.prefix = 'TEST#';
+    schema1.tableIndex[1].pk.prefix = 'TEST#';
+    schema1.tableIndex[0].project = ['repoId', 'version'];
+
+    expect(() => {
+      mergeSchemas([schema1, schema2])
+    }).toThrow(`Project mismatched property "repoId" on table "test-table" at key[0]`);
   });
 
   // ----------------------------------------------------------------
@@ -89,8 +122,8 @@ describe('mergeSchemas()', () => {
     const schema1 = copyObject(ModelSchemaMock);
     const schema2 = copyObject(ModelSchemaMock);
 
-    schema1.tableKeys[0][0].prefix = 'TEST#';
-    schema1.tableKeys[1][0].prefix = 'TEST#';
+    schema1.tableIndex[0].pk.prefix = 'TEST#';
+    schema1.tableIndex[1].pk.prefix = 'TEST#';
     schema1.removalPolicy = 'retain';
 
     expect(() => {
@@ -115,9 +148,9 @@ describe('mergeSchemas()', () => {
     const schema1 = copyObject(ModelSchemaMock);
     const schema2 = copyObject(ModelSchemaMock);
 
-    schema1.tableKeys[0][0].prefix = 'TEST#';
-    schema1.tableKeys[1][0].prefix = 'TEST#';
-    schema1.tableKeys[0][0].token = TPropTokens.number;
+    schema1.tableIndex[0].pk.prefix = 'TEST#';
+    schema1.tableIndex[1].pk.prefix = 'TEST#';
+    schema1.tableIndex[0].pk.token = TPropTokens.number;
 
     expect(() => {
       mergeSchemas([schema1, schema2])
@@ -130,9 +163,9 @@ describe('mergeSchemas()', () => {
     const schema1 = copyObject(ModelSchemaMock);
     const schema2 = copyObject(ModelSchemaMock);
 
-    schema1.tableKeys[0][0].prefix = 'TEST#';
-    schema1.tableKeys[1][0].prefix = 'TEST#';
-    schema1.tableKeys[0][0].alias = 'test';
+    schema1.tableIndex[0].pk.prefix = 'TEST#';
+    schema1.tableIndex[1].pk.prefix = 'TEST#';
+    schema1.tableIndex[0].pk.alias = 'test';
 
     expect(() => {
       mergeSchemas([schema1, schema2])
@@ -145,8 +178,8 @@ describe('mergeSchemas()', () => {
     const schema1 = copyObject(ModelSchemaMock);
     const schema2 = copyObject(ModelSchemaMock);
 
-    schema1.tableKeys[0][0].prefix = 'TEST#';
-    schema1.tableKeys[1][0].prefix = '';
+    schema1.tableIndex[0].pk.prefix = 'TEST#';
+    schema1.tableIndex[1].pk.prefix = '';
 
     expect(() => {
       mergeSchemas([schema1, schema2])

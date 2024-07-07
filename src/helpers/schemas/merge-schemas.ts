@@ -4,10 +4,11 @@ import { copyObject } from "@/utils";
 /**
  * Merge all model schemas to create migrations
  * 
- * When models map to unique tables then no merging is necessary. But when
- * two or more models map to the same DynamoDB table it's critical that their
- * keys map to the same indices and data-types. Additinoally, if two models 
- * are going to share the same table then they need to have unique value prefixes.
+ * If all models map to unique tables, then no merging is necessary. 
+ * 
+ * But when two or more models map to the same DynamoDB table, it's critical that 
+ * keys map to the same indices and data-types. Additinoally, if two models
+ * share the same table, then keys must have unique value prefixes.
  * 
  * The mereged model schemas are used to generate the DynamoDB tables using
  * both the CDK and the direct DynamoDB API calls. The CDK is used to instantiate
@@ -70,16 +71,18 @@ function compareProps(
     throw new Error(`RCU mismatch ${matchProp.rcu} !== ${indexProp.rcu}`);
   }
   if (matchProp.wcu !== indexProp.wcu) {
-    throw new Error(`RCU mismatch ${matchProp.wcu} !== ${indexProp.wcu}`);
+    throw new Error(`WCU mismatch ${matchProp.wcu} !== ${indexProp.wcu}`);
   }
-  if (matchProp.project.length !== indexProp.project.length) {
-    throw new Error(`Project mismatch`);
-  }
-  matchProp.project.forEach((matchVal, i) => {
-    const indexVal = indexProp.project[i];
+  const props = new Set<string>();
 
-    if (matchVal !== indexVal) {
-      throw new Error(`Project mismatch "${matchVal}" !== "${indexVal}"`);
+  matchProp.project.forEach(prop => props.add(prop));
+  indexProp.project.forEach(prop => props.add(prop));
+
+  props.forEach(prop => {
+    if (!matchProp.project.includes(prop)
+      || !indexProp.project.includes(prop)
+    ) {
+      throw new Error(`Project mismatched property "${prop}"`);
     } 
   });
 }

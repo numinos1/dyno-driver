@@ -1,13 +1,14 @@
-import { BillingMode } from "@aws-sdk/client-dynamodb";
 import { TModelSchema, TPropTokens } from "../../src/types";
 
 export const ModelSchemaMock: TModelSchema = {
   "tableName": "test-table",
-  "billingMode": BillingMode.PAY_PER_REQUEST,
   "removalPolicy": "destroy",
-  "tableKeys": [
-    [
-      {
+  "tableIndex": [
+    {
+      rcu: 0,
+      wcu: 0,
+      project: [],
+      pk: {
         "name": "id",
         "alias": "pk",
         "type": "string",
@@ -17,7 +18,7 @@ export const ModelSchemaMock: TModelSchema = {
         "isKey": true,
         "index": 0
       },
-      {
+      sk: {
         "name": "repoId",
         "alias": "sk",
         "type": "string",
@@ -27,9 +28,12 @@ export const ModelSchemaMock: TModelSchema = {
         "isKey": true,
         "index": 0
       }
-    ],
-    [
-      {
+    },
+    {
+      rcu: 0,
+      wcu: 0,
+      project: [],
+      pk: {
         "name": "repoId",
         "alias": "pk1",
         "prefix": "REP#",
@@ -39,7 +43,7 @@ export const ModelSchemaMock: TModelSchema = {
         "isKey": true,
         "index": 1
       },
-      {
+      sk: {
         "name": "version",
         "alias": "sk1",
         "type": "string",
@@ -49,6 +53,6 @@ export const ModelSchemaMock: TModelSchema = {
         "isKey": true,
         "index": 1
       }
-    ]
+    }
   ]
 };

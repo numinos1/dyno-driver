@@ -42,10 +42,10 @@ export type TPropMap = Map<string, TProp>;
 
 export interface TIndex {
   pk: TProp;
-  sk?: TProp;
-  wcu?: number;
-  rcu?: number;
-  project?: string[];
+  sk: TProp;
+  wcu: number;
+  rcu: number;
+  project: string[];
 };
 
 export interface TProp {

@@ -1,3 +1,4 @@
+import { pruneObject } from "@/utils";
 import { BillingMode, CreateTableCommandInput, GlobalSecondaryIndex, ProvisionedThroughput, TableDescription } from "@aws-sdk/client-dynamodb";
 
 /**
@@ -22,8 +23,7 @@ export function normalizeDynamoSchema(
       Projection: entry.Projection,
       ProvisionedThroughput: entry.ProvisionedThroughput,
       KeySchema: normalizeKeySchema(entry.KeySchema)
-    }))
-    .sort((a, b) => a.IndexName.localeCompare(b.IndexName))
+    })).sort((a, b) => a.IndexName.localeCompare(b.IndexName))
   };
 }
 

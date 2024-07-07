@@ -52,7 +52,7 @@ export function toCdkIndices(schema: TModelSchema) {
     billingMode: (wcu || rcu) 
       ? BillingMode.PROVISIONED
       : BillingMode.PAY_PER_REQUEST,
-    ProvisionedThroughput: (wcu || rcu) 
+    provisionedThroughput: (wcu || rcu) 
       ? {
           ReadCapacityUnits: rcu,
           WriteCapacityUnits: wcu

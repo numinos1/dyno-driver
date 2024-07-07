@@ -31,10 +31,13 @@ describe('toStrategy()', () => {
       expect(toStrategy<EntityMock>(
         {},
         [
-          [
-            propsMock.get('repoId'),
-            propsMock.get('id')
-          ]
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('repoId'),
+            sk: propsMock.get('id')
+          }
         ],
         'testTable'
       )).toEqual({
@@ -55,10 +58,13 @@ describe('toStrategy()', () => {
           id: '1234abcd'
         },
         [
-          [
-            propsMock.get('repoId'),
-            propsMock.get('id')
-          ]
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('repoId'),
+            sk: propsMock.get('id')
+          }
         ],
         'testTable'
       )).toEqual({
@@ -89,10 +95,13 @@ describe('toStrategy()', () => {
           body: 'xxxxxxx'
         },
         [
-          [
-            propsMock.get('repoId'),
-            propsMock.get('id')
-          ]
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('repoId'),
+            sk: propsMock.get('id')
+          }
         ],
         'testTable'
       )).toEqual({
@@ -121,18 +130,27 @@ describe('toStrategy()', () => {
       expect(toStrategy<EntityMock>(
         {},
         [
-          [
-            propsMock.get('repoId'),
-            propsMock.get('id')
-          ],
-          [
-            propsMock.get('id'),
-            propsMock.get('repoId')
-          ],
-          [
-            propsMock.get('version'),
-            propsMock.get('id')
-          ]
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('repoId'),
+            sk: propsMock.get('id')
+          },
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('id'),
+            sk: propsMock.get('repoId')
+          },
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('version'),
+            sk: propsMock.get('id')
+          }
         ],
         'testTable'
       )).toEqual({
@@ -159,10 +177,13 @@ describe('toStrategy()', () => {
           repoId: 'abcd1234'
         },
         [
-          [
-            propsMock.get('repoId'),
-            propsMock.get('id')
-          ]
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('repoId'),
+            sk: propsMock.get('id')
+          }
         ],
         'testTable'
       )).toEqual({
@@ -190,10 +211,13 @@ describe('toStrategy()', () => {
           repoId: 'abcd1234'
         },
         [
-          [
-            propsMock.get('repoId'),
-            propsMock.get('id')
-          ]
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('repoId'),
+            sk: propsMock.get('id')
+          }
         ],
         'testTable'
       )).toEqual({
@@ -225,18 +249,27 @@ describe('toStrategy()', () => {
           status: 'active',
         },
         [
-          [
-            propsMock.get('repoId'),
-            propsMock.get('id')
-          ],
-          [
-            propsMock.get('id'),
-            propsMock.get('repoId')
-          ],
-          [
-            propsMock.get('version'),
-            propsMock.get('id')
-          ]
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('repoId'),
+            sk: propsMock.get('id')
+          },
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('id'),
+            sk: propsMock.get('repoId')
+          },
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('version'),
+            sk: propsMock.get('id')
+          }
         ],
         'testTable'
       )).toEqual({
@@ -266,18 +299,27 @@ describe('toStrategy()', () => {
           createdOn: 1232423452
         },
         [
-          [
-            propsMock.get('repoId'),
-            propsMock.get('id')
-          ],
-          [
-            propsMock.get('id'),
-            propsMock.get('repoId')
-          ],
-          [
-            propsMock.get('version'),
-            propsMock.get('id')
-          ]
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('repoId'),
+            sk: propsMock.get('id')
+          },
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('id'),
+            sk: propsMock.get('repoId')
+          },
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('version'),
+            sk: propsMock.get('id')
+          }
         ],
         'testTable'
       )).toEqual({
@@ -311,10 +353,13 @@ describe('toStrategy()', () => {
           id: { $gt: 'efgh5678' }
         },
         [
-          [
-            propsMock.get('repoId'),
-            propsMock.get('id')
-          ]
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('repoId'),
+            sk: propsMock.get('id')
+          }
         ],
         'testTable'
       )).toEqual({
@@ -345,10 +390,13 @@ describe('toStrategy()', () => {
           status: 'active',
         },
         [
-          [
-            propsMock.get('repoId'),
-            propsMock.get('id')
-          ]
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('repoId'),
+            sk: propsMock.get('id')
+          }
         ],
         'testTable'
       )).toEqual({
@@ -382,17 +430,26 @@ describe('toStrategy()', () => {
           status: 'active',
         },
         [
-          [
-            propsMock.get('repoId'),
-            propsMock.get('id')
-          ],
-          [
-            propsMock.get('id'),
-            propsMock.get('repoId')
-          ], [
-            propsMock.get('version'),
-            propsMock.get('id')
-          ]
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('repoId'),
+            sk: propsMock.get('id')
+          },
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('id'),
+            sk: propsMock.get('repoId')
+          },
+          { wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('version'),
+            sk: propsMock.get('id')
+          }
         ],
         'testTable'
       )).toEqual({
@@ -424,16 +481,27 @@ describe('toStrategy()', () => {
           createdOn: 1232423452
         },
         [
-          [
-            propsMock.get('repoId'),
-            propsMock.get('id')
-          ], [
-            propsMock.get('id'),
-            propsMock.get('repoId')
-          ], [
-            propsMock.get('version'),
-            propsMock.get('id')
-          ]
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('repoId'),
+            sk: propsMock.get('id')
+          },
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('id'),
+            sk: propsMock.get('repoId')
+          }, 
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('version'),
+            sk: propsMock.get('id')
+          }
         ],
         'testTable'
       )).toEqual({
@@ -469,10 +537,13 @@ describe('toStrategy()', () => {
           id: 'efgh5678'
         },
         [
-          [
-            propsMock.get('repoId'),
-            propsMock.get('id')
-          ]
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('repoId'),
+            sk: propsMock.get('id')
+          }
         ],
         'testTable'
       )).toEqual({
@@ -503,10 +574,13 @@ describe('toStrategy()', () => {
           status: 'active',
         },
         [
-          [
-            propsMock.get('repoId'),
-            propsMock.get('id')
-          ]
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('repoId'),
+            sk: propsMock.get('id')
+          }
         ],
         'testTable'
       )).toEqual({
@@ -538,17 +612,27 @@ describe('toStrategy()', () => {
           id: 'efgh5678'
         },
         [
-          [
-            propsMock.get('repoId'),
-            propsMock.get('id')
-          ], [
-            propsMock.get('id'),
-            propsMock.get('repoId')
-          ],
-          [
-            propsMock.get('version'),
-            propsMock.get('id')
-          ]
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('repoId'),
+            sk: propsMock.get('id')
+          }, 
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('id'),
+            sk: propsMock.get('repoId')
+          },
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('version'),
+            sk: propsMock.get('id')
+          }
         ],
         'testTable'
       )).toEqual({
@@ -576,16 +660,27 @@ describe('toStrategy()', () => {
           repoId: 'abcd1234',
         },
         [
-          [
-            propsMock.get('repoId'),
-            propsMock.get('id')
-          ], [
-            propsMock.get('id'),
-            propsMock.get('repoId')
-          ], [
-            propsMock.get('version'),
-            propsMock.get('id')
-          ]
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('repoId'),
+            sk: propsMock.get('id')
+          },
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('id'),
+            sk: propsMock.get('repoId')
+          }, 
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('version'),
+            sk: propsMock.get('id')
+          }
         ],
         'testTable'
       )).toEqual({
@@ -613,16 +708,27 @@ describe('toStrategy()', () => {
           version: 'abcd1234',
         },
         [
-          [
-            propsMock.get('repoId'),
-            propsMock.get('id')
-          ], [
-            propsMock.get('id'),
-            propsMock.get('repoId')
-          ], [
-            propsMock.get('version'),
-            propsMock.get('id')
-          ]
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('repoId'),
+            sk: propsMock.get('id')
+          }, 
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('id'),
+            sk: propsMock.get('repoId')
+          }, 
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('version'),
+            sk: propsMock.get('id')
+          }
         ],
         'testTable'
       )).toEqual({
@@ -651,18 +757,27 @@ describe('toStrategy()', () => {
           createdOn: 1232423452
         },
         [
-          [
-            propsMock.get('repoId'),
-            propsMock.get('id')
-          ],
-          [
-            propsMock.get('repoId'),
-            propsMock.get('version')
-          ],
-          [
-            propsMock.get('repoId'),
-            propsMock.get('createdOn')
-          ]
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('repoId'),
+            sk: propsMock.get('id')
+          },
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('repoId'),
+            sk: propsMock.get('version')
+          },
+          {
+            wcu: 0,
+            rcu: 0,
+            project: [],
+            pk: propsMock.get('repoId'),
+            sk: propsMock.get('createdOn')
+          }
         ],
         'testTable'
       )).toEqual({

@@ -23,7 +23,7 @@ describe('DynoDriver()', () => {
       metrics: true
     });
 
-    expect(drive.toCdkSchemas()).toEqual([]);
+    expect(drive.exportCdkSchemas()).toEqual([]);
   });
 
   // ------------------------------------------------------
@@ -35,11 +35,12 @@ describe('DynoDriver()', () => {
       entities: [EntityMock]
     });
 
-    expect(drive.toCdkSchemas()).toEqual([{
+    expect(drive.exportCdkSchemas()).toEqual([{
       table: {
         tableName: "test-table",
         removalPolicy: "destroy",
         billingMode: "PAY_PER_REQUEST",
+        provisionedThroughput: undefined,
         partitionKey: {
           name: "pk",
           type: "S"
@@ -52,7 +53,13 @@ describe('DynoDriver()', () => {
       },
       indices: [{
         indexName: "test-table-gsi-1",
+        billingMode: "PAY_PER_REQUEST",
+        provisionedThroughput: undefined,
         projectionType: "ALL",
+        projection: {
+          NonKeyAttributes: [],
+          ProjectionType: "ALL"
+        },
         partitionKey: {
           name: "pk1",
           type: "S",
@@ -74,11 +81,12 @@ describe('DynoDriver()', () => {
       entities: [EntityMock, Entity2Mock]
     });
 
-    expect(drive.toCdkSchemas()).toEqual([{
+    expect(drive.exportCdkSchemas()).toEqual([{
       table: {
         tableName: "test-table",
         removalPolicy: "destroy",
         billingMode: "PAY_PER_REQUEST",
+        provisionedThroughput: undefined,
         partitionKey: {
           name: "pk",
           type: "S"
@@ -92,6 +100,12 @@ describe('DynoDriver()', () => {
       indices: [{
         indexName: "test-table-gsi-1",
         projectionType: "ALL",
+        billingMode: "PAY_PER_REQUEST",
+        provisionedThroughput: undefined,
+        projection: {
+          NonKeyAttributes: [],
+          ProjectionType: "ALL"
+        },
         partitionKey: {
           name: "pk1",
           type: "S",
@@ -103,6 +117,12 @@ describe('DynoDriver()', () => {
       }, {
         indexName: "test-table-gsi-2",
         projectionType: "ALL",
+        billingMode: "PAY_PER_REQUEST",
+        provisionedThroughput: undefined,
+        projection: {
+          NonKeyAttributes: [],
+          ProjectionType: "ALL"
+        },
         partitionKey: {
           name: "pk2",
           type: "N",
@@ -114,6 +134,12 @@ describe('DynoDriver()', () => {
       }, {
         indexName: "test-table-gsi-3",
         projectionType: "ALL",
+        billingMode: "PAY_PER_REQUEST",
+        provisionedThroughput: undefined,
+        projection: {
+          NonKeyAttributes: [],
+          ProjectionType: "ALL"
+        },
         partitionKey: {
           name: "pk3",
           type: "S",
@@ -125,6 +151,12 @@ describe('DynoDriver()', () => {
       }, {
         indexName: "test-table-gsi-4",
         projectionType: "ALL",
+        billingMode: "PAY_PER_REQUEST",
+        provisionedThroughput: undefined,
+        projection: {
+          NonKeyAttributes: [],
+          ProjectionType: "ALL"
+        },
         partitionKey: {
           name: "pk4",
           type: "S",
@@ -136,6 +168,12 @@ describe('DynoDriver()', () => {
       }, {
         indexName: "test-table-gsi-5",
         projectionType: "ALL",
+        billingMode: "PAY_PER_REQUEST",
+        provisionedThroughput: undefined,
+        projection: {
+          NonKeyAttributes: [],
+          ProjectionType: "ALL"
+        },
         partitionKey: {
           name: "pk5",
           type: "S",
@@ -159,13 +197,15 @@ describe('DynoDriver()', () => {
       entities: [EntityMock, Entity2Mock]
     });
 
-    expect(drive.toModelSchemas()).toEqual([{
+    expect(drive.exportModelSchemas()).toEqual([{
       "tableName": "test-table",
-      "billingMode": "PAY_PER_REQUEST",
       "removalPolicy": "destroy",
-      "tableKeys": [
-        [
-          {
+      "tableIndex": [
+        {
+          wcu: 0,
+          rcu: 0,
+          project: [],
+          pk: {
             "alias": "pk",
             "index": 0,
             "isKey": true,
@@ -175,7 +215,7 @@ describe('DynoDriver()', () => {
             "token": "S",
             "type": "string",
           },
-          {
+          sk: {
             "alias": "sk",
             "index": 0,
             "isKey": true,
@@ -185,9 +225,12 @@ describe('DynoDriver()', () => {
             "token": "S",
             "type": "string",
           },
-        ],
-        [
-          {
+        },
+        {
+          wcu: 0,
+          rcu: 0,
+          project: [],
+          pk: {
             "alias": "pk1",
             "index": 1,
             "isKey": true,
@@ -197,7 +240,7 @@ describe('DynoDriver()', () => {
             "token": "S",
             "type": "string",
           },
-          {
+          sk: {
             "alias": "sk1",
             "index": 1,
             "isKey": true,
@@ -207,9 +250,12 @@ describe('DynoDriver()', () => {
             "token": "S",
             "type": "string",
           },
-        ],
-        [
-          {
+        },
+        {
+          wcu: 0,
+          rcu: 0,
+          project: [],
+          pk: {
             "alias": "pk2",
             "index": 2,
             "isKey": true,
@@ -219,7 +265,7 @@ describe('DynoDriver()', () => {
             "token": "N",
             "type": "number",
           },
-          {
+          sk: {
             "alias": "sk2",
             "index": 2,
             "isKey": true,
@@ -229,9 +275,12 @@ describe('DynoDriver()', () => {
             "token": "S",
             "type": "string",
           },
-        ],
-        [
-          {
+        },
+        {
+          wcu: 0,
+          rcu: 0,
+          project: [],
+          pk: {
             "alias": "pk3",
             "index": 3,
             "isKey": true,
@@ -241,7 +290,7 @@ describe('DynoDriver()', () => {
             "token": "S",
             "type": "string",
           },
-          {
+          sk: {
             "alias": "sk3",
             "index": 3,
             "isKey": true,
@@ -251,9 +300,12 @@ describe('DynoDriver()', () => {
             "token": "S",
             "type": "string",
           },
-        ],
-        [
-          {
+        },
+        {
+          wcu: 0,
+          rcu: 0,
+          project: [],
+          pk: {
             "alias": "pk4",
             "index": 4,
             "isKey": true,
@@ -263,7 +315,7 @@ describe('DynoDriver()', () => {
             "token": "S",
             "type": "string",
           },
-          {
+          sk: {
             "alias": "sk4",
             "index": 4,
             "isKey": true,
@@ -273,9 +325,12 @@ describe('DynoDriver()', () => {
             "token": "S",
             "type": "string",
           },
-        ],
-        [
-          {
+        },
+        {
+          wcu: 0,
+          rcu: 0,
+          project: [],
+          pk: {
             "alias": "pk5",
             "index": 5,
             "isKey": true,
@@ -285,7 +340,7 @@ describe('DynoDriver()', () => {
             "token": "S",
             "type": "string",
           },
-          {
+          sk: {
             "alias": "sk5",
             "index": 5,
             "isKey": true,
@@ -295,7 +350,7 @@ describe('DynoDriver()', () => {
             "token": "S",
             "type": "string",
           },
-        ],
+        },
       ]
     }]);
   });

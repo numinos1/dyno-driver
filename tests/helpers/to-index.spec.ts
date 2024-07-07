@@ -1,22 +1,25 @@
 import { newPropList } from '../mocks/props.mock';
 import { describe, expect, it } from '@jest/globals';
-import { toKeys } from '../../src/helpers/to-keys';
-import { TProp, TPropTokens } from '../../src/types';
+import { toIndex } from '../../src/helpers/to-index';
+import { TIndex, TProp, TPropTokens } from '../../src/types';
 
 /**
- * Helper to convert TProp to string[][]
+ * Helper to convert TIndex to string[][]
  */
-function toNames(keys: TProp[][]): string[][] {
-  return keys.map(key => key.map(k => k.name));
+function toNames(keys: TIndex[]) {
+  return keys.map(key => ({
+    pk: key.pk.name,
+    sk: key.sk.name
+  }));
 }
 
 /**
  * Tests
  */
-describe('toKeys()', () => {
+describe('toIndex()', () => {
 
   it('is a function', () => {
-    expect(typeof toKeys)
+    expect(typeof toIndex)
       .toEqual('function');
   });
 
@@ -27,24 +30,24 @@ describe('toKeys()', () => {
   it('should throw if no keys', () => {
     const props = newPropList();
 
-    expect(() => toKeys([], props)).toThrow("missing keys");
+    expect(() => toIndex([{ pk: '' }], props)).toThrow("key[0] missing prop name");
   });
 
   it('should throw if blank prop name', () => {
     const props = newPropList();
 
-    expect(() => toKeys([['']], props)).toThrow("key[0] missing prop name");
-    expect(() => toKeys([['', 'repoId']], props)).toThrow("key[0] missing prop name");
-    expect(() => toKeys([['repoId', '']], props)).toThrow("key[0] missing prop name");
+    expect(() => toIndex([{ pk: '' }], props)).toThrow("key[0] missing prop name");
+    expect(() => toIndex([{ pk: '', sk: 'repoId' }], props)).toThrow("key[0] missing prop name");
+    expect(() => toIndex([{ pk: 'repoId', sk: '' }], props)).toThrow("key[0] missing prop name");
   });
 
   it('should throw if keys are not a prop', () => {
     const props = newPropList();
 
-    expect(() => toKeys([['xxx']], props)).toThrow("key[0] xxx is not a prop");
-    expect(() => toKeys([['docs#xxx']], props)).toThrow("key[0] xxx is not a prop");
-    expect(() => toKeys([['repoId', 'yyy']], props)).toThrow("key[0] yyy is not a prop");
-    expect(() => toKeys([['repoId', 'docs#yyy']], props)).toThrow("key[0] yyy is not a prop");
+    expect(() => toIndex([{ pk: 'xxx' }], props)).toThrow("key[0] xxx is not a prop");
+    expect(() => toIndex([{ pk: 'docs#xxx' }], props)).toThrow("key[0] xxx is not a prop");
+    expect(() => toIndex([{ pk: 'repoId', sk: 'yyy' }], props)).toThrow("key[0] yyy is not a prop");
+    expect(() => toIndex([{ pk: 'repoId', sk: 'docs#yyy' }], props)).toThrow("key[0] yyy is not a prop");
   });
 
   // ----------------------------------------------------------------
@@ -53,8 +56,8 @@ describe('toKeys()', () => {
 
   it('should handle a single key', () => {
     const props = newPropList();
-    expect(toNames(toKeys([['repoId']], props)))
-      .toEqual([['repoId', 'repoId']]);
+    expect(toNames(toIndex([{ pk: 'repoId' }], props)))
+      .toEqual([{ pk: 'repoId', sk: 'repoId' }]);
 
     expect(props.find(p => p.name === 'repoId')).toEqual({
       name: 'repoId',
@@ -80,8 +83,8 @@ describe('toKeys()', () => {
 
   it('should handle a single key with a prefix', () => {
     const props = newPropList();
-    expect(toNames(toKeys([['DOC#repoId']], props)))
-      .toEqual([['repoId', 'repoId']]);
+    expect(toNames(toIndex([{ pk: 'DOC#repoId' }], props)))
+      .toEqual([{ pk: 'repoId', sk: 'repoId' }]);
 
     expect(props.find(p => p.name === 'repoId')).toEqual({
       name: 'repoId',
@@ -111,8 +114,8 @@ describe('toKeys()', () => {
 
   it('should handle a prop pk with a static sk', () => {
     const props = newPropList();
-    expect(toNames(toKeys([['repoId', 'DOC#']], props)))
-      .toEqual([['repoId', '']]);
+    expect(toNames(toIndex([{ pk: 'repoId', sk: 'DOC#' }], props)))
+      .toEqual([{ pk: 'repoId', sk: '' }]);
 
     expect(props.find(p => p.name === 'repoId')).toEqual({
       name: 'repoId',
@@ -138,8 +141,8 @@ describe('toKeys()', () => {
 
   it('should handle a static sk with a prop sk', () => {
     const props = newPropList();
-    expect(toNames(toKeys([['DOC#', 'repoId']], props)))
-      .toEqual([['', 'repoId']]);
+    expect(toNames(toIndex([{ pk: 'DOC#', sk: 'repoId' }], props)))
+      .toEqual([{ pk: '', sk: 'repoId' }]);
 
     expect(props[props.length - 1]).toEqual({
       name: '',
@@ -169,8 +172,8 @@ describe('toKeys()', () => {
 
   it('should handle single keys', () => {
     const props = newPropList();
-    expect(toNames(toKeys([['repoId', 'id']], props)))
-      .toEqual([['repoId', 'id']]);
+    expect(toNames(toIndex([{ pk: 'repoId', sk: 'id' }], props)))
+      .toEqual([{ pk: 'repoId', sk: 'id' }]);
 
     expect(props.find(p => p.name === 'repoId')).toEqual({
       name: 'repoId',
@@ -200,8 +203,8 @@ describe('toKeys()', () => {
 
   it('should handle compound GSI Keys', () => {
     const props = newPropList();
-    expect(toNames(toKeys([['repoId', 'id'], ['id', 'repoId']], props)))
-      .toEqual([['repoId', 'id'], ['id', 'repoId']]);
+    expect(toNames(toIndex([{ pk: 'repoId', sk: 'id' }, { pk: 'id', sk: 'repoId' }], props)))
+      .toEqual([{ pk: 'repoId', sk: 'id' }, { pk: 'id', sk: 'repoId' }]);
 
     expect(props.find(p => p.name === 'repoId')).toEqual({
       name: 'repoId',
