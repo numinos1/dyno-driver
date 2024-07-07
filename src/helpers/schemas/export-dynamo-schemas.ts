@@ -94,13 +94,10 @@ export function toBillingMode(keys: TIndex) {
  * Extract Provisioned Throughput from keys
  */
 export function toProvisionedThroughput(keys: TIndex) {
-  if (keys.wcu || keys.rcu) {
-    return {
-      ReadCapacityUnits: keys.rcu,
-      WriteCapacityUnits: keys.wcu
-    };
-  }
-  return undefined;
+  return {
+    ReadCapacityUnits: keys.rcu,
+    WriteCapacityUnits: keys.wcu
+  };
 }
 
 /**

@@ -1,4 +1,3 @@
-import { pruneObject } from "@/utils";
 import { BillingMode, CreateTableCommandInput, GlobalSecondaryIndex, ProvisionedThroughput, TableDescription } from "@aws-sdk/client-dynamodb";
 
 /**

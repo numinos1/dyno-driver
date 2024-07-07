@@ -50,31 +50,27 @@ export function pruneObject<Type>(value: Record<string, Type>): Record<string, T
  * Recursively diff two objects
  **/
 export function diffObjects(canonical: any, copy: any) {
-  if (canonical === copy) {
-    return true;
-  }
   if (typeof canonical !== typeof copy) {
     return false;
   }
   if (Array.isArray(canonical)) {
-    if (!Array.isArray(copy)) {
-      return false;
-    }
     if (canonical.length !== copy.length) {
       return false;
     }
-    return canonical.reduce((out, val, index) => 
-      out && diffObjects(val, copy[index]),
-      true
+    return canonical.every((val, index) =>
+      diffObjects(val, copy[index])
     );
   }
   if (canonical && typeof canonical === 'object') {
     if (!copy) {
       return false;
     }
-    return Object.entries(canonical).reduce((out, [key, val]) => 
-      out && diffObjects(val, copy[key]),
-      true
+    const keys = new Set<string>(
+      Object.keys(canonical)
+        .concat(Object.keys(copy))
+    );
+    return [...keys].every(key => 
+      diffObjects(canonical[key], copy[key])
     );
   }
   return (canonical === copy);
