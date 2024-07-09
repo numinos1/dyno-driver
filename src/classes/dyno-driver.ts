@@ -1,7 +1,6 @@
 import {
   DynamoDBClient,
   DeleteTableCommand,
-  DeleteTableCommandInput,
   DescribeTableCommand,
   ListTablesCommand,
   CreateTableCommand,
@@ -31,7 +30,7 @@ export class DynoDriver {
   public region?: string;
   public metrics: boolean;
   public client: DynamoDBClient;
-  public models: DynoModel<any>[];
+  public models: Map<any, DynoModel<any>>;
   public subscriptions: TSubscription[];
   public removalPolicy?: TRemovalPolicy;
   public billingMode?: TBillingMode;
@@ -64,7 +63,7 @@ export class DynoDriver {
     this.removalPolicy = removalPolicy;
     this.client = new DynamoDBClient(pruneObject({ endpoint, region }));
     this.subscriptions = [];
-    this.models = [];
+    this.models = new Map();
 
     if (entities) {
       entities.forEach(entity => this.entity(entity));
@@ -111,12 +110,13 @@ export class DynoDriver {
       removalPolicy: this.removalPolicy,
       entityName: entityName,
       tableName: tableName,
+      entity: entity,
       index: index,
       props: props,
     });
 
     // Add model to the models
-    this.models.push(model);
+    this.models.set(entity, model);
 
     // Add model to the DI registry
     container.register(entity as any, {
@@ -157,6 +157,13 @@ export class DynoDriver {
   //   );
   // }
 
+  /**
+   * Get instantiated model from a constructor
+   */
+  model<Type>(entity: Type): DynoModel<Type> {
+    return this.models.get(entity);
+  }
+
   // ----------------------------------------------------------------
   //    Migration Methods
   // ----------------------------------------------------------------
@@ -179,7 +186,7 @@ export class DynoDriver {
    */
   exportModelSchemas() {
     return mergeSchemas(
-      this.models.map(model =>
+      Object.values(this.models).map(model =>
         model.toModelSchema()
       )
     );

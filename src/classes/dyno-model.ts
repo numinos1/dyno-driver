@@ -7,8 +7,8 @@ import { toExpression } from '@/helpers/to-expression';
 import { toIndex } from '@/helpers/to-index';
 import { Timer } from "@/utils";
 
-export interface GetOptions<Type> {
-  where: TExpression<Type>,
+export interface GetOptions<T> {
+  where: TExpression<T>,
   consistent?: boolean;
   order?: TOrder;
 }
@@ -28,6 +28,7 @@ export class DynoModel<Type> {
   private subscriptions: TSubscription[];
   public removalPolicy: TRemovalPolicy;
   public billingMode: TBillingMode;
+  public entity: Function;
 
   /**
    * Constructor
@@ -35,6 +36,7 @@ export class DynoModel<Type> {
   constructor({
     entityName,
     tableName,
+    entity,
     index,
     props,
     client,
@@ -44,6 +46,7 @@ export class DynoModel<Type> {
   }: {
     entityName: string; 
     tableName: string; 
+    entity: Function;
     index: TEntityIndex[];
     props: TPropMap;
     client: DynamoDBClient;
@@ -55,6 +58,7 @@ export class DynoModel<Type> {
       this.client = client;
       this.tableName = tableName;
       this.metrics = metrics;
+      this.entity = entity;
       this.removalPolicy = removalPolicy;
       this.subscriptions = [];
       this.propMap = props;

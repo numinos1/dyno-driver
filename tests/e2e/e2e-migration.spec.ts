@@ -1,11 +1,9 @@
 import "reflect-metadata";
 import { describe, expect, it } from '@jest/globals';
-import { DynoDriver } from '../src/classes/dyno-driver';
-import { EntityMock } from './mocks/entity.mock';
-import { Entity2Mock } from './mocks/entity-2.mock';
-import { Entity3Mock } from './mocks/entity-3.mock';
-import { normalizeDynamoSchema } from '../src/helpers/schemas/normalize-dynamo-schema';
-import { compareSchemas } from '../src/helpers/schemas/compare-schemas';
+import { DynoDriver } from '../../src/classes/dyno-driver';
+import { EntityMock } from '../mocks/entity.mock';
+import { Entity2Mock } from '../mocks/entity-2.mock';
+import { Entity3Mock } from '../mocks/entity-3.mock';
 
 const DYNO_OPTIONS = {
   tableName: 'test-table',
@@ -15,7 +13,7 @@ const DYNO_OPTIONS = {
   entities: [EntityMock, Entity2Mock]
 };
 
-describe('DynoDriver e2e', () => {
+describe('Migration E2E', () => {
 
   // ----------------------------------------------------------------
 
