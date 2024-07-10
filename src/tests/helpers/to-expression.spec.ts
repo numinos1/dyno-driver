@@ -1,7 +1,7 @@
 import { propsMock } from '../mocks/props.mock';
 import { describe, expect, it } from '@jest/globals';
-import { toExpression } from '../../src/helpers/to-expression';
-import { EntityMock } from '../mocks/entity.mock';
+import { toExpression } from '@/helpers/to-expression';
+import { EntityMock } from '@/tests/mocks/entity.mock';
 
 
 describe('toExpression()', () => {

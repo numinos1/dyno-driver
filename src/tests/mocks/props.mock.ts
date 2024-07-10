@@ -1,4 +1,4 @@
-import { TProp, TPropTokens } from '../../src/types';
+import { TProp, TPropTokens } from '@/types';
 
 export const propList: TProp[] = [
   {

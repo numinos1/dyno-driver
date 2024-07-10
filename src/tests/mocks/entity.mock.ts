@@ -1,14 +1,13 @@
-import { DynoEntity } from '../../src/decorators/dyno-entity';
-import { DynoProp } from '../../src/decorators/dyno-prop';
+import { DynoEntity } from '@/decorators/dyno-entity';
+import { DynoProp } from '@/decorators/dyno-prop';
 
 @DynoEntity({
   index: [
-    { pk: 'ABC#id', sk: 'REP#repoId' },
-    { pk: 'ABC#repoId', sk: 'VER#version' },
-    { pk: 'ABC#createdOn', sk: 'ABC#status' }
+    { pk: 'DOC1#id', sk: 'REP#repoId' },
+    { pk: 'REP1#repoId', sk: 'VER#version' }
   ]
 })
-export class Entity3Mock {
+export class EntityMock {
 
   @DynoProp({
     type: 'string',
@@ -76,3 +75,4 @@ export class Entity3Mock {
   })
   body: string;
 }
+

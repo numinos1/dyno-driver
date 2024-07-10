@@ -1,10 +1,10 @@
-import { Entity3Mock } from './../mocks/entity-3.mock';
 import "reflect-metadata";
-import { DynoModel } from '../../src/classes/dyno-model';
 import { describe, expect, it } from '@jest/globals';
-import { DynoDriver } from '../../src/classes/dyno-driver';
-import { EntityMock } from '../mocks/entity.mock';
-import { Entity2Mock } from '../mocks/entity-2.mock';
+import { DynoModel } from '@/classes/dyno-model';
+import { DynoDriver } from '@/classes/dyno-driver';
+import { EntityMock } from '@/tests/mocks/entity.mock';
+import { Entity2Mock } from '@/tests/mocks/entity-2.mock';
+import { Entity3Mock } from '@/tests/mocks/entity-3.mock';
 
 describe('Query E2E', () => {
   const dyno = new DynoDriver({
@@ -20,16 +20,14 @@ describe('Query E2E', () => {
   it('creates dynamo tables', async () => {
     
     const namesBefore = await dyno.getDynamoTableNames();
-
-    await dyno.deleteTables(namesBefore);
-
+    const deleteResults = await dyno.deleteTables(namesBefore);
     const schemas = await dyno.exportMigrationSchemas();
+
     const createTables = schemas
       .filter(schema => schema.diffStatus === 'CREATE')
       .map(schema => schema.modelSchema);
 
-    await dyno.createTables(createTables);
-
+    const createResults = await dyno.createTables(createTables);
     const namesAfter = await dyno.getDynamoTableNames();
 
     expect(namesAfter).toEqual(['test-table']);
@@ -49,15 +47,32 @@ describe('Query E2E', () => {
 
   // ----------------------------------------------------------------
 
-  it('Put a document', async () => {
-    const model: DynoModel<EntityMock> = dyno.model(EntityMock);
+  it('Create a document', async () => {
+    const model = dyno.model<EntityMock>(EntityMock);
+    const now = Math.round(Date.now() / 1000);
 
-    const result = model.getOne({
-      where: {
-        asdfafdadff: { a: 2 },
-        id: '1324242',
-        repoId: 'aasdfsaf',
-      }
+    const result = await model.putOne({
+      repoId: 'abunker',
+      id: '12345678',
+      version: '1234',
+      encoding: 'json',
+      status: 'ready',
+      createdBy: 'abunker',
+      createdOn: now,
+      updatedBy: 'abunker',
+      updatedOn: now,
+      body: JSON.stringify({
+        name: 'Andrew Bunker',
+        age: 53,
+        address: '166 1675 South',
+        city: 'Farmington',
+        state: 'UT',
+        zip: 84025,
+        phone: '801-580-1203'
+      })
     });
+
+    console.log('RESULT_PUT', result);
+
   });
 });

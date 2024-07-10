@@ -1,5 +1,5 @@
-import { DynoEntity } from '../../src/decorators/dyno-entity';
-import { DynoProp } from '../../src/decorators/dyno-prop';
+import { DynoEntity } from '@/decorators/dyno-entity';
+import { DynoProp } from '@/decorators/dyno-prop';
 
 @DynoEntity({
   index: [

@@ -1,8 +1,8 @@
 import { EntityMock } from '../mocks/entity.mock';
 import { propsMock } from '../mocks/props.mock';
-import { TProp } from '../../src/types';
 import { describe, expect, it } from '@jest/globals';
-import { TQueryType, toStrategy } from '../../src/helpers/to-strategy';
+import { TQueryType, toStrategy } from '@/helpers/to-strategy';
+import { TProp } from '@/types';
 
 /**
  * Helper to convert TProp to string[][]

@@ -1,4 +1,4 @@
-import { TModelSchema, TPropTokens } from "../../src/types";
+import { TModelSchema, TPropTokens } from "@/types";
 
 export const ModelSchemaMock: TModelSchema = {
   "tableName": "test-table",

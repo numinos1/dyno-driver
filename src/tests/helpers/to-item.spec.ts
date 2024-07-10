@@ -1,7 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
-import { toItem } from '../../src/helpers/to-item';
-import { EntityMock } from '../mocks/entity.mock';
-import { propList } from './../mocks/props.mock';
+import { toItem } from '@/helpers/to-item';
+import { EntityMock } from '@/tests/mocks/entity.mock';
+import { propList } from '@/tests/mocks/props.mock';
 
 describe('toItem()', () => {
 

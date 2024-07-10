@@ -160,7 +160,7 @@ export class DynoDriver {
   /**
    * Get instantiated model from a constructor
    */
-  model<Type>(entity: Type): DynoModel<Type> {
+  model<Type>(entity: Function): DynoModel<Type> {
     return this.models.get(entity);
   }
 
@@ -186,7 +186,7 @@ export class DynoDriver {
    */
   exportModelSchemas() {
     return mergeSchemas(
-      Object.values(this.models).map(model =>
+      [...this.models.values()].map(model =>
         model.toModelSchema()
       )
     );
@@ -248,22 +248,34 @@ export class DynoDriver {
    * Delete Dynamo Db Tables by Name
    */
   async deleteTables(TableNames: string[]) {
+    const results = [];
+
     for (let TableName of TableNames) {
-      await this.client.send(
+      const result = await this.client.send(
         new DeleteTableCommand({ TableName })
       );
+      if (result.TableDescription) {
+        results.push(result.TableDescription);
+      }
     }
+    return results;
   }
 
   /**
    * Create Dynamo Db Tables
    */
   async createTables(schemas: CreateTableCommandInput[]) {
+    const results = [];
+
     for (let schema of schemas) {
-      await this.client.send(
+      const result = await this.client.send(
         new CreateTableCommand(schema)
       );
+      if (result.TableDescription) {
+        results.push(result.TableDescription);
+      }
     }
+    return results;
   }
  
 }

@@ -1,8 +1,8 @@
-import { copyObject } from '../../src/utils';
-import { ModelSchemaMock } from './../mocks/model-schema.mock';
+import { copyObject } from '@/utils';
+import { ModelSchemaMock } from '@/tests/mocks/model-schema.mock';
 import { describe, expect, it } from '@jest/globals';
-import { mergeSchemas } from '../../src/helpers/schemas/merge-schemas';
-import { TIndex, TProp, TPropTokens } from '../../src/types';
+import { mergeSchemas } from '@/helpers/schemas/merge-schemas';
+import { TIndex, TProp, TPropTokens } from '@/types';
 
 describe('mergeSchemas()', () => {
 

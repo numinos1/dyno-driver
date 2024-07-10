@@ -1,8 +1,8 @@
 import "reflect-metadata";
 import { describe, expect, it } from '@jest/globals';
-import { DynoDriver } from '../../src/classes/dyno-driver';
-import { EntityMock } from '../mocks/entity.mock';
-import { Entity2Mock } from '../mocks/entity-2.mock';
+import { DynoDriver } from '@/classes/dyno-driver';
+import { EntityMock } from '@/tests/mocks/entity.mock';
+import { Entity2Mock } from '@/tests/mocks/entity-2.mock';
 
 describe('DynoDriver()', () => {
 

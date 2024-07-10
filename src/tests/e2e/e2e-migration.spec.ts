@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { describe, expect, it } from '@jest/globals';
-import { DynoDriver } from '../../src/classes/dyno-driver';
+import { DynoDriver } from '@/classes/dyno-driver';
 import { EntityMock } from '../mocks/entity.mock';
 import { Entity2Mock } from '../mocks/entity-2.mock';
 import { Entity3Mock } from '../mocks/entity-3.mock';

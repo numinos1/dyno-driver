@@ -40,8 +40,6 @@
   "exclude": [
     "node_modules", 
     "lib", 
-    "tests/**/*", 
-    "**/*.spec.ts",
     "jest.config.js"
   ]
 }

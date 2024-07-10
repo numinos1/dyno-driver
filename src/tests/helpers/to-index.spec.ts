@@ -1,7 +1,7 @@
 import { newPropList } from '../mocks/props.mock';
 import { describe, expect, it } from '@jest/globals';
-import { toIndex } from '../../src/helpers/to-index';
-import { TIndex, TProp, TPropTokens } from '../../src/types';
+import { toIndex } from '@/helpers/to-index';
+import { TIndex, TProp, TPropTokens } from '@/types';
 
 /**
  * Helper to convert TIndex to string[][]
