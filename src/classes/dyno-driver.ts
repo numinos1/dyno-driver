@@ -11,7 +11,7 @@ import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import { container } from 'tsyringe';
 import { DynoModel } from '@/classes/dyno-model';
 import { entitiesMap, pruneObject } from '@/utils';
-import { TBillingMode, TEventType, TMigrationSchema, TRemovalPolicy, TSubscription } from '@/types';
+import { TBillingMode, TEventType, TMigrationSchema, TRemovalPolicy, TSubscription, Constructor } from '@/types';
 import { mergeSchemas } from "@/helpers/schemas/merge-schemas";
 import { exportCdkSchemas } from "@/helpers/schemas/export-cdk-schemas";
 import { exportDynamoSchemas } from '@/helpers/schemas/export-dynamo-schemas';
@@ -30,7 +30,7 @@ export class DynoDriver {
   public region?: string;
   public metrics: boolean;
   public client: DynamoDBClient;
-  public models: Map<any, DynoModel<any>>;
+  public models: Map<Function, DynoModel<any>>;
   public subscriptions: TSubscription[];
   public removalPolicy?: TRemovalPolicy;
   public billingMode?: TBillingMode;
@@ -160,12 +160,12 @@ export class DynoDriver {
   /**
    * Get instantiated model from a constructor
    */
-  model<Type>(entity: Function): DynoModel<Type> {
+  model<T>(entity: Constructor<T>): DynoModel<T> {
     return this.models.get(entity);
   }
 
   // ----------------------------------------------------------------
-  //    Migration Methods
+  //    Export Migration Schemas
   // ----------------------------------------------------------------
 
   /**
@@ -209,6 +209,10 @@ export class DynoDriver {
       this.exportModelSchemas()
     );
   }
+
+  // ----------------------------------------------------------------
+  //    DynamoDB Migration Methods
+  // ----------------------------------------------------------------
 
   /**
    * Get Dynamo Db Table Props

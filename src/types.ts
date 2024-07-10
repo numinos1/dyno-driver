@@ -1,5 +1,15 @@
 import { CreateTableCommandInput } from "@aws-sdk/client-dynamodb";
 
+// --------------------------------------------------
+//                    Primitives
+// --------------------------------------------------
+
+export type Constructor<T> = new (...args: any[]) => T;
+
+// --------------------------------------------------
+//                    Enums
+// --------------------------------------------------
+
 export type TRemovalPolicy = 'destroy' | 'retain' | 'snapshot';
 export type TBillingMode = 'PAY_PER_REQUEST' | 'PROVISIONED';
 export type TProjectionType = 'KEYS_ONLY' | 'INCLUDE' | 'ALL';

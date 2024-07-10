@@ -48,10 +48,10 @@ describe('Query E2E', () => {
   // ----------------------------------------------------------------
 
   it('Create a document', async () => {
-    const model = dyno.model<EntityMock>(EntityMock);
+    const model = dyno.model(EntityMock);
     const now = Math.round(Date.now() / 1000);
 
-    const result = await model.putOne({
+    const createDoc = {
       repoId: 'abunker',
       id: '12345678',
       version: '1234',
@@ -70,9 +70,21 @@ describe('Query E2E', () => {
         zip: 84025,
         phone: '801-580-1203'
       })
+    };
+
+    await model.putOne(createDoc);
+
+    const readDoc = await model.getOne({
+      where: {
+        id: '12344678',
+        repoId: 'abunker'
+      },
+      consistent: true
     });
 
-    console.log('RESULT_PUT', result);
+    console.log('GOT_DOC', readDoc);
+
+    expect(readDoc).toEqual(createDoc);
 
   });
 });

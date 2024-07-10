@@ -3,6 +3,7 @@ import { singleton } from 'tsyringe';
 import { TBillingMode, TEntityIndex, TEventType, TExpression, TIndex, TModelSchema, TOrder, TProp, TPropMap, TRemovalPolicy, TSubscription } from '@/types';
 import { TStrategy, TQueryType, toStrategy } from '@/helpers/to-strategy';
 import { toItem } from '@/helpers/to-item';
+import { toKeys } from '@/helpers/to-keys';
 import { toExpression } from '@/helpers/to-expression';
 import { toIndex } from '@/helpers/to-index';
 import { Timer } from "@/utils";
@@ -117,6 +118,9 @@ export class DynoModel<Type> {
       });
       const result = await this.client.send(command);
 
+      console.log('PUT_CMD', JSON.stringify(command, null, '  '));
+      console.log('PUT_RES', JSON.stringify(result, null, '  '));
+
       this.onEvent('success', {
         method: 'putOne',
         time: timer(),
@@ -179,6 +183,7 @@ export class DynoModel<Type> {
       this.tableIndex,
       this.tableName
     );
+
     switch (strategy.type) {
       case TQueryType.tableScan:
         return this.getOneScanTable(options, strategy);
@@ -299,17 +304,21 @@ export class DynoModel<Type> {
     strategy: TStrategy<Type>,
   ): Promise<Type | undefined> {
     const { where, consistent } = options;
-    const { table, index } = strategy;
+    const { table, index, keys, query } = strategy;
     const timer = Timer();
 
     try {
       const command = new GetItemCommand({
         TableName: index || table,
-        Key: toItem<Type>(where as Partial<Type>, this.propStack),
+        Key: toKeys<Type>(keys, query),
         ConsistentRead: consistent === true,
         ReturnConsumedCapacity: this.metrics ? 'TOTAL' : 'NONE'
       });
+
       const result = await this.client.send(command);
+
+      console.log('GET_CMD', JSON.stringify(command, null, '  '));
+      console.log('GET_RES', JSON.stringify(result, null, '  '));
 
       this.onEvent('success', {
         method: 'getOne',
