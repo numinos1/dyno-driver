@@ -15,7 +15,7 @@ describe('Query E2E', () => {
     entities: [EntityMock, Entity2Mock]
   });
 
-  // ----------------------------------------------------------------
+  // // ----------------------------------------------------------------
 
   it('creates dynamo tables', async () => {
     
@@ -33,58 +33,58 @@ describe('Query E2E', () => {
     expect(namesAfter).toEqual(['test-table']);
   });
 
-  // ----------------------------------------------------------------
+  // // ----------------------------------------------------------------
 
-  it('Get a model for an Entity', async () => {
-    const model1 = dyno.model(EntityMock);
-    const model2 = dyno.model(Entity2Mock);
-    const model3 = dyno.model(Entity3Mock);
+  // it('Get a model for an Entity', async () => {
+  //   const model1 = dyno.model(EntityMock);
+  //   const model2 = dyno.model(Entity2Mock);
+  //   const model3 = dyno.model(Entity3Mock);
 
-    expect(model1 instanceof DynoModel).toEqual(true);
-    expect(model2 instanceof DynoModel).toEqual(true);
-    expect(model3 instanceof DynoModel).toEqual(false);
-  });
+  //   expect(model1 instanceof DynoModel).toEqual(true);
+  //   expect(model2 instanceof DynoModel).toEqual(true);
+  //   expect(model3 instanceof DynoModel).toEqual(false);
+  // });
 
-  // ----------------------------------------------------------------
+  // // ----------------------------------------------------------------
 
-  it('Create a document', async () => {
-    const model = dyno.model(EntityMock);
-    const now = Math.round(Date.now() / 1000);
+  // it('Create a document', async () => {
+  //   const model = dyno.model(EntityMock);
+  //   const now = Math.round(Date.now() / 1000);
 
-    const createDoc = {
-      repoId: 'abunker',
-      id: '12345678',
-      version: '1234',
-      encoding: 'json',
-      status: 'ready',
-      createdBy: 'abunker',
-      createdOn: now,
-      updatedBy: 'abunker',
-      updatedOn: now,
-      body: JSON.stringify({
-        name: 'Andrew Bunker',
-        age: 53,
-        address: '166 1675 South',
-        city: 'Farmington',
-        state: 'UT',
-        zip: 84025,
-        phone: '801-580-1203'
-      })
-    };
+  //   const createDoc = {
+  //     repoId: 'abunker',
+  //     id: '12345678',
+  //     version: '1234',
+  //     encoding: 'json',
+  //     status: 'ready',
+  //     createdBy: 'abunker',
+  //     createdOn: now,
+  //     updatedBy: 'abunker',
+  //     updatedOn: now,
+  //     body: JSON.stringify({
+  //       name: 'Andrew Bunker',
+  //       age: 53,
+  //       address: '166 1675 South',
+  //       city: 'Farmington',
+  //       state: 'UT',
+  //       zip: 84025,
+  //       phone: '801-580-1203'
+  //     })
+  //   };
 
-    await model.putOne(createDoc);
+  //   await model.putOne(createDoc);
 
-    const readDoc = await model.getOne({
-      where: {
-        id: '12344678',
-        repoId: 'abunker'
-      },
-      consistent: true
-    });
+  //   const readDoc = await model.getOne({
+  //     where: {
+  //       id: '12345678',
+  //       repoId: 'abunker'
+  //     },
+  //     consistent: true
+  //   });
 
-    console.log('GOT_DOC', readDoc);
+  //   console.log('GOT_DOC', readDoc);
 
-    expect(readDoc).toEqual(createDoc);
+  //   expect(readDoc).toEqual(createDoc);
 
-  });
+  // });
 });

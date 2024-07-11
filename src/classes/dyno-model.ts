@@ -118,8 +118,8 @@ export class DynoModel<Type> {
       });
       const result = await this.client.send(command);
 
-      console.log('PUT_CMD', JSON.stringify(command, null, '  '));
-      console.log('PUT_RES', JSON.stringify(result, null, '  '));
+      //console.log('PUT_CMD', JSON.stringify(command, null, '  '));
+      //console.log('PUT_RES', JSON.stringify(result, null, '  '));
 
       this.onEvent('success', {
         method: 'putOne',
@@ -317,8 +317,8 @@ export class DynoModel<Type> {
 
       const result = await this.client.send(command);
 
-      console.log('GET_CMD', JSON.stringify(command, null, '  '));
-      console.log('GET_RES', JSON.stringify(result, null, '  '));
+      //console.log('GET_CMD', JSON.stringify(command, null, '  '));
+      //console.log('GET_RES', JSON.stringify(result, null, '  '));
 
       this.onEvent('success', {
         method: 'getOne',

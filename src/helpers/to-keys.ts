@@ -7,6 +7,18 @@ const TO_MARSHALL = new Set(['L', 'M', 'SS', 'NS', 'BS']);
 
 export type TItem = Record<string, AttributeValue>;
 
+// Number = N (cast as string)
+// String = S (value
+// Buffer = B (value
+// Boolean = BOOL (value)
+
+// Array = L (recurse)
+// Map/Object = M (recurse)
+// Set = SS, NS, BS
+
+// Date (throw)
+
+
 /**
  * Create Keys from 
  */

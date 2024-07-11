@@ -16,6 +16,10 @@ export function DynoProp({
   return (proto: any, name: string) => {
     let entry = entitiesMap.get(proto);
 
+    const reflectType = Reflect.getMetadata('design:type', proto, name);
+
+    //console.log('PROP', proto, name, type, '===', reflectType);
+
     if (!entry) {
       entitiesMap.set(proto, entry = {
         entityName: '',
