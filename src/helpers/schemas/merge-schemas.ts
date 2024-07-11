@@ -58,8 +58,8 @@ function compareProps(
   if (matchProp.pk.alias !== indexProp.pk.alias) {
     throw new Error(`Alias collision "${matchProp.pk.alias}" !== '${indexProp.pk.alias}"`);
   }
-  if (matchProp.pk.token !== indexProp.pk.token) {
-    throw new Error(`Token mismatch "${matchProp.pk.token}" !== '${indexProp.pk.token}"`);
+  if (matchProp.pk.type !== indexProp.pk.type) {
+    throw new Error(`Token mismatch "${matchProp.pk.type}" !== '${indexProp.pk.type}"`);
   }
   if (!matchProp.pk.prefix || !indexProp.pk.prefix) {
     throw new Error(`Missing prefix`);

@@ -57,15 +57,6 @@ function toKey(
       prefix = `${prefix}#`
     }
   }
-  // default type
-  let type: TPropTypes = 'string';
-
-  // Key type (aka token)
-  const token = TPropTokens[type];
-
-  if (token !== 'S' && token !== 'N' && token !== 'B') {
-    throw new Error(`key[${index}] invalid type "${token}"`);
-  }
 
   // if prefix but no name
   if (!name) {
@@ -73,8 +64,7 @@ function toKey(
       name: '',
       alias: alias,
       prefix: prefix,
-      type: type,
-      token: token,
+      type: TPropTokens.string,
       isRequired: false,
       isKey: true,
       index: index
@@ -88,6 +78,13 @@ function toKey(
     if (!prop) {
       throw new Error(`key[${index}] ${name} is not a prop`);
     }
+    // throw if not a proper index types
+    if (prop.type !== 'S'
+      && prop.type !== 'N'
+      && prop.type !== 'B'
+    ) {
+        throw new Error(`key[${index}] invalid type "${prop.type}"`);
+    }
     // If prop is already a key, add new prop entry
     if (prop.isKey) {
       propStack.push(prop = {
@@ -95,7 +92,6 @@ function toKey(
         alias: alias,
         prefix: prefix,
         type: prop.type,
-        token: prop.token,
         isRequired: !index,
         isKey: true,
         index: index

@@ -31,11 +31,11 @@ export function toCdkTable(schema: TModelSchema) {
       : undefined,
     partitionKey: {
       name: 'pk',
-      type: pk.token
+      type: pk.type
     },
     sortKey: {
       name: 'sk',
-      type: sk.token
+      type: sk.type
     },
     timeToLiveAttribute: 'ttl'
   };
@@ -66,11 +66,11 @@ export function toCdkIndices(schema: TModelSchema) {
     },
     partitionKey: {
       name: `pk${i + 1}`,
-      type: pk.token
+      type: pk.type
     },
     sortKey: {
       name: `sk${i + 1}`,
-      type: sk.token
+      type: sk.type
     },
     projectionType: 'ALL'
   }));

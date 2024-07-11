@@ -62,8 +62,7 @@ export interface TProp {
   name: string;           // Model prop name
   alias: string;          // Table prop name
   prefix: string;         // Table prop value prefix
-  type: TPropTypes;       // Model prop value type
-  token: TPropTokens;     // Table prop value type
+  type: TPropValues;       // Model prop value type
   isRequired: boolean;    // Is the prop required?
   isKey: boolean;         // Is the prop a key?
   index: number;          // Index index
@@ -100,8 +99,7 @@ export const PropTypes = Object
       name: key,
       alias: val,
       prefix: '',
-      type: key as TPropTypes,
-      token: val,
+      type: val,
       isRequired: false,
       isKey: false
     };

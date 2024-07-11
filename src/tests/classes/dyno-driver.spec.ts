@@ -212,8 +212,7 @@ describe('DynoDriver()', () => {
             "isRequired": true,
             "name": "id",
             "prefix": "DOC1#",
-            "token": "S",
-            "type": "string",
+            "type": "S",
           },
           sk: {
             "alias": "sk",
@@ -222,8 +221,7 @@ describe('DynoDriver()', () => {
             "isRequired": true,
             "name": "repoId",
             "prefix": "REP#",
-            "token": "S",
-            "type": "string",
+            "type": "S",
           },
         },
         {
@@ -237,8 +235,7 @@ describe('DynoDriver()', () => {
             "isRequired": false,
             "name": "repoId",
             "prefix": "REP1#",
-            "token": "S",
-            "type": "string",
+            "type": "S",
           },
           sk: {
             "alias": "sk1",
@@ -247,8 +244,7 @@ describe('DynoDriver()', () => {
             "isRequired": false,
             "name": "version",
             "prefix": "VER#",
-            "token": "S",
-            "type": "string",
+            "type": "S",
           },
         },
         {
@@ -262,8 +258,7 @@ describe('DynoDriver()', () => {
             "isRequired": false,
             "name": "createdOn",
             "prefix": "EM2#",
-            "token": "N",
-            "type": "number",
+            "type": "N",
           },
           sk: {
             "alias": "sk2",
@@ -272,8 +267,7 @@ describe('DynoDriver()', () => {
             "isRequired": false,
             "name": "status",
             "prefix": "",
-            "token": "S",
-            "type": "string",
+            "type": "S",
           },
         },
         {
@@ -287,8 +281,7 @@ describe('DynoDriver()', () => {
             "isRequired": false,
             "name": "",
             "prefix": "USER#",
-            "token": "S",
-            "type": "string",
+            "type": "S",
           },
           sk: {
             "alias": "sk3",
@@ -297,8 +290,7 @@ describe('DynoDriver()', () => {
             "isRequired": false,
             "name": "createdBy",
             "prefix": "",
-            "token": "S",
-            "type": "string",
+            "type": "S",
           },
         },
         {
@@ -312,8 +304,7 @@ describe('DynoDriver()', () => {
             "isRequired": false,
             "name": "createdBy",
             "prefix": "EM2#",
-            "token": "S",
-            "type": "string",
+            "type": "S",
           },
           sk: {
             "alias": "sk4",
@@ -322,8 +313,7 @@ describe('DynoDriver()', () => {
             "isRequired": false,
             "name": "",
             "prefix": "USER#",
-            "token": "S",
-            "type": "string",
+            "type": "S",
           },
         },
         {
@@ -337,8 +327,7 @@ describe('DynoDriver()', () => {
             "isRequired": false,
             "name": "repoId",
             "prefix": "EM2#",
-            "token": "S",
-            "type": "string",
+            "type": "S",
           },
           sk: {
             "alias": "sk5",
@@ -347,8 +336,7 @@ describe('DynoDriver()', () => {
             "isRequired": false,
             "name": "repoId",
             "prefix": "EM2#",
-            "token": "S",
-            "type": "string",
+            "type": "S",
           },
         },
       ]

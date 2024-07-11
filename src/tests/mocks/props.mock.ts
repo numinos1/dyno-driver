@@ -5,8 +5,7 @@ export const propList: TProp[] = [
     name: 'id',
     alias: 'sk',
     prefix: 'DOC#',
-    type: 'string',
-    token: TPropTokens.string,
+    type: TPropTokens.string,
     isRequired: true,
     isKey: true,
     index: 0
@@ -15,8 +14,7 @@ export const propList: TProp[] = [
     name: 'repoId',
     alias: 'pk',
     prefix: 'REPO#',
-    type: 'string',
-    token: TPropTokens.string,
+    type: TPropTokens.string,
     isRequired: true,
     isKey: true,
     index: 0
@@ -25,8 +23,7 @@ export const propList: TProp[] = [
     name: 'version',
     alias: 'vid',
     prefix: '',
-    type: 'string',
-    token: TPropTokens.string,
+    type: TPropTokens.string,
     isRequired: true,
     isKey: false,
     index: 0
@@ -35,8 +32,7 @@ export const propList: TProp[] = [
     name: 'encoding',
     alias: 'enc',
     prefix: '',
-    type: 'string',
-    token: TPropTokens.string,
+    type: TPropTokens.string,
     isRequired: true,
     isKey: false,
     index: 0
@@ -45,8 +41,7 @@ export const propList: TProp[] = [
     name: 'status',
     alias: 'sta',
     prefix: '',
-    type: 'string',
-    token: TPropTokens.string,
+    type: TPropTokens.string,
     isRequired: true,
     isKey: false,
     index: 0
@@ -55,8 +50,7 @@ export const propList: TProp[] = [
     name: 'createdBy',
     alias: 'cby',
     prefix: '',
-    type: 'string',
-    token: TPropTokens.string,
+    type: TPropTokens.string,
     isRequired: true,
     isKey: false,
     index: 0
@@ -65,8 +59,7 @@ export const propList: TProp[] = [
     name: 'createdOn',
     alias: 'con',
     prefix: '',
-    type: 'number',
-    token: TPropTokens.number,
+    type: TPropTokens.number,
     isRequired: true,
     isKey: false,
     index: 0
@@ -75,8 +68,7 @@ export const propList: TProp[] = [
     name: 'updatedBy',
     alias: 'uby',
     prefix: '',
-    type: 'string',
-    token: TPropTokens.string,
+    type: TPropTokens.string,
     isRequired: true,
     isKey: false,
     index: 0
@@ -85,8 +77,7 @@ export const propList: TProp[] = [
     name: 'updatedOn',
     alias: 'uon', 
     prefix: '',
-    type: 'number',
-    token: TPropTokens.number,
+    type: TPropTokens.number,
     isRequired: true,
     isKey: false,
     index: 0
@@ -95,8 +86,7 @@ export const propList: TProp[] = [
     name: 'deleteOn',
     alias: 'ttl',
     prefix: '',
-    type: 'number',
-    token: TPropTokens.number,
+    type: TPropTokens.number,
     isRequired: false,
     isKey: false,
     index: 0
@@ -105,8 +95,7 @@ export const propList: TProp[] = [
     name: 'body',
     alias: 'bdy',
     prefix: '',
-    type: 'binary',
-    token: TPropTokens.binary,
+    type: TPropTokens.binary,
     isRequired: false,
     isKey: false,
     index: 0

@@ -41,8 +41,7 @@ describe('mergeSchemas()', () => {
          "name": "userId",
          "alias": "pk2",
          "prefix": "USER#",
-         "type": "string",
-         "token": TPropTokens.string,
+         "type": TPropTokens.string,
          "isRequired": false,
          "isKey": true,
          "index": 2
@@ -50,8 +49,7 @@ describe('mergeSchemas()', () => {
        sk: {
          "name": "version",
          "alias": "sk2",
-         "type": "string",
-         "token": TPropTokens.string,
+         "type": TPropTokens.string,
          "prefix": "",
          "isRequired": false,
          "isKey": true,
@@ -150,7 +148,7 @@ describe('mergeSchemas()', () => {
 
     schema1.tableIndex[0].pk.prefix = 'TEST#';
     schema1.tableIndex[1].pk.prefix = 'TEST#';
-    schema1.tableIndex[0].pk.token = TPropTokens.number;
+    schema1.tableIndex[0].pk.type = TPropTokens.number;
 
     expect(() => {
       mergeSchemas([schema1, schema2])

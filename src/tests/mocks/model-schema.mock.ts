@@ -11,8 +11,7 @@ export const ModelSchemaMock: TModelSchema = {
       pk: {
         "name": "id",
         "alias": "pk",
-        "type": "string",
-        "token": TPropTokens.string,
+        "type": TPropTokens.string,
         "prefix": "DOC#",
         "isRequired": true,
         "isKey": true,
@@ -21,8 +20,7 @@ export const ModelSchemaMock: TModelSchema = {
       sk: {
         "name": "repoId",
         "alias": "sk",
-        "type": "string",
-        "token": TPropTokens.string,
+        "type": TPropTokens.string,
         "prefix": "REP#",
         "isRequired": true,
         "isKey": true,
@@ -37,8 +35,7 @@ export const ModelSchemaMock: TModelSchema = {
         "name": "repoId",
         "alias": "pk1",
         "prefix": "REP#",
-        "type": "string",
-        "token": TPropTokens.string,
+        "type": TPropTokens.string,
         "isRequired": false,
         "isKey": true,
         "index": 1
@@ -46,8 +43,7 @@ export const ModelSchemaMock: TModelSchema = {
       sk: {
         "name": "version",
         "alias": "sk1",
-        "type": "string",
-        "token": TPropTokens.string,
+        "type": TPropTokens.string,
         "prefix": "VER#",
         "isRequired": false,
         "isKey": true,

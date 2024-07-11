@@ -90,13 +90,13 @@ export function toExpression<Type>(
     }
     const valueKey = `:v${++valueCount}`;
 
-    if (prop.type === 'string') {
+    if (prop.type === 'S') {
       val = noPrefix
         ? `${val}`
         : `${prop.prefix}${val}`;
     }
     values[valueKey] = {
-      [prop.token]: val
+      [prop.type]: val
     } as AttributeValue; // TODO - hack
 
     return valueKey;
@@ -209,8 +209,7 @@ export function toExpression<Type>(
     return evalExpr(val, {
       ...prop,
       alias: `size(${prop.alias})`,
-      type: 'number',
-      token: TPropTokens.number
+      type: TPropTokens.number
     });
   }
 }

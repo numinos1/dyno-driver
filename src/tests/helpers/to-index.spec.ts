@@ -63,8 +63,7 @@ describe('toIndex()', () => {
       name: 'repoId',
       alias: 'pk',
       prefix: '',
-      type: 'string',
-      token: TPropTokens.string,
+      type: TPropTokens.string,
       isRequired: true,
       isKey: true,
       index: 0
@@ -73,8 +72,7 @@ describe('toIndex()', () => {
       name: 'repoId',
       alias: 'sk',
       prefix: '',
-      type: 'string',
-      token: TPropTokens.string,
+      type: TPropTokens.string,
       isRequired: true,
       isKey: true,
       index: 0
@@ -90,8 +88,7 @@ describe('toIndex()', () => {
       name: 'repoId',
       alias: 'pk',
       prefix: 'DOC#',
-      type: 'string',
-      token: TPropTokens.string,
+      type: TPropTokens.string,
       isRequired: true,
       isKey: true,
       index: 0
@@ -100,8 +97,7 @@ describe('toIndex()', () => {
       name: 'repoId',
       alias: 'sk',
       prefix: 'DOC#',
-      type: 'string',
-      token: TPropTokens.string,
+      type: TPropTokens.string,
       isRequired: true,
       isKey: true,
       index: 0
@@ -121,8 +117,7 @@ describe('toIndex()', () => {
       name: 'repoId',
       alias: 'pk',
       prefix: '',
-      type: 'string',
-      token: TPropTokens.string,
+      type: TPropTokens.string,
       isRequired: true,
       isKey: true,
       index: 0
@@ -131,8 +126,7 @@ describe('toIndex()', () => {
       name: '',
       alias: 'sk',
       prefix: 'DOC#',
-      type: 'string',
-      token: TPropTokens.string,
+      type: TPropTokens.string,
       isRequired: false,
       isKey: true,
       index: 0
@@ -148,8 +142,7 @@ describe('toIndex()', () => {
       name: '',
       alias: 'pk',
       prefix: 'DOC#',
-      type: 'string',
-      token: TPropTokens.string,
+      type: TPropTokens.string,
       isRequired: false,
       isKey: true,
       index: 0
@@ -158,8 +151,7 @@ describe('toIndex()', () => {
       name: 'repoId',
       alias: 'sk',
       prefix: '',
-      type: 'string',
-      token: TPropTokens.string,
+      type: TPropTokens.string,
       isRequired: true,
       isKey: true,
       index: 0
@@ -179,8 +171,7 @@ describe('toIndex()', () => {
       name: 'repoId',
       alias: 'pk',
       prefix: '',
-      type: 'string',
-      token: TPropTokens.string,
+      type: TPropTokens.string,
       isRequired: true,
       isKey: true,
       index: 0
@@ -189,8 +180,7 @@ describe('toIndex()', () => {
       name: 'id',
       alias: 'sk',
       prefix: '',
-      type: 'string',
-      token: TPropTokens.string,
+      type: TPropTokens.string,
       isRequired: true,
       isKey: true,
       index: 0
@@ -210,8 +200,7 @@ describe('toIndex()', () => {
       name: 'repoId',
       alias: 'pk',
       prefix: '',
-      type: 'string',
-      token: TPropTokens.string,
+      type: TPropTokens.string,
       isRequired: true,
       isKey: true,
       index: 0
@@ -220,8 +209,7 @@ describe('toIndex()', () => {
       name: 'id',
       alias: 'sk',
       prefix: '',
-      type: 'string',
-      token: TPropTokens.string,
+      type: TPropTokens.string,
       isRequired: true,
       isKey: true,
       index: 0
@@ -230,8 +218,7 @@ describe('toIndex()', () => {
       name: 'id',
       alias: 'pk1',
       prefix: '',
-      type: 'string',
-      token: TPropTokens.string,
+      type: TPropTokens.string,
       isRequired: false,
       isKey: true,
       index: 1
@@ -240,8 +227,7 @@ describe('toIndex()', () => {
       name: 'repoId',
       alias: 'sk1',
       prefix: '',
-      type: 'string',
-      token: TPropTokens.string,
+      type: TPropTokens.string,
       isRequired: false,
       isKey: true,
       index: 1

@@ -1,15 +1,13 @@
-import { TProp, TPropTokens, TPropTypes } from "@/types";
+import { TProp, TPropTokens } from "@/types";
 import { entitiesMap } from "@/utils";
 
 /**
  * DynoProp Decorator
  */
 export function DynoProp({
-  type,
   alias = '',
   isRequired = false
 }: {
-  type: TPropTypes;
   alias?: string;  
   isRequired?: boolean
 }): Function {
@@ -17,8 +15,7 @@ export function DynoProp({
     let entry = entitiesMap.get(proto);
 
     const reflectType = Reflect.getMetadata('design:type', proto, name);
-
-    //console.log('PROP', proto, name, type, '===', reflectType);
+    const dynamoType = designToType(reflectType);
 
     if (!entry) {
       entitiesMap.set(proto, entry = {
@@ -34,8 +31,7 @@ export function DynoProp({
     entry.props.set(name, {
       name: name,
       alias: alias,
-      type: type,
-      token: TPropTokens[type],
+      type: dynamoType,
       prefix: '',
       isRequired: isRequired,
       isKey: false,
@@ -43,3 +39,28 @@ export function DynoProp({
     });
   };
 }
+
+/**
+ * Convert Entity Prop Design Type to Dynamo Type
+ */
+export function designToType(fn: any): TPropTokens {
+  if (fn === Number) return TPropTokens.number;
+  if (fn === String) return TPropTokens.string;
+  if (fn === Boolean) return TPropTokens.binary;
+  if (fn === Array) return TPropTokens.list;
+  if (fn === Object) return TPropTokens.map;
+  if (fn === Set) return TPropTokens.stringSet;
+  if (fn === Buffer) return TPropTokens.binary;
+  throw new Error(`Invalid Property Type "${fn}"`);
+}
+
+// number = 'N',
+// string = 'S',
+// binary = 'B',
+// boolean = 'BOOL',
+// null = 'NULL',
+// list = 'L',
+// map = 'M',
+// stringSet = 'SS', // new Set<string>();
+// numberSet = 'NS', // new Set<number>();
+// binarySet = 'BS', // new Set<buffer>();

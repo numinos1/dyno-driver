@@ -36,9 +36,9 @@ export function toKeys<Type>(
     if (prop.prefix) {
       val = prop.prefix + val;
     }
-    Item[prop.alias] = TO_MARSHALL.has(prop.token)
+    Item[prop.alias] = TO_MARSHALL.has(prop.type)
       ? marshall(val)
-      : { [prop.token]: val };
+      : { [prop.type]: val };
   }
   return Item;
 }

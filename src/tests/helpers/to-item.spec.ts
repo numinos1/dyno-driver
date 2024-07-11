@@ -23,7 +23,7 @@ describe('toItem()', () => {
       createdOn: 1234,
       updatedBy: '1234abcd',
       updatedOn: 1234,
-      body: 'xxxx'
+      body: Buffer.from('xxxx')
     }, propList)).toEqual({
       cby: { S: '1234abcd' },
       con: { N: 1234 },
@@ -34,7 +34,7 @@ describe('toItem()', () => {
       uby: { S: '1234abcd' },
       uon: { N: 1234 },
       vid: { S: 'abcd1234' },
-      bdy: { B: 'xxxx' }
+      bdy: { B: Buffer.from('xxxx') }
     });
   });
 

@@ -1,5 +1,5 @@
 import { TIndex, TModelSchema, TProp } from "@/types";
-import { BillingMode, CreateTableCommandInput, KeyType, ProjectionType } from "@aws-sdk/client-dynamodb";
+import { AttributeDefinition, BillingMode, CreateTableCommandInput, KeyType, ProjectionType } from "@aws-sdk/client-dynamodb";
 
 /**
  * Export Dynamo Schemas
@@ -52,7 +52,7 @@ export function toKeys(index: TIndex) {
 /**
  * Extract Attribute Definitions from Index
  */
-export function toAttributeDefinitions(index: TIndex[]) {
+export function toAttributeDefinitions(index: TIndex[]): AttributeDefinition[] {
   return index.flatMap(toKeys).map(key => ({
     AttributeName: key.alias,
     AttributeType: toAttributeType(key)
@@ -104,13 +104,13 @@ export function toProvisionedThroughput(keys: TIndex) {
  * Convert Prop Token to Attribute Type
  */
 export function toAttributeType(prop: TProp) {
-  switch (prop.token) {
+  switch (prop.type) {
     case 'S':
     case 'N':
     case 'B':
-      return prop.token;
+      return prop.type;
     default:
-      throw new Error(`Invalid Attribute Type ${prop.alias}=${prop.token}`);
+      throw new Error(`Invalid Attribute Type ${prop.alias}=${prop.type}`);
   }
 }
 
