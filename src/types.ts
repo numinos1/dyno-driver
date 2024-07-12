@@ -1,10 +1,12 @@
-import { CreateTableCommandInput } from "@aws-sdk/client-dynamodb";
+import { AttributeValue, CreateTableCommandInput } from "@aws-sdk/client-dynamodb";
 
 // --------------------------------------------------
 //                    Primitives
 // --------------------------------------------------
 
 export type Constructor<T> = new (...args: any[]) => T;
+
+export type TItem = Record<string, AttributeValue>;
 
 // --------------------------------------------------
 //                    Enums

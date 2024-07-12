@@ -2,9 +2,9 @@ import { DynamoDBClient, PutItemCommand, GetItemCommand, QueryCommand, Attribute
 import { singleton } from 'tsyringe';
 import { TBillingMode, TEntityIndex, TEventType, TExpression, TIndex, TModelSchema, TOrder, TProp, TPropMap, TRemovalPolicy, TSubscription } from '@/types';
 import { TStrategy, TQueryType, toStrategy } from '@/helpers/to-strategy';
-import { toItem } from '@/helpers/to-item';
-import { toKeys } from '@/helpers/to-keys';
+import { toKeys } from '@/helpers/marshall/to-keys';
 import { toDoc } from '@/helpers/marshall/to-doc';
+import { toItem } from '@/helpers/marshall/to-item';
 import { toExpression } from '@/helpers/to-expression';
 import { toIndex } from '@/helpers/to-index';
 import { Timer } from "@/utils";

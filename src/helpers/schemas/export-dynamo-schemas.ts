@@ -19,7 +19,7 @@ export function toDynamoSchema(
   const priKeys = schema.tableIndex[0];
   const gsiKeys = schema.tableIndex.slice(1);
 
-  return {
+  const command: CreateTableCommandInput = {
     TableName: schema.tableName,
     BillingMode: toBillingMode(priKeys),
     ProvisionedThroughput: toProvisionedThroughput(priKeys),
@@ -30,16 +30,21 @@ export function toDynamoSchema(
     //DeletionPolicy: schema.removalPolicy,
     // UpdateReplacePolicy: string;
     AttributeDefinitions: toAttributeDefinitions(schema.tableIndex),
-    KeySchema: toKeySchema(priKeys),
+    KeySchema: toKeySchema(priKeys)
+  };
+
+  if (gsiKeys.length) {
     // LocalSecondaryIndexes?: LocalSecondaryIndex[];
-    GlobalSecondaryIndexes: gsiKeys.map((keys, i) => ({
+    command.GlobalSecondaryIndexes = gsiKeys.map((keys, i) => ({
       BillingMode: toBillingMode(keys),
       ProvisionedThroughput: toProvisionedThroughput(keys),
       Projection: toProjection(keys),
       IndexName: toIndexName(schema, i),
       KeySchema: toKeySchema(keys)
-    }))
+    }));
   };
+
+  return command;
 }
 
 /**

@@ -5,6 +5,7 @@ import { DynoDriver } from '@/classes/dyno-driver';
 import { EntityMock } from '@/tests/mocks/entity.mock';
 import { Entity2Mock } from '@/tests/mocks/entity-2.mock';
 import { Entity3Mock } from '@/tests/mocks/entity-3.mock';
+import { Entity4Mock } from '@/tests/mocks/entity-4.mock';
 
 describe('Query E2E', () => {
   const dyno = new DynoDriver({
@@ -12,7 +13,7 @@ describe('Query E2E', () => {
     endpoint: "http://localhost:8000",
     region: "local",
     metrics: true,
-    entities: [EntityMock, Entity2Mock]
+    entities: [EntityMock, Entity2Mock, Entity4Mock]
   });
 
   // // ----------------------------------------------------------------
@@ -20,17 +21,19 @@ describe('Query E2E', () => {
   it('creates dynamo tables', async () => {
     
     const namesBefore = await dyno.getDynamoTableNames();
-    const deleteResults = await dyno.deleteTables(namesBefore);
+    await dyno.deleteTables(namesBefore);
+
     const schemas = await dyno.exportMigrationSchemas();
 
     const createTables = schemas
       .filter(schema => schema.diffStatus === 'CREATE')
       .map(schema => schema.modelSchema);
 
-    const createResults = await dyno.createTables(createTables);
+    await dyno.createTables(createTables);
+
     const namesAfter = await dyno.getDynamoTableNames();
 
-    expect(namesAfter).toEqual(['test-table']);
+    expect(namesAfter).toEqual(['test-table', 'types-table']);
   });
 
   // // ----------------------------------------------------------------
@@ -47,7 +50,7 @@ describe('Query E2E', () => {
 
   // // ----------------------------------------------------------------
 
-  it('Create a document', async () => {
+  it('Put and Get a document', async () => {
     const model = dyno.model(EntityMock);
     const now = Math.round(Date.now() / 1000);
 
@@ -79,12 +82,10 @@ describe('Query E2E', () => {
     const readDoc = await model.getOne({
       where: {
         id: '12345678',
-        repoId: 'abunker'
+        repoId: 'abunker',
       },
       consistent: true
     });
-
-    console.log('GOT_DOC', readDoc);
 
     expect(readDoc).toEqual(createDoc);
     expect(JSON.parse(readDoc.body.toString('utf8'))).toEqual(body);

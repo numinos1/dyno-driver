@@ -48,7 +48,7 @@ describe('Migration E2E', () => {
       .map(schema => schema.modelSchema);
 
     await dyno.createTables(createTables);
-    
+
     const names = await dyno.getDynamoTableNames();
 
     expect(names).toEqual(['test-table']);

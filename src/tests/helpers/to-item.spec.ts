@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
-import { toItem } from '@/helpers/to-item';
+import { toItem } from '@/helpers/marshall/to-item';
 import { EntityMock } from '@/tests/mocks/entity.mock';
 import { propList } from '@/tests/mocks/props.mock';
 
@@ -26,13 +26,13 @@ describe('toItem()', () => {
       body: Buffer.from('xxxx')
     }, propList)).toEqual({
       cby: { S: '1234abcd' },
-      con: { N: 1234 },
+      con: { N: "1234" },
       enc: { S: 'json' },
       pk: { S: 'REPO#abcd' },
       sk: { S: 'DOC#1245' },
       sta: { S: 'active' },
       uby: { S: '1234abcd' },
-      uon: { N: 1234 },
+      uon: { N: "1234" },
       vid: { S: 'abcd1234' },
       bdy: { B: Buffer.from('xxxx') }
     });

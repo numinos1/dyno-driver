@@ -11,19 +11,24 @@ export function normalizeDynamoSchema(
   if (schema.GlobalSecondaryIndexes) {
     gsi = schema.GlobalSecondaryIndexes as GlobalSecondaryIndex[];
   }
-  return {
+  const command: CreateTableCommandInput = {
     TableName: schema.TableName,
     BillingMode: toBillingMode(schema),
     ProvisionedThroughput: toProvisionedThroughput(schema),
     AttributeDefinitions: normalizeKeySchema(schema.AttributeDefinitions),
-    KeySchema: normalizeKeySchema(schema.KeySchema),
-    GlobalSecondaryIndexes: gsi.map(entry => ({
+    KeySchema: normalizeKeySchema(schema.KeySchema)
+  };
+
+  if (gsi.length) {
+    command.GlobalSecondaryIndexes = gsi.map(entry => ({
       IndexName: entry.IndexName,
       Projection: entry.Projection,
       ProvisionedThroughput: entry.ProvisionedThroughput,
       KeySchema: normalizeKeySchema(entry.KeySchema)
-    })).sort((a, b) => a.IndexName.localeCompare(b.IndexName))
-  };
+    })).sort((a, b) => a.IndexName.localeCompare(b.IndexName));
+  }
+
+  return command;
 }
 
 /**

@@ -6,7 +6,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "test": "jest",
+    "test": "jest --runInBand",
     "build": "tsc -b .",
     "prepublish": "tsc -b ."
   },
