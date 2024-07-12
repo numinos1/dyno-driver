@@ -92,7 +92,7 @@ describe('toStrategy()', () => {
           updatedOn: 1232132422,
           updatedBy: 'andrew',
           deleteOn: 1231232131,
-          body: 'xxxxxxx'
+          body: Buffer.from('xxxxxxx')
         },
         [
           {
@@ -114,7 +114,7 @@ describe('toStrategy()', () => {
           updatedOn: 1232132422,
           updatedBy: 'andrew',
           deleteOn: 1231232131,
-          body: 'xxxxxxx'
+          body: Buffer.from('xxxxxxx')
         },
         query: {},
         keys: [],

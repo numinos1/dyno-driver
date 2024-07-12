@@ -1,9 +1,10 @@
-import { DynamoDBClient, PutItemCommand, GetItemCommand, QueryCommand } from "@aws-sdk/client-dynamodb"; // ES Modules import
+import { DynamoDBClient, PutItemCommand, GetItemCommand, QueryCommand, AttributeValue } from "@aws-sdk/client-dynamodb"; // ES Modules import
 import { singleton } from 'tsyringe';
 import { TBillingMode, TEntityIndex, TEventType, TExpression, TIndex, TModelSchema, TOrder, TProp, TPropMap, TRemovalPolicy, TSubscription } from '@/types';
 import { TStrategy, TQueryType, toStrategy } from '@/helpers/to-strategy';
 import { toItem } from '@/helpers/to-item';
 import { toKeys } from '@/helpers/to-keys';
+import { toDoc } from '@/helpers/marshall/to-doc';
 import { toExpression } from '@/helpers/to-expression';
 import { toIndex } from '@/helpers/to-index';
 import { Timer } from "@/utils";
@@ -24,7 +25,7 @@ export class DynoModel<Type> {
   public tableIndex: TIndex[];
   public propMap: TPropMap;
   public propStack: TProp[];
-  private propCount: number;
+  public propCount: number;
   private metrics: boolean;
   private subscriptions: TSubscription[];
   public removalPolicy: TRemovalPolicy;
@@ -230,9 +231,12 @@ export class DynoModel<Type> {
         strategy
       });
 
-      return result.Items
-        ? result.Items?.[0] as Type
-        : undefined;
+      const doc = result.Items?.[0];
+
+      if (doc) {
+        return toDoc<Type>(doc, this.propStack, this.propCount);
+      }
+      return undefined;
     }
     catch (error) {
       this.onEvent('failure', {
@@ -281,9 +285,12 @@ export class DynoModel<Type> {
         strategy,
       });
 
-      return result.Items
-        ? result.Items?.[0] as Type
-        : undefined;
+      const doc = result.Items?.[0];
+
+      if (doc) {
+        return toDoc<Type>(doc, this.propStack, this.propCount);
+      }
+      return undefined;
     }
     catch (error) {
       this.onEvent('failure', {
@@ -327,9 +334,12 @@ export class DynoModel<Type> {
         strategy,
       });
 
-      return result.Item
-        ? result.Item as Type
-        : undefined;
+      const doc = result.Item;
+
+      if (doc) {
+        return toDoc<Type>(doc, this.propStack, this.propCount);
+      }
+      return undefined;
     }
     catch (error) {
       this.onEvent('failure', {
