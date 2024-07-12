@@ -24,7 +24,8 @@ export interface TEntity {
   entityName?: string;
   tableName?: string;
   index: TEntityIndex[];
-  props: Map<string, TProp>
+  props: Map<string, TProp>,
+  aliases: Set<string>
 }
 
 export interface TEntityIndex {

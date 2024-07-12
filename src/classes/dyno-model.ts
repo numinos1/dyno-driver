@@ -117,10 +117,9 @@ export class DynoModel<Type> {
         ExpressionAttributeNames: where ? names : undefined,
         ExpressionAttributeValues: where ? values : undefined
       });
+      // console.log('PUT_CMD', JSON.stringify(command, null, '  '));
       const result = await this.client.send(command);
-
-      //console.log('PUT_CMD', JSON.stringify(command, null, '  '));
-      //console.log('PUT_RES', JSON.stringify(result, null, '  '));
+      // console.log('PUT_RES', JSON.stringify(result, null, '  '));
 
       this.onEvent('success', {
         method: 'putOne',

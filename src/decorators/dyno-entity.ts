@@ -20,7 +20,8 @@ export function DynoEntity({
         entityName: '',
         tableName: '',
         index: [],
-        props: new Map<string, TProp>()
+        props: new Map<string, TProp>(),
+        aliases: new Set<string>()
       });
     }
     entry.entityName = className;

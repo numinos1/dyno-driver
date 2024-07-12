@@ -22,11 +22,21 @@ export function DynoProp({
         entityName: '',
         tableName: '',
         index: [],
-        props: new Map<string, TProp>()
+        props: new Map<string, TProp>(),
+        aliases: new Set<string>()
       });
     }
     if (entry.props[name]) {
-      throw new Error(`duplicate prop "${name}" on entity`);
+      throw new Error(`duplicate prop name "${name}" on entity`);
+    }
+    if (!alias) {
+      alias = name;
+    }
+    if (entry.aliases.has(alias)) {
+      throw new Error(`duplicate prop alias "${alias}" on entity`);
+    }
+    else {
+      entry.aliases.add(alias);
     }
     entry.props.set(name, {
       name: name,
@@ -46,7 +56,7 @@ export function DynoProp({
 export function designToType(fn: any): TPropTokens {
   if (fn === Number) return TPropTokens.number;
   if (fn === String) return TPropTokens.string;
-  if (fn === Boolean) return TPropTokens.binary;
+  if (fn === Boolean) return TPropTokens.boolean;
   if (fn === Array) return TPropTokens.list;
   if (fn === Object) return TPropTokens.map;
   if (fn === Set) return TPropTokens.stringSet;

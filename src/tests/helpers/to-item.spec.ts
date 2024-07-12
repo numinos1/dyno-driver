@@ -34,7 +34,7 @@ describe('toItem()', () => {
       uby: { S: '1234abcd' },
       uon: { N: "1234" },
       vid: { S: 'abcd1234' },
-      bdy: { B: Buffer.from('xxxx') }
+      bdy: { B: new Uint8Array(Buffer.from('xxxx')) }
     });
   });
 

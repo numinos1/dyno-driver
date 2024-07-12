@@ -16,51 +16,57 @@ export function toItemAttr(
   switch (type) {
     case 'S': {
       return {
-        [type]: prefix
+        S: prefix
           ? `${prefix}${value}`
           : value
       };
     }
     case 'N': {
       return {
-        [type]: prefix
+        N: prefix
           ? `${prefix}${value}`
           : `${value}`
       };
     }
     case 'B': {
       return {
-        [type]: value
+        B: new Uint8Array(value)
       };
     }
     case 'BOOL': {
-      return {
-        [type]: value
-      };
-    }
-    case 'BS': {
-      return {
-        [type]: [...value]
-      };
+      return { BOOL: value };
     }
     case 'SS': {
-      return {
-        [type]: [...value]
-      };
+      const val = [...value];
+      const first = val[0];
+
+      if (typeof first === 'string') {
+        return { 'SS': val };
+      }
+      if (typeof first === 'number') {
+        return { 'NS': val.map(v => `${v}`) };
+      }
+      else if (val[0] instanceof Buffer) {
+        return { 'BS': val };
+      }
+      else {
+        throw new Error(`Invalid Set value type "${typeof first}"`);
+      }
     }
     case 'NS': {
       return {
-        [type]: [...value].map(val => `${val}`)
+        NS: [...value].map(val => `${val}`)
       };
     }
     case 'L': {
       return {
-        [type]: value.map(marshall)
+        // TODO - Hack to get recursive lists to marshall
+        L: marshall(value) as any
       };
     }
     case 'M': {
       return {
-        [type]: marshall(value)
+        M: marshall(value)
       };
     }
     default: {
