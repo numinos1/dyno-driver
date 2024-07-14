@@ -6,6 +6,7 @@ import { EntityMock } from '@/tests/mocks/entity.mock';
 import { Entity2Mock } from '@/tests/mocks/entity-2.mock';
 import { Entity3Mock } from '@/tests/mocks/entity-3.mock';
 import { Entity4Mock } from '@/tests/mocks/entity-4.mock';
+import { Item4Mock, item4Mock } from '@/tests/mocks/item-4.mock';
 
 describe('Query E2E', () => {
   const dyno = new DynoDriver({
@@ -93,41 +94,81 @@ describe('Query E2E', () => {
 
   // ----------------------------------------------------------------
 
-  it('Put and Get a document with all data-types', async () => {
+  it('Put and Get a document', async () => {
     const model = dyno.model(Entity4Mock);
-
-    const putDoc: Entity4Mock = {
-      id: '123456',
-      repoId: 123456,
-      isBig: true,
-      ages: [1, 25, 53, 14, 21, 47],
-      names: ['andrew', 'sylvia', 'sam', 'analee'],
-      list: [1, 2, 'three', 'four', true, [1, 2, 3, 4], { a: 1 }],
-      colors: new Set(['a', 'b', 'c']),
-      years: new Set([1, 2, 3, 4]),
-      meta: { a: 1, b: '1234', c: [1, 2, 3], d: { e: { f: 12233 } } },
-      meta2: { a: 1, b: 2, c: 3 },
-      body: Buffer.from(JSON.stringify({
-        name: 'Andrew Bunker',
-        age: 53,
-        address: '166 1675 South',
-        city: 'Farmington',
-        state: 'UT',
-        zip: 84025,
-        phone: '801-580-1203'
-      }), 'utf8')
-    };
+    const putDoc: Entity4Mock = item4Mock;
 
     await model.putOne(putDoc);
 
     const getDoc = await model.getOne({
       where: {
-        id: '123456',
-        repoId: 123456
+        id: putDoc.id,
+        repoId: putDoc.repoId
       },
       consistent: true
     });
 
     expect(getDoc).toEqual(putDoc);
   });
+
+  // ----------------------------------------------------------------
+
+  it('Update and Get a document', async () => {
+    const model = dyno.model(Entity4Mock);
+    const putDoc: Entity4Mock = Item4Mock();
+    const updateDoc: Entity4Mock = Item4Mock(putDoc);
+
+    await model.putOne(putDoc);
+
+    await model.putOne(updateDoc, {
+      id: putDoc.id,
+      repoId: putDoc.repoId
+    });
+
+    const getDoc = await model.getOne({
+      where: {
+        id: putDoc.id,
+        repoId: putDoc.repoId
+      },
+      consistent: true
+    });
+
+    expect(getDoc).toEqual(updateDoc);
+  });
+
+  // ----------------------------------------------------------------
+
+  it('Batch write multiple documents', async () => {
+    const model = dyno.model(Entity4Mock);
+    const docs: Entity4Mock[] = [];
+
+    for (let i = 0; i < 50; i++) {
+      docs.push(Item4Mock());
+    }
+    const results = await model.putMany(docs);
+
+    expect(results).toEqual({
+      batches: [{
+        id: 1,
+        requests: 25,
+        retryable: 0,
+        wcu: 25,
+        status: 'success',
+        duration: expect.any(Number),
+      }, {
+        id: 2,
+        requests: 25,
+        retryable: 0,
+        wcu: 25,
+        status: 'success',
+        duration: expect.any(Number),
+      }],
+      errors: [],
+      failed: [],
+      retries: 0,
+      saved: expect.any(Array)
+    });
+  });
+
 });
+

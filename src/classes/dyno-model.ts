@@ -1,7 +1,8 @@
-import { DynamoDBClient, PutItemCommand, GetItemCommand, QueryCommand, AttributeValue } from "@aws-sdk/client-dynamodb"; // ES Modules import
+import { DynamoDBClient, PutItemCommand, BatchWriteItemCommand, GetItemCommand, QueryCommand, AttributeValue } from "@aws-sdk/client-dynamodb"; // ES Modules import
 import { singleton } from 'tsyringe';
 import { TBillingMode, TEntityIndex, TEventType, TExpression, TIndex, TModelSchema, TOrder, TProp, TPropMap, TRemovalPolicy, TSubscription } from '@/types';
 import { TStrategy, TQueryType, toStrategy } from '@/helpers/to-strategy';
+import { BatchWrite, TBatchResults } from '@/helpers/batching/batch-write';
 import { toKeys } from '@/helpers/marshall/to-keys';
 import { toDoc } from '@/helpers/marshall/to-doc';
 import { toItem } from '@/helpers/marshall/to-item';
@@ -145,27 +146,41 @@ export class DynoModel<Type> {
    * - TODO: If where, call putOne() for each entry
    * - TODO: Else, call batchPut() for each batch
    */
-  // async putMany(docs: Type[], { where }: {
-  //   where?: TExpression<Type>
-  // }): Promise<Type[]> {
-  //   const timer = this.metrics && Timer();
+  async putMany(docs: Type[]): Promise<TBatchResults> {
+    const timer = this.metrics && Timer();
 
-  //   try {
-  //     this.onEvent('success', {
-  //       method: 'putMany',
-  //       time: timer(),
-  //       wcu: result.ConsumedCapacity?.CapacityUnits || 0,
-  //     });
-  //   }
-  //   catch (error) {
-  //     this.onEvent('failure', {
-  //       method: 'putMany',
-  //       time: timer(),
-  //       error
-  //     });
-  //     throw error;
-  //   }
-  // }
+    try {
+      const results = await BatchWrite({
+        client: this.client,
+        tableName: this.tableName,
+        writeRequests: docs.map(doc => ({
+          // DeleteRequest
+          PutRequest: {
+            Item: toItem<Type>(doc, this.propStack)
+          }
+        }))
+      });
+
+      this.onEvent('success', {
+        method: 'putMany',
+        time: timer(),
+        wcu: results.batches.reduce(
+          (wcu, batch) => wcu + batch.wcu,
+          0
+        )
+      });
+
+      return results;
+    }
+    catch (error) {
+      this.onEvent('failure', {
+        method: 'putMany',
+        time: timer(),
+        error
+      });
+      throw error;
+    }
+  }
 
   /**
    * Get One

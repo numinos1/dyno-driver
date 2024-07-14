@@ -9,10 +9,12 @@ export const entitiesMap = new Map<Function, TEntity>();
 //      Time & Date Utilities
 // ------------------------------------------------------------------
 
+export type TTimer = () => number;
+
 /**
  * Measure elapsed time in ms
  */
-export function Timer() {
+export function Timer(): TTimer {
   const begin = process.hrtime();
 
   return function end() {
