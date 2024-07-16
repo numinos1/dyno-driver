@@ -37,17 +37,6 @@ export interface TEntityIndex {
 };
 
 // --------------------------------------------------
-//                    Events
-// --------------------------------------------------
-
-export interface TSubscription {
-  type: TEventType;
-  cb: Function;
-}
-
-export type TEventType = 'success' | 'failure';
-
-// --------------------------------------------------
 //                    Model
 // --------------------------------------------------
 

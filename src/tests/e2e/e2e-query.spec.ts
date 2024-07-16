@@ -8,6 +8,8 @@ import { Entity3Mock } from '@/tests/mocks/entity-3.mock';
 import { Entity4Mock } from '@/tests/mocks/entity-4.mock';
 import { Item4Mock, item4Mock } from '@/tests/mocks/item-4.mock';
 
+const DocKeyRegex = /^repo#\w+\|doc#\w+$/;
+
 describe('Query E2E', () => {
   const dyno = new DynoDriver({
     tableName: 'test-table',
@@ -102,8 +104,8 @@ describe('Query E2E', () => {
 
     const getDoc = await model.getOne({
       where: {
-        id: putDoc.id,
-        repoId: putDoc.repoId
+        repoId: putDoc.repoId,
+        docId: putDoc.docId
       },
       consistent: true
     });
@@ -121,14 +123,14 @@ describe('Query E2E', () => {
     await model.putOne(putDoc);
 
     await model.putOne(updateDoc, {
-      id: putDoc.id,
-      repoId: putDoc.repoId
+      repoId: putDoc.repoId,
+      docId: putDoc.docId
     });
 
     const getDoc = await model.getOne({
       where: {
-        id: putDoc.id,
-        repoId: putDoc.repoId
+        repoId: putDoc.repoId,
+        docId: putDoc.docId
       },
       consistent: true
     });
@@ -143,7 +145,10 @@ describe('Query E2E', () => {
     const docs: Entity4Mock[] = [];
 
     for (let i = 0; i < 50; i++) {
-      docs.push(Item4Mock());
+      docs.push(Item4Mock({
+        repoId: '1234abcdefg',
+        docId: `AAAA${i}`
+      }));
     }
     const results = await model.putMany(docs);
 
@@ -168,7 +173,17 @@ describe('Query E2E', () => {
       retries: 0,
       saved: expect.any(Array)
     });
+
+    results.saved.forEach(result => {
+      expect(result).toMatch(DocKeyRegex)
+    });
   });
+
+  // ----------------------------------------------------------------
+
+  // it(`Reads multiple documents`, async () => {
+
+  // });
 
 });
 

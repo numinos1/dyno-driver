@@ -3,9 +3,9 @@ import { makeId } from '../test-utils';
 /**
  * Example of every use-case
  */
-export const item4Mock = {
-  id: makeId(11),
-  repoId: 123456,
+export const item4Mock: Entity4Mock = {
+  repoId: makeId(11),
+  docId: makeId(11),
   isBig: true,
   ages: [1, 25, 53, 14, 21, 47],
   names: ['andrew', 'sylvia', 'sam', 'analee'],
@@ -31,10 +31,10 @@ export const item4Mock = {
 /**
  * Generate Entity4 Item for Tests
  */
-export function Item4Mock(from?: Entity4Mock): Entity4Mock {
+export function Item4Mock(from?: Partial<Entity4Mock>): Entity4Mock {
   return {
-    id: from?.id || makeId(11),
-    repoId: from?.repoId || 123456,
+    repoId: from?.repoId || makeId(11),
+    docId: from?.docId || makeId(11),
     isBig: false,
     ages: [1, 2, 3],
     names: ['nancy', 'drew'],

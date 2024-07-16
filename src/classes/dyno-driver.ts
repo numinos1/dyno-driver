@@ -11,7 +11,7 @@ import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import { container } from 'tsyringe';
 import { DynoModel } from '@/classes/dyno-model';
 import { entitiesMap, pruneObject } from '@/utils';
-import { TBillingMode, TEventType, TMigrationSchema, TRemovalPolicy, TSubscription, Constructor } from '@/types';
+import { TBillingMode, TMigrationSchema, TRemovalPolicy, Constructor } from '@/types';
 import { mergeSchemas } from "@/helpers/schemas/merge-schemas";
 import { exportCdkSchemas } from "@/helpers/schemas/export-cdk-schemas";
 import { exportDynamoSchemas } from '@/helpers/schemas/export-dynamo-schemas';
@@ -31,7 +31,7 @@ export class DynoDriver {
   public metrics: boolean;
   public client: DynamoDBClient;
   public models: Map<Function, DynoModel<any>>;
-  public subscriptions: TSubscription[];
+  public logger: Function;
   public removalPolicy?: TRemovalPolicy;
   public billingMode?: TBillingMode;
 
@@ -45,13 +45,15 @@ export class DynoDriver {
     entities,
     metrics = false,
     removalPolicy = 'destroy',
+    logger = function logger() {}
   }: {
     tableName: string;
     endpoint?: string;
     region?: string;
     removalPolicy?: TRemovalPolicy,
     entities?: Function[];
-    metrics?: boolean;    
+    metrics?: boolean;  
+    logger?: Function;
   }) {
     if (!VALID_TABLE_NAME.test(tableName)) {
       throw new Error(`invalid tableName: "${tableName}"`);
@@ -62,7 +64,7 @@ export class DynoDriver {
     this.metrics = metrics;
     this.removalPolicy = removalPolicy;
     this.client = new DynamoDBClient(pruneObject({ endpoint, region }));
-    this.subscriptions = [];
+    this.logger = logger;
     this.models = new Map();
 
     if (entities) {
@@ -106,7 +108,7 @@ export class DynoDriver {
     const model = new DynoModel<typeof entity>({
       client: this.client,
       metrics: this.metrics,
-      subscriptions: this.subscriptions,
+      logger: this.logger,
       removalPolicy: this.removalPolicy,
       entityName: entityName,
       tableName: tableName,
@@ -124,13 +126,6 @@ export class DynoDriver {
     });
 
     return model;
-  }
-
-  /**
-   * Middleware Events
-   */
-  on(type: TEventType, cb: Function) {
-    this.subscriptions.push({ type, cb });
   }
 
   /**

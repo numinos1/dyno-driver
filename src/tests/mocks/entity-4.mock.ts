@@ -4,18 +4,18 @@ import { DynoProp } from '@/decorators/dyno-prop';
 @DynoEntity({
   tableName: 'types-table',
   index: [{
-    pk: 'ET4#id',
-    sk: 'repoId'
+    pk: 'repo#repoId',
+    sk: 'doc#docId'
   },
   ]
 })
 export class Entity4Mock {
 
   @DynoProp({})
-  id: string;
+  repoId: string;
 
   @DynoProp({})
-  repoId: number;
+  docId: string;
 
   @DynoProp({})
   isBig: boolean;
