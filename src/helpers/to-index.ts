@@ -1,4 +1,4 @@
-import { TEntityIndex, TIndex, TProp, TPropTokens, TPropTypes } from '@/types';
+import { TEntityIndex, TIndex, TProp, TPropTokens } from '@/types';
 /**
  * Create table index from entity index for model
  */

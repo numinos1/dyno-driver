@@ -13,7 +13,7 @@ export function toExpression<Type>(
   props: TPropMap,
   names: Record<string, string>,
   values: Record<string, AttributeValue>
-) {
+): string | undefined {
   let valueCount: number = Object.keys(values).length;
 
   const $operators = {
@@ -23,7 +23,7 @@ export function toExpression<Type>(
   };
 
   // Main Routine
-  return evalExpr(expr);
+  return evalExpr(expr) || undefined;
 
   /**
    * Evaluate Any Expression

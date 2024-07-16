@@ -1,9 +1,8 @@
-import { AttributeValue, ConsumedCapacity, DynamoDBClient, GetItemCommand, QueryCommandOutput } from "@aws-sdk/client-dynamodb"; // ES Modules import
+import { AttributeValue, ConsumedCapacity, DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb"; // ES Modules import
 import { singleton } from 'tsyringe';
 import { TBillingMode, TEntityIndex, TExpression, TIndex, TModelSchema, TOrder, TProp, TPropMap, TRemovalPolicy } from '@/types';
-import { TStrategy, TQueryType, toStrategy } from '@/helpers/to-strategy';
+import { TQueryType, toStrategy } from '@/helpers/to-strategy';
 import { BatchWrite, TBatchResults } from '@/helpers/queries/batch-write';
-import { toKeys } from '@/helpers/marshall/to-keys';
 import { toDoc } from '@/helpers/marshall/to-doc';
 import { toItem } from '@/helpers/marshall/to-item';
 import { toIndex } from '@/helpers/to-index';
@@ -81,10 +80,9 @@ export class DynoModel<Type> {
   }
 
   // -------------------------------------------------------------------
+  //      Put One
+  // -------------------------------------------------------------------
 
-  /**
-   * Put One
-   */
   async putOne(
     doc: Type,
     where?: TExpression<Type>
@@ -122,10 +120,10 @@ export class DynoModel<Type> {
   }
 
   // -------------------------------------------------------------------
+  //      Put Many
+  // -------------------------------------------------------------------
 
   /**
-   * Put Many
-   * 
    * - TODO: If where, call putOne() for each entry
    * - TODO: Else, call batchPut() for each batch
    */
@@ -170,21 +168,16 @@ export class DynoModel<Type> {
   }
 
   // -------------------------------------------------------------------
+  //        Get One
+  // -------------------------------------------------------------------
 
-  /**
-   * Get One
-   */
   async getOne(
     options: GetOptions<Type>
   ): Promise<Type | undefined> {
-    const strategy = toStrategy(
-      options.where,
-      this.tableIndex,
-      this.tableName
-    );
+    const strategy = toStrategy(options.where, this.tableIndex, this.tableName);
     const timer = Timer();
     let item: Record<string, AttributeValue>;
-    let cc: ConsumedCapacity;
+    let rcc: ConsumedCapacity;
 
     try {
       switch (strategy.type) {
@@ -192,7 +185,7 @@ export class DynoModel<Type> {
           const result = await this.client.send(
             scanTable<Type>(options, strategy, this.metrics, this.propMap, 1)
           )
-          cc = result.ConsumedCapacity || {};
+          rcc = result.ConsumedCapacity || {};
           item = result.Items?.[0];
           break;
         }
@@ -201,7 +194,7 @@ export class DynoModel<Type> {
           const result = await this.client.send(
             queryTable<Type>(options, strategy, this.metrics, this.propMap, 1)
           );
-          cc = result.ConsumedCapacity || {};
+          rcc = result.ConsumedCapacity || {};
           item = result.Items?.[0];
           break;
         }
@@ -209,7 +202,7 @@ export class DynoModel<Type> {
           const result = await this.client.send(
             getItem<Type>(options, strategy, this.metrics)
           );
-          cc = result.ConsumedCapacity || {};
+          rcc = result.ConsumedCapacity || {};
           item = result.Item;
         }
       }
@@ -217,7 +210,7 @@ export class DynoModel<Type> {
       this.logger({
         message: 'getOne success',
         duration: timer(),
-        rcu: cc.CapacityUnits || 0,
+        rcu: rcc.CapacityUnits || 0,
         strategy
       });
 
@@ -237,10 +230,9 @@ export class DynoModel<Type> {
   }
 
   // -------------------------------------------------------------------
+  //      Get Many
+  // -------------------------------------------------------------------
 
- /**
-   * Get Many
-   */
   async getMany(
     options: GetOptions<Type>
   ): Promise<Type[]> {
@@ -257,9 +249,9 @@ export class DynoModel<Type> {
     try {
       switch (strategy.type) {
         case TQueryType.tableScan: {
-          const result = await this.client.send(
-            scanTable<Type>(options, strategy, this.metrics, this.propMap, limit)
-          )
+          const query: QueryCommand = scanTable<Type>(options, strategy, this.metrics, this.propMap, limit);
+          const result = await this.client.send(query);
+          console.log('SCAN');
           cc = result.ConsumedCapacity || {};
           items = result.Items || [];
           break;
@@ -267,9 +259,9 @@ export class DynoModel<Type> {
         case TQueryType.pkQuery:
         case TQueryType.skQuery:
         case TQueryType.get: {
-          const result = await this.client.send(
-            queryTable<Type>(options, strategy, this.metrics, this.propMap, limit)
-          );
+          const query = queryTable<Type>(options, strategy, this.metrics, this.propMap, limit);
+          const result = await this.client.send(query);
+          console.log('QUERY');
           cc = result.ConsumedCapacity || {};
           items = result.Items || [];
           break;
@@ -298,9 +290,10 @@ export class DynoModel<Type> {
     }
   }
 
-  /**
-   * Delete Documents
-   */
+  // -------------------------------------------------------------------
+  //      Delete
+  // -------------------------------------------------------------------
+
   async delete() { }
 
   // ----------------------------------------------------------------

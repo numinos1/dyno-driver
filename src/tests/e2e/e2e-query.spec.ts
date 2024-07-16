@@ -1,3 +1,4 @@
+import { marshall } from '@aws-sdk/util-dynamodb';
 import "reflect-metadata";
 import { describe, expect, it } from '@jest/globals';
 import { DynoModel } from '@/classes/dyno-model';
@@ -181,9 +182,31 @@ describe('Query E2E', () => {
 
   // ----------------------------------------------------------------
 
-  // it(`Reads multiple documents`, async () => {
+  it(`Reads multiple documents in a range`, async () => {
+    const model = dyno.model(Entity4Mock);
 
-  // });
+    const docs = await model.getMany({
+      where: {
+        repoId: '1234abcdefg',
+        docId: {
+          $between: ['AAAA0', 'AAAA15']
+        }
+      // }
+      // where: {
+      //   repoId: '1234abcdefg',
+      //   docId: {
+      //     $and: [
+      //       { docId: { $ge: 'AAAA0' } },
+      //       { docId: { $le: 'AAAA15' } }
+      //     ]
+      //   }
+      }
+    });
+
+    console.log(docs.map(doc => doc.docId).join(','));
+
+    expect(docs.length).toEqual(50);
+  });
 
 });
 

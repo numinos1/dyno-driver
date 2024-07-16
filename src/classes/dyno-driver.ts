@@ -7,7 +7,6 @@ import {
   CreateTableCommandInput,
   TableDescription
 } from "@aws-sdk/client-dynamodb"; 
-import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import { container } from 'tsyringe';
 import { DynoModel } from '@/classes/dyno-model';
 import { entitiesMap, pruneObject } from '@/utils';
