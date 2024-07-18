@@ -19,7 +19,7 @@ export function putItem<Type>(
   return new PutItemCommand({
     TableName: tableName,
     Item: toItem<Type>(doc, propStack),
-    ReturnValues: 'NONE',
+    ReturnValues: 'NONE', // "ALL_OLD" || "UPDATED_OLD" || "ALL_NEW" || "UPDATED_NEW"
     ReturnConsumedCapacity: metrics ? 'TOTAL' : 'NONE',
     ReturnItemCollectionMetrics: metrics ? 'SIZE' : 'NONE',
     ReturnValuesOnConditionCheckFailure: 'NONE',

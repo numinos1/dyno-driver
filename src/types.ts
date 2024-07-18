@@ -8,6 +8,12 @@ export type Constructor<T> = new (...args: any[]) => T;
 
 export type TItem = Record<string, AttributeValue>;
 
+export interface TPutOneResult<Type> {
+  duration: number,
+  wcu: number,
+  doc: Type
+};
+
 // --------------------------------------------------
 //                    Enums
 // --------------------------------------------------
@@ -43,11 +49,11 @@ export interface TEntityIndex {
 export type TPropMap = Map<string, TProp>;
 
 export interface TIndex {
-  pk: TProp;
-  sk: TProp;
-  wcu: number;
-  rcu: number;
-  project: string[];
+  pk: TProp; // Partition Key Property
+  sk: TProp; // Sort Key Property
+  wcu: number; // Allocated WCU to index
+  rcu: number; // Allocated RCU to index
+  project: string[]; // Projected Props
 };
 
 export interface TProp {

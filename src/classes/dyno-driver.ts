@@ -21,6 +21,14 @@ const VALID_TABLE_NAME = /^[a-zA-Z0-9_.-]{3,255}$/;
 const VALID_ATTR_NAME = /^[a-zA-Z0-9_.-]{2,255}$/;
 
 /**
+ * Dummy Logger
+ */
+class Logger {
+  constructor() { }
+  log(data: any) {}
+}
+
+/**
  * DynoDriver Class
  */
 export class DynoDriver {
@@ -30,7 +38,6 @@ export class DynoDriver {
   public metrics: boolean;
   public client: DynamoDBClient;
   public models: Map<Function, DynoModel<any>>;
-  public logger: Function;
   public removalPolicy?: TRemovalPolicy;
   public billingMode?: TBillingMode;
 
@@ -44,7 +51,6 @@ export class DynoDriver {
     entities,
     metrics = false,
     removalPolicy = 'destroy',
-    logger = function logger() {}
   }: {
     tableName: string;
     endpoint?: string;
@@ -52,7 +58,6 @@ export class DynoDriver {
     removalPolicy?: TRemovalPolicy,
     entities?: Function[];
     metrics?: boolean;  
-    logger?: Function;
   }) {
     if (!VALID_TABLE_NAME.test(tableName)) {
       throw new Error(`invalid tableName: "${tableName}"`);
@@ -63,7 +68,6 @@ export class DynoDriver {
     this.metrics = metrics;
     this.removalPolicy = removalPolicy;
     this.client = new DynamoDBClient(pruneObject({ endpoint, region }));
-    this.logger = logger;
     this.models = new Map();
 
     if (entities) {
@@ -107,7 +111,6 @@ export class DynoDriver {
     const model = new DynoModel<typeof entity>({
       client: this.client,
       metrics: this.metrics,
-      logger: this.logger,
       removalPolicy: this.removalPolicy,
       entityName: entityName,
       tableName: tableName,

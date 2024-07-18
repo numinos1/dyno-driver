@@ -6,6 +6,8 @@ import { makeId } from '../test-utils';
 export const item4Mock: Entity4Mock = {
   repoId: makeId(11),
   docId: makeId(11),
+  alias: 'xyzabcd',
+  total: 1234,
   isBig: true,
   ages: [1, 25, 53, 14, 21, 47],
   names: ['andrew', 'sylvia', 'sam', 'analee'],
@@ -16,13 +18,13 @@ export const item4Mock: Entity4Mock = {
   meta2: { a: 1, b: 2, c: 3 },
   body: Buffer.from(
     JSON.stringify({
-      name: 'Andrew Bunker',
+      name: 'Paul Dineach',
       age: 53,
-      address: '166 1675 South',
-      city: 'Farmington',
-      state: 'UT',
-      zip: 84025,
-      phone: '801-580-1203'
+      address: '1945 Starcross Drive',
+      city: 'Leyland',
+      state: 'CT',
+      zip: 84123,
+      phone: '801-575-5555'
     }),
     'utf8'
   )
@@ -35,6 +37,8 @@ export function Item4Mock(from?: Partial<Entity4Mock>): Entity4Mock {
   return {
     repoId: from?.repoId || makeId(11),
     docId: from?.docId || makeId(11),
+    alias: makeId(20),
+    total: 1234678,
     isBig: false,
     ages: [1, 2, 3],
     names: ['nancy', 'drew'],
@@ -45,7 +49,13 @@ export function Item4Mock(from?: Partial<Entity4Mock>): Entity4Mock {
     meta2: { moreStuff: 123123213133 },
     body: Buffer.from(
       JSON.stringify({
-        code: makeId(30)
+        name: 'Paul Dineach',
+        age: 53,
+        address: '1945 Starcross Drive',
+        city: 'Leyland',
+        state: 'CT',
+        zip: 84123,
+        phone: '801-575-5555'
       }),
       'utf8'
     )

@@ -21,6 +21,12 @@ export class Entity4Mock {
   isBig: boolean;
 
   @DynoProp({})
+  alias: string;
+
+  @DynoProp({})
+  total: number;
+
+  @DynoProp({})
   ages: number[];
 
   @DynoProp({})

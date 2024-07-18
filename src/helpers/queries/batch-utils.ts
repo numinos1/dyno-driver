@@ -95,15 +95,3 @@ export function toCapacityUnits(
   ) || 0;
 }
 
-/**
- * Get next key from query results
- */
-export function toNextKey(
-  result: any
-): string {
-  const key = result?.LastEvaluatedKey?.sk;
-
-  return key
-    ? key.replace(/^.*?#/, '')
-    : '';
-}

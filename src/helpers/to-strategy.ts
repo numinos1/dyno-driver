@@ -25,9 +25,9 @@ export enum TQueryType {
   tableScan = 0,
   pkQuery = 1,
   skQuery = 2,
-  get = 3
+  getItem = 3
 }
-
+  
 // ------------------------------------------------------------------
 //                            Methods
 // ------------------------------------------------------------------
@@ -92,7 +92,7 @@ export function toTheory<Type>(
       // Sort key is a value
       case 'value': {
         return {
-          type: TQueryType.get,
+          type: TQueryType.getItem,
           keys: [pk, sk],
           index: index,
         }

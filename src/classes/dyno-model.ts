@@ -1,8 +1,8 @@
-import { AttributeValue, ConsumedCapacity, DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb"; // ES Modules import
+import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb"; // ES Modules import
 import { singleton } from 'tsyringe';
-import { TBillingMode, TEntityIndex, TExpression, TIndex, TModelSchema, TOrder, TProp, TPropMap, TRemovalPolicy } from '@/types';
+import { TBillingMode, TEntityIndex, TExpression, TIndex, TItem, TModelSchema, TOrder, TProp, TPropMap, TRemovalPolicy } from '@/types';
 import { TQueryType, toStrategy } from '@/helpers/to-strategy';
-import { BatchWrite, TBatchResults } from '@/helpers/queries/batch-write';
+import { BatchWrite } from '@/helpers/queries/batch-write';
 import { toDoc } from '@/helpers/marshall/to-doc';
 import { toItem } from '@/helpers/marshall/to-item';
 import { toIndex } from '@/helpers/to-index';
@@ -33,7 +33,6 @@ export class DynoModel<Type> {
   public removalPolicy: TRemovalPolicy;
   public billingMode: TBillingMode;
   public entity: Function;
-  public logger: Function;
 
   // -------------------------------------------------------------------
 
@@ -49,7 +48,6 @@ export class DynoModel<Type> {
     client,
     removalPolicy,
     metrics,
-    logger
   }: {
     entityName: string; 
     tableName: string; 
@@ -59,7 +57,6 @@ export class DynoModel<Type> {
     client: DynamoDBClient;
     removalPolicy: TRemovalPolicy;
     metrics: boolean;
-    logger: Function;
   }) {
     try {
       this.client = client;
@@ -71,12 +68,20 @@ export class DynoModel<Type> {
       this.propStack = [...props.values()];
       this.propCount = props.size;
       this.tableIndex = toIndex(index, this.propStack);
-      this.logger = logger || function logger() { };
     }
     catch (err) {
       err.message = `Entity "${entityName}" ${err.message}`;
       throw err;
     }
+  }
+
+  /**
+   * Unmarshall Document
+   */
+  unmarshall(doc: TItem | undefined): Type | undefined {
+    return doc
+      ? toDoc<Type>(doc, this.propStack, this.propCount)
+      : undefined;
   }
 
   // -------------------------------------------------------------------
@@ -86,37 +91,25 @@ export class DynoModel<Type> {
   async putOne(
     doc: Type,
     where?: TExpression<Type>
-  ): Promise<Type> { 
+  ) { 
     const timer = this.metrics && Timer();
 
-    try {
-      const result = await this.client.send(
-        putItem<Type>(
-          doc,
-          where,
-          this.metrics,
-          this.tableName,
-          this.propMap,
-          this.propStack
-        )
-      );
+    const result = await this.client.send(
+      putItem<Type>(
+        doc,
+        where,
+        this.metrics,
+        this.tableName,
+        this.propMap,
+        this.propStack
+      )
+    );
 
-      this.logger({
-        message: 'putOne success',
-        duration: timer(),
-        wcu: result.ConsumedCapacity?.CapacityUnits || 0,
-      });
-
-      return doc;
-    }
-    catch (error) {
-      this.logger({
-        message: 'putOne failure',
-        duration: timer(),
-        error
-      });
-      throw error;
-    }
+    return {
+      duration: timer(),
+      cost: result.ConsumedCapacity?.CapacityUnits || 0,
+      doc: doc
+    };
   }
 
   // -------------------------------------------------------------------
@@ -129,42 +122,28 @@ export class DynoModel<Type> {
    */
   async putMany(
     docs: Type[]
-  ): Promise<TBatchResults> {
+  ) {
     const timer = this.metrics && Timer();
 
-    try {
-      const results = await BatchWrite<Type>({
-        client: this.client,
-        tableName: this.tableName,
-        writeRequests: docs.map(doc => ({
-          PutRequest: {
-            Item: toItem<Type>(doc, this.propStack)
-          }
-        }))
-      });
+    const results = await BatchWrite<Type>({
+      client: this.client,
+      tableName: this.tableName,
+      writeRequests: docs.map(doc => ({
+        PutRequest: {
+          Item: toItem<Type>(doc, this.propStack)
+        }
+      }))
+    });
 
-      this.logger({
-        message: 'putMany success',
-        duration: timer(),
-        wcu: results.batches.reduce(
-          (wcu, batch) => wcu + batch.wcu,
-          0
-        )
-      });
-
-      // TODO - Return processed results
-      // TODO - ids need to be correlated to input docs
-      // TODO - Return an array of status' in the order of the inputs
-      return results;
-    }
-    catch (error) {
-      this.logger({
-        message: 'putMany failure',
-        duration: timer(),
-        error
-      });
-      throw error;
-    }
+    // TODO - Return processed results
+    // TODO - ids need to be correlated to input docs
+    // TODO - Return an array of status' in the order of the inputs
+    return {
+      duration: timer(),
+      cost: results.batches.reduce((wcu, batch) => wcu + batch.wcu, 0),
+      results,
+      docs
+    };
   }
 
   // -------------------------------------------------------------------
@@ -173,59 +152,52 @@ export class DynoModel<Type> {
 
   async getOne(
     options: GetOptions<Type>
-  ): Promise<Type | undefined> {
+  ) {
     const strategy = toStrategy(options.where, this.tableIndex, this.tableName);
     const timer = Timer();
-    let item: Record<string, AttributeValue>;
-    let rcc: ConsumedCapacity;
 
-    try {
-      switch (strategy.type) {
-        case TQueryType.tableScan: {
-          const result = await this.client.send(
-            scanTable<Type>(options, strategy, this.metrics, this.propMap, 1)
-          )
-          rcc = result.ConsumedCapacity || {};
-          item = result.Items?.[0];
-          break;
-        }
-        case TQueryType.pkQuery:
-        case TQueryType.skQuery: {
-          const result = await this.client.send(
-            queryTable<Type>(options, strategy, this.metrics, this.propMap, 1)
-          );
-          rcc = result.ConsumedCapacity || {};
-          item = result.Items?.[0];
-          break;
-        }
-        case TQueryType.get: {
-          const result = await this.client.send(
-            getItem<Type>(options, strategy, this.metrics)
-          );
-          rcc = result.ConsumedCapacity || {};
-          item = result.Item;
-        }
+    switch (strategy.type) {
+
+      // Table Scan
+      case TQueryType.tableScan: {
+        const result = await this.client.send(
+          scanTable<Type>(options, strategy, this.metrics, this.propMap, 1)
+        )
+        return {
+          duration: timer(),
+          cost: result.ConsumedCapacity.CapacityUnits || 0,
+          strategy: TQueryType[strategy.type],
+          doc: this.unmarshall(result.Items?.[0])
+        };
+      }
+        
+      // Table Query
+      case TQueryType.pkQuery:
+      case TQueryType.skQuery: {
+        const result = await this.client.send(
+          queryTable<Type>(options, strategy, this.metrics, this.propMap, 1)
+        );
+        return {
+          duration: timer(),
+          cost: result.ConsumedCapacity.CapacityUnits || 0,
+          strategy: TQueryType[strategy.type],
+          doc: this.unmarshall(result.Items?.[0])
+        };
       }
 
-      this.logger({
-        message: 'getOne success',
-        duration: timer(),
-        rcu: rcc.CapacityUnits || 0,
-        strategy
-      });
+      // Get Item
+      case TQueryType.getItem: {
+        const result = await this.client.send(
+          getItem<Type>(options, strategy, this.metrics)
+        );
 
-      return item
-        ? toDoc<Type>(item, this.propStack, this.propCount)
-        : undefined;
-    }
-    catch (error) {
-      this.logger({
-        method: 'getOne failure',
-        duration: timer(),
-        strategy,
-        error
-      });
-      throw error;
+        return {
+          duration: timer(),
+          cost: result.ConsumedCapacity.CapacityUnits || 0,
+          strategy: TQueryType[strategy.type],
+          doc: this.unmarshall(result.Item)
+        };
+      }
     }
   }
 
@@ -235,58 +207,43 @@ export class DynoModel<Type> {
 
   async getMany(
     options: GetOptions<Type>
-  ): Promise<Type[]> {
+  ) {
     const strategy = toStrategy(
       options.where,
       this.tableIndex,
       this.tableName
     );
     const timer = Timer();
-    let items: Record<string, AttributeValue>[];
-    let cc: ConsumedCapacity;
-    let limit = 1000;
+    let limit = 1;
 
-    try {
-      switch (strategy.type) {
-        case TQueryType.tableScan: {
-          const query: QueryCommand = scanTable<Type>(options, strategy, this.metrics, this.propMap, limit);
-          const result = await this.client.send(query);
-          console.log('SCAN');
-          cc = result.ConsumedCapacity || {};
-          items = result.Items || [];
-          break;
-        }
-        case TQueryType.pkQuery:
-        case TQueryType.skQuery:
-        case TQueryType.get: {
-          const query = queryTable<Type>(options, strategy, this.metrics, this.propMap, limit);
-          const result = await this.client.send(query);
-          console.log('QUERY');
-          cc = result.ConsumedCapacity || {};
-          items = result.Items || [];
-          break;
-        }
+    switch (strategy.type) {
+
+      case TQueryType.tableScan: {
+        const query: QueryCommand = scanTable<Type>(options, strategy, this.metrics, this.propMap, limit);
+        const result = await this.client.send(query);
+
+        return {
+          duration: timer(),
+          cost: result.ConsumedCapacity.CapacityUnits || 0,
+          strategy: TQueryType[strategy.type],
+          docs: result.Items.map(item => this.unmarshall(item)),
+          next: this.unmarshall(result.LastEvaluatedKey)
+        };
       }
+      case TQueryType.pkQuery:
+      case TQueryType.skQuery:
+      case TQueryType.getItem: {
+        const query = queryTable<Type>(options, strategy, this.metrics, this.propMap, limit);
+        const result = await this.client.send(query);
 
-      this.logger({
-        message: 'getMany success',
-        duration: timer(),
-        rcu: cc.CapacityUnits || 0,
-        strategy
-      });
-
-      return items.map(item =>
-        toDoc<Type>(item, this.propStack, this.propCount)
-      );
-    }
-    catch (error) {
-      this.logger({
-        method: 'getOne failure',
-        duration: timer(),
-        strategy,
-        error
-      });
-      throw error;
+        return {
+          duration: timer(),
+          cost: result.ConsumedCapacity.CapacityUnits || 0,
+          strategy: TQueryType[strategy.type],
+          docs: result.Items.map(item => this.unmarshall(item)),
+          next: this.unmarshall(result.LastEvaluatedKey)
+        };
+      }
     }
   }
 
