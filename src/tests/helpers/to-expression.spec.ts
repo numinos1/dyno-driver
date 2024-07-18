@@ -17,7 +17,7 @@ describe('toExpression()', () => {
     const names = {}, values = {};
     const expr = toExpression<EntityMock>({}, propsMock, names, values);
 
-    expect(expr).toEqual('');
+    expect(expr).toEqual(undefined);
     expect(names).toEqual({});
     expect(values).toEqual({});
   });

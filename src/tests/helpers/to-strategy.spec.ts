@@ -547,7 +547,7 @@ describe('toStrategy()', () => {
         ],
         'testTable'
       )).toEqual({
-        type: TQueryType.get,
+        type: TQueryType.getItem,
         keys: [
           propsMock.get('repoId'),
           propsMock.get('id')
@@ -584,7 +584,7 @@ describe('toStrategy()', () => {
         ],
         'testTable'
       )).toEqual({
-        type: TQueryType.get,
+        type: TQueryType.getItem,
         keys: [
           propsMock.get('repoId'),
           propsMock.get('id')
@@ -636,7 +636,7 @@ describe('toStrategy()', () => {
         ],
         'testTable'
       )).toEqual({
-        type: TQueryType.get,
+        type: TQueryType.getItem,
         keys: [
           propsMock.get('repoId'),
           propsMock.get('id')
@@ -684,7 +684,7 @@ describe('toStrategy()', () => {
         ],
         'testTable'
       )).toEqual({
-        type: TQueryType.get,
+        type: TQueryType.getItem,
         keys: [
           propsMock.get('repoId'),
           propsMock.get('id')
@@ -732,7 +732,7 @@ describe('toStrategy()', () => {
         ],
         'testTable'
       )).toEqual({
-        type: TQueryType.get,
+        type: TQueryType.getItem,
         keys: [
           propsMock.get('version'),
           propsMock.get('id')
@@ -781,7 +781,7 @@ describe('toStrategy()', () => {
         ],
         'testTable'
       )).toEqual({
-        type: TQueryType.get,
+        type: TQueryType.getItem,
         keys: [
           propsMock.get('repoId'),
           propsMock.get('createdOn')
