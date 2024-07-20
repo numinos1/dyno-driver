@@ -2,6 +2,7 @@ import { TExpression, TProp, TPropMap } from "@/types";
 import { PutItemCommand } from "@aws-sdk/client-dynamodb";
 import { toItem } from "../marshall/to-item";
 import { toExpression } from "../to-expression";
+import { propObject } from "@/utils";
 
 /**
  * Put Item
@@ -23,10 +24,8 @@ export function putItem<Type>(
     ReturnConsumedCapacity: metrics ? 'TOTAL' : 'NONE',
     ReturnItemCollectionMetrics: metrics ? 'SIZE' : 'NONE',
     ReturnValuesOnConditionCheckFailure: 'NONE',
-    ConditionExpression: where
-      ? toExpression(where, propMap, names, values)
-      : undefined,
-    ExpressionAttributeNames: where ? names : undefined,
-    ExpressionAttributeValues: where ? values : undefined
+    ConditionExpression: toExpression(where, propMap, names, values),
+    ExpressionAttributeNames: propObject(names),
+    ExpressionAttributeValues: propObject(values),
   });
 }

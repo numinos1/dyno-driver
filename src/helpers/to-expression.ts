@@ -1,6 +1,7 @@
 import { AttributeValue } from "@aws-sdk/client-dynamodb";
 import { TPropTokens, PropTypes, TExpression } from '@/types';
 import { TProp, TPropMap } from '@/types';
+import { toQueryAttr } from "./marshall/to-query-attr";
 
 /**
  * Evaluate Expression
@@ -14,6 +15,9 @@ export function toExpression<Type>(
   names: Record<string, string>,
   values: Record<string, AttributeValue>
 ): string | undefined {
+  if (!expr) {
+    return undefined;
+  }
   let valueCount: number = Object.keys(values).length;
 
   const $operators = {
@@ -90,14 +94,7 @@ export function toExpression<Type>(
     }
     const valueKey = `:v${++valueCount}`;
 
-    if (prop.type === 'S') {
-      val = noPrefix
-        ? `${val}`
-        : `${prop.prefix}${val}`;
-    }
-    values[valueKey] = {
-      [prop.type]: val
-    } as AttributeValue; // TODO - hack
+    values[valueKey] = toQueryAttr(val, noPrefix ? '' : prop.prefix);
 
     return valueKey;
   }
@@ -209,7 +206,8 @@ export function toExpression<Type>(
     return evalExpr(val, {
       ...prop,
       alias: `size(${prop.alias})`,
-      type: TPropTokens.number
+      type: TPropTokens.number,
+      prefix: ''
     });
   }
 }

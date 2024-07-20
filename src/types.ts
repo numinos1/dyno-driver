@@ -109,7 +109,7 @@ export const PropTypes = Object
 // --------------------------------------------------
 
 export type TExpression<T> = {
-  [P in keyof T]?: T[P] | TComparison<T[P]> | TConjunction<T> | TSize<T[P]>;
+  [P in keyof T]?: T[P] | TComparison<T[P]> | TConjunction<T> | TSize;
 } & TConjunction<T>;
 
 export type TConjunction<T> = {
@@ -132,8 +132,17 @@ export type TComparison<P> = {
   $contains?: string;
 }
 
-export type TSize<P> = {
-  $size?: TComparison<P>;
+export type TSizeComparison = {
+  $eq?: number | string;
+  $lt?: number | string;
+  $le?: number | string;
+  $gt?: number | string;
+  $ge?: number | string;
+  $between?: [number | string, number | string];
+}
+
+export type TSize = {
+  $size?: TSizeComparison;
 };
 
 // --------------------------------------------------

@@ -3,6 +3,7 @@ import { GetOptions } from "@/classes/dyno-model";
 import { TStrategy } from "../to-strategy";
 import { toExpression } from "../to-expression";
 import { TPropMap } from "@/types";
+import { propObject } from '../../utils';
 
 /**
  * Query Table
@@ -28,7 +29,7 @@ export function queryTable<Type>(
     ReturnConsumedCapacity: metrics ? 'TOTAL' : 'NONE',
     FilterExpression: toExpression(filter, propMap, names, values),
     KeyConditionExpression: toExpression(query, propMap, names, values),
-    ExpressionAttributeNames: names,
-    ExpressionAttributeValues: values
+    ExpressionAttributeNames: propObject(names),
+    ExpressionAttributeValues: propObject(values)
   });
 }

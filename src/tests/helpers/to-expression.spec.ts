@@ -152,7 +152,7 @@ describe('toExpression()', () => {
         { repoId: { $type: 'string' } },
         { repoId: { $begins: '123' } },
         { repoId: { $contains: '456' } },
-        { repoId: { $size: { $gt: '123' } } }
+        { repoId: { $size: { $gt: 123 } } }
       ]
     }, propsMock, names, values);
     
@@ -201,8 +201,8 @@ describe('toExpression()', () => {
       "#uon": "uon"
     });
     expect(values).toEqual({
-      ":v1": { "N": 10 },
-      ":v2": { "N": 20 },
+      ":v1": { "N": "10" },
+      ":v2": { "N": "20" },
     });
   });
 

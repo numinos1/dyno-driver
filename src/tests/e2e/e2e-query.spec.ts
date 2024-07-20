@@ -7,6 +7,7 @@ import { Entity2Mock } from '@/tests/mocks/entity-2.mock';
 import { Entity3Mock } from '@/tests/mocks/entity-3.mock';
 import { Entity4Mock } from '@/tests/mocks/entity-4.mock';
 import { Item4Mock, item4Mock } from '@/tests/mocks/item-4.mock';
+import { makeId } from "../test-utils";
 
 const DocKeyRegex = /^repo#\w+\|doc#\w+$/;
 
@@ -79,11 +80,9 @@ describe('Query E2E', () => {
 
     const putResult = await model.putOne(putDoc);
 
-    expect(putResult).toEqual({
-      duration: expect.any(Number),
-      cost: expect.any(Number),
-      doc: putDoc
-    });
+    expect(putResult.duration).toEqual(expect.any(Number));
+    expect(putResult.cost).toEqual(expect.any(Number));
+    expect(putResult.doc).toEqual(putDoc);
 
     const getResult = await model.getOne({
       where: {
@@ -93,12 +92,10 @@ describe('Query E2E', () => {
       consistent: true
     });
 
-    expect(getResult).toEqual({
-      duration: expect.any(Number),
-      cost: expect.any(Number),
-      strategy: 'getItem',
-      doc: putDoc
-    });
+    expect(getResult.duration).toEqual(expect.any(Number));
+    expect(getResult.cost).toEqual(expect.any(Number));
+    expect(getResult.doc).toEqual(putDoc);
+    expect(getResult.strategy).toEqual('getItem');
   });
 
   // ----------------------------------------------------------------
@@ -109,11 +106,9 @@ describe('Query E2E', () => {
 
     const putResult = await model.putOne(putDoc);
 
-    expect(putResult).toEqual({
-      duration: expect.any(Number),
-      cost: expect.any(Number),
-      doc: putDoc
-    });
+    expect(putResult.duration).toEqual(expect.any(Number));
+    expect(putResult.cost).toEqual(expect.any(Number));
+    expect(putResult.doc).toEqual(putDoc);
 
     const getResult = await model.getOne({
       where: {
@@ -123,12 +118,10 @@ describe('Query E2E', () => {
       consistent: true
     });
 
-    expect(getResult).toEqual({
-      duration: expect.any(Number),
-      cost: expect.any(Number),
-      strategy: 'getItem',
-      doc: putDoc
-    });
+    expect(getResult.duration).toEqual(expect.any(Number));
+    expect(getResult.cost).toEqual(expect.any(Number));
+    expect(getResult.doc).toEqual(putDoc);
+    expect(getResult.strategy).toEqual('getItem');
   });
 
   // ----------------------------------------------------------------
@@ -138,20 +131,16 @@ describe('Query E2E', () => {
     const putDoc1: Entity4Mock = Item4Mock();
     const putResult1 = await model.putOne(putDoc1);
 
-    expect(putResult1).toEqual({
-      duration: expect.any(Number),
-      cost: expect.any(Number),
-      doc: putDoc1
-    });
+    expect(putResult1.duration).toEqual(expect.any(Number));
+    expect(putResult1.cost).toEqual(expect.any(Number));
+    expect(putResult1.doc).toEqual(putDoc1);
 
     const putDoc2: Entity4Mock = Item4Mock(putDoc1);
     const putResult2 = await model.putOne(putDoc2);
 
-    expect(putResult2).toEqual({
-      duration: expect.any(Number),
-      cost: expect.any(Number),
-      doc: putDoc2
-    });
+    expect(putResult2.duration).toEqual(expect.any(Number));
+    expect(putResult2.cost).toEqual(expect.any(Number));
+    expect(putResult2.doc).toEqual(putDoc2);
 
     const getResult1 = await model.getOne({
       where: {
@@ -161,17 +150,15 @@ describe('Query E2E', () => {
       consistent: true
     });
 
-    expect(getResult1).toEqual({
-      duration: expect.any(Number),
-      cost: expect.any(Number),
-      strategy: 'getItem',
-      doc: putDoc2
-    });
+    expect(getResult1.duration).toEqual(expect.any(Number));
+    expect(getResult1.cost).toEqual(expect.any(Number));
+    expect(getResult1.doc).toEqual(putDoc2);
+    expect(getResult1.strategy).toEqual('getItem');
   });
 
   // ----------------------------------------------------------------
 
-  it('Conditional update a document', async () => {
+  it('Conditionally update a document', async () => {
     const model = dyno.model(Entity4Mock);
     const putDoc1: Entity4Mock = Item4Mock();
     await model.putOne(putDoc1);
@@ -192,11 +179,9 @@ describe('Query E2E', () => {
       alias: putDoc1.alias
     });
 
-    expect(result1).toEqual({
-      duration: expect.any(Number),
-      cost: expect.any(Number),
-      doc: putDoc2
-    });
+    expect(result1.duration).toEqual(expect.any(Number));
+    expect(result1.cost).toEqual(expect.any(Number));
+    expect(result1.doc).toEqual(putDoc2);
 
     const getResult1 = await model.getOne({
       where: {
@@ -206,12 +191,33 @@ describe('Query E2E', () => {
       consistent: true
     });
 
-    expect(getResult1).toEqual({
-      duration: expect.any(Number),
-      cost: expect.any(Number),
-      strategy: 'getItem',
-      doc: putDoc2
+    expect(getResult1.duration).toEqual(expect.any(Number));
+    expect(getResult1.cost).toEqual(expect.any(Number));
+    expect(getResult1.doc).toEqual(putDoc2);
+    expect(getResult1.strategy).toEqual('getItem');
+  });
+
+  // ----------------------------------------------------------------
+
+  it('Conditionally create a document', async () => {
+    const model = dyno.model(Entity4Mock);
+    const putDoc1: Entity4Mock = Item4Mock();
+
+    const result1 = await model.putOne(putDoc1, {
+      repoId: { $exists: false },
+      docId: { $exists: false }
     });
+
+    expect(result1.doc).toEqual(putDoc1);
+
+    await expect(() =>
+      model.putOne(putDoc1, {
+        repoId: { $exists: false },
+        docId: { $exists: false }
+      })
+    ).rejects.toThrow(
+      'The conditional request failed'
+    );
   });
 
   // ----------------------------------------------------------------
@@ -228,91 +234,108 @@ describe('Query E2E', () => {
     }
     const results = await model.putMany(docs);
 
-    expect(results).toEqual({
-      duration: expect.any(Number),
-      cost: expect.any(Number),
-      results: {
-        batches: [{
-          id: 1,
-          requests: 25,
-          retryable: 0,
-          wcu: 25,
-          status: 'success',
-          duration: expect.any(Number),
-        }, {
-          id: 2,
-          requests: 25,
-          retryable: 0,
-          wcu: 25,
-          status: 'success',
-          duration: expect.any(Number),
-        }],
-        errors: [],
-        failed: [],
-        retries: 0,
-        saved: expect.any(Array)
-      },
-      docs: docs
+    expect(results.duration).toEqual(expect.any(Number));
+    expect(results.cost).toEqual(expect.any(Number));
+    expect(results.docs).toEqual(docs);
+    expect(results.results).toEqual({
+      batches: [{
+        id: 1,
+        requests: 25,
+        retryable: 0,
+        wcu: 25,
+        status: 'success',
+        duration: expect.any(Number),
+      }, {
+        id: 2,
+        requests: 25,
+        retryable: 0,
+        wcu: 25,
+        status: 'success',
+        duration: expect.any(Number),
+      }],
+      errors: [],
+      failed: [],
+      retries: 0,
+      saved: expect.any(Array)
     });
-
-    // results.saved.forEach(result => {
-    //   expect(result).toMatch(DocKeyRegex)
-    // });
   });
 
   // ----------------------------------------------------------------
 
-  // it(`Query multiple documents in a range`, async () => {
-  //   const model = dyno.model(Entity4Mock);
-  //   const spyLog = jest.spyOn(logger, 'log');
-  //   const docs = await model.getMany({
-  //     where: {
-  //       repoId: '1234abcdefg',
-  //       docId: {
-  //         $between: ['AAAA0', 'AAAA15']
-  //       }
-  //     }
-  //   });
+  it(`Get documents in a key range`, async () => {
+    const model = dyno.model(Entity4Mock);
+    const docs: Entity4Mock[] = [];
 
-  //   expect(docs.length).toEqual(8);
-  //   expect(spyLog).toHaveBeenCalledWith(
-  //     expect.objectContaining({
-  //       strategy:
-  //         expect.objectContaining({
-  //           type: 2
-  //         })
-  //      })
-  //   );
-  //   spyLog.mockRestore();
-  // });
+    for (let i = 0; i < 50; i++) {
+      docs.push(Item4Mock({
+        repoId: '123Query',
+        docId: `BBB${i}`
+      }));
+    }
+    await model.putMany(docs);
 
-   // ----------------------------------------------------------------
+    const result2 = await model.getMany({
+      where: {
+        repoId: '123Query',
+        docId: { $between: ['BBB0', 'BBB2']}
+      }
+    });
 
-  // it(`Scan multiple documents in a range`, async () => {
-  //   const model = dyno.model(Entity4Mock);
-  //   const spyLog = jest.spyOn(logger, 'log');
-  //   const docs = await model.getMany({
-  //     where: {
-  //       docId: {
-  //         $and: [
-  //           { docId: { $ge: 'AAAA0' } },
-  //           { docId: { $le: 'AAAA15' } }
-  //         ]
-  //       }
-  //     }
-  //   });
+    expect(result2.docs.length).toEqual(13);
+    expect(result2.strategy).toEqual('skQuery')
+  });
 
-  //   expect(docs.length).toEqual(8);
-  //   expect(spyLog).toHaveBeenCalledWith(
-  //     expect.objectContaining({
-  //       strategy:
-  //         expect.objectContaining({
-  //           type: 0
-  //         })
-  //      })
-  //   );
-  //   spyLog.mockRestore();
-  // });
+  // ----------------------------------------------------------------
+
+  it(`get documents that contain substring`, async () => {
+    const model = dyno.model(Entity4Mock);
+    const docs: Entity4Mock[] = [];
+
+    for (let i = 0; i < 30; i++) {
+      docs.push(Item4Mock({
+        repoId: 'xxxQuery',
+        docId: `XXXXX${i}`,
+        //alias: makeId(i + 3)
+      }));
+    }
+    await model.putMany(docs);
+
+    const result1 = await model.getMany({
+      where: {
+        repoId: 'xxxQuery',
+        names: { $contains: 'drew' }
+      }
+    });
+
+    expect(result1.docs.length).toEqual(30);
+    expect(result1.strategy).toEqual('pkQuery');
+  });
+
+  // ----------------------------------------------------------------
+
+  it(`get documents where string greater than size`, async () => {
+    const model = dyno.model(Entity4Mock);
+    const docs: Entity4Mock[] = [];
+
+    for (let i = 0; i < 30; i++) {
+      docs.push(Item4Mock({
+        repoId: 'sizeQuery',
+        docId: `size${i}`,
+        alias: makeId(i + 1)
+      }));
+    }
+    await model.putMany(docs);
+
+    const result1 = await model.getMany({
+      where: {
+        repoId: 'sizeQuery',
+        alias: { $size: { $gt: 15 }}
+      }
+    });
+
+    expect(result1.docs.length).toEqual(15);
+    expect(result1.strategy).toEqual('pkQuery');
+  });
 
 });
 

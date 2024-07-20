@@ -93,22 +93,21 @@ export class DynoModel<Type> {
     where?: TExpression<Type>
   ) { 
     const timer = this.metrics && Timer();
-
-    const result = await this.client.send(
-      putItem<Type>(
-        doc,
-        where,
-        this.metrics,
-        this.tableName,
-        this.propMap,
-        this.propStack
-      )
+    const command = putItem<Type>(
+      doc,
+      where,
+      this.metrics,
+      this.tableName,
+      this.propMap,
+      this.propStack
     );
+    const result = await this.client.send(command);
 
     return {
       duration: timer(),
       cost: result.ConsumedCapacity?.CapacityUnits || 0,
-      doc: doc
+      doc: doc,
+      command: command.input
     };
   }
 
@@ -160,42 +159,44 @@ export class DynoModel<Type> {
 
       // Table Scan
       case TQueryType.tableScan: {
-        const result = await this.client.send(
-          scanTable<Type>(options, strategy, this.metrics, this.propMap, 1)
-        )
+        const command = scanTable<Type>(options, strategy, this.metrics, this.propMap, 1);
+        const result = await this.client.send(command);
+
         return {
           duration: timer(),
           cost: result.ConsumedCapacity.CapacityUnits || 0,
+          doc: this.unmarshall(result.Items?.[0]),
           strategy: TQueryType[strategy.type],
-          doc: this.unmarshall(result.Items?.[0])
+          command: command.input
         };
       }
         
       // Table Query
       case TQueryType.pkQuery:
       case TQueryType.skQuery: {
-        const result = await this.client.send(
-          queryTable<Type>(options, strategy, this.metrics, this.propMap, 1)
-        );
+        const command = queryTable<Type>(options, strategy, this.metrics, this.propMap, 1);
+        const result = await this.client.send(command);
+
         return {
           duration: timer(),
           cost: result.ConsumedCapacity.CapacityUnits || 0,
+          doc: this.unmarshall(result.Items?.[0]),
           strategy: TQueryType[strategy.type],
-          doc: this.unmarshall(result.Items?.[0])
+          command: command.input
         };
       }
 
       // Get Item
       case TQueryType.getItem: {
-        const result = await this.client.send(
-          getItem<Type>(options, strategy, this.metrics)
-        );
+        const command = getItem<Type>(options, strategy, this.metrics);
+        const result = await this.client.send(command);
 
         return {
           duration: timer(),
           cost: result.ConsumedCapacity.CapacityUnits || 0,
+          doc: this.unmarshall(result.Item),
           strategy: TQueryType[strategy.type],
-          doc: this.unmarshall(result.Item)
+          command: command.input
         };
       }
     }
@@ -214,34 +215,36 @@ export class DynoModel<Type> {
       this.tableName
     );
     const timer = Timer();
-    let limit = 1;
+    let limit = 1000;
 
     switch (strategy.type) {
 
       case TQueryType.tableScan: {
-        const query: QueryCommand = scanTable<Type>(options, strategy, this.metrics, this.propMap, limit);
-        const result = await this.client.send(query);
+        const command: QueryCommand = scanTable<Type>(options, strategy, this.metrics, this.propMap, limit);
+        const result = await this.client.send(command);
 
         return {
           duration: timer(),
           cost: result.ConsumedCapacity.CapacityUnits || 0,
-          strategy: TQueryType[strategy.type],
           docs: result.Items.map(item => this.unmarshall(item)),
-          next: this.unmarshall(result.LastEvaluatedKey)
+          next: this.unmarshall(result.LastEvaluatedKey),
+          strategy: TQueryType[strategy.type],
+          command: command.input
         };
       }
       case TQueryType.pkQuery:
       case TQueryType.skQuery:
       case TQueryType.getItem: {
-        const query = queryTable<Type>(options, strategy, this.metrics, this.propMap, limit);
-        const result = await this.client.send(query);
+        const command = queryTable<Type>(options, strategy, this.metrics, this.propMap, limit);
+        const result = await this.client.send(command);
 
         return {
           duration: timer(),
           cost: result.ConsumedCapacity.CapacityUnits || 0,
-          strategy: TQueryType[strategy.type],
           docs: result.Items.map(item => this.unmarshall(item)),
-          next: this.unmarshall(result.LastEvaluatedKey)
+          next: this.unmarshall(result.LastEvaluatedKey),
+          strategy: TQueryType[strategy.type],
+          command: command.input
         };
       }
     }

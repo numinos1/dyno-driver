@@ -10,7 +10,7 @@ export function toItemAttr(
   type: TPropTokens,
   prefix?: string
 ): AttributeValue {
-  if (typeof value === null) {
+  if (value === null) {
     return { NULL: true };
   }
   switch (type) {
@@ -46,12 +46,10 @@ export function toItemAttr(
       if (typeof first === 'number') {
         return { 'NS': val.map(v => `${v}`) };
       }
-      else if (val[0] instanceof Buffer) {
+      if (val[0] instanceof Buffer) {
         return { 'BS': val };
       }
-      else {
-        throw new Error(`Invalid Set value type "${typeof first}"`);
-      }
+      throw new Error(`Invalid Set value type "${typeof first}"`);
     }
     case 'NS': {
       return {

@@ -77,3 +77,14 @@ export function diffObjects(canonical: any, copy: any) {
   }
   return (canonical === copy);
 }
+
+/**
+ * Only allow objects with defined props through
+ */
+export function propObject<Type>(value: Type): Type | undefined {
+  if (!value) return undefined;
+  if (typeof value !== 'object') return undefined;
+  if (!Object.keys(value).length) return undefined;
+
+  return value;
+}

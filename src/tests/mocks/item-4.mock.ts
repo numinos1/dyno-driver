@@ -33,10 +33,10 @@ export const item4Mock: Entity4Mock = {
 /**
  * Generate Entity4 Item for Tests
  */
-export function Item4Mock(from?: Partial<Entity4Mock>): Entity4Mock {
+export function Item4Mock(doc?: Partial<Entity4Mock>): Entity4Mock {
   return {
-    repoId: from?.repoId || makeId(11),
-    docId: from?.docId || makeId(11),
+    repoId: makeId(11),
+    docId: makeId(11),
     alias: makeId(20),
     total: 1234678,
     isBig: false,
@@ -58,6 +58,7 @@ export function Item4Mock(from?: Partial<Entity4Mock>): Entity4Mock {
         phone: '801-575-5555'
       }),
       'utf8'
-    )
+    ),
+    ...doc
   };
 }
