@@ -23,6 +23,7 @@ export interface GetManyOptions<T> {
   consistent?: boolean;
   order?: TOrder;
   limit?: number;
+  start?: Partial<T>;
 }
 
 /**
@@ -168,10 +169,13 @@ export class DynoModel<Type> {
     const timer = Timer();
 
     switch (strategy.type) {
-
-      // Table Scan
       case TQueryType.tableScan: {
-        const command = scanTable<Type>(getOptions, strategy, this.metrics, this.propMap);
+        const command = scanTable<Type>(
+          getOptions,
+          strategy,
+          this.metrics,
+          this.propMap
+        );
         const result = await this.client.send(command);
 
         return {
@@ -182,11 +186,14 @@ export class DynoModel<Type> {
           command: command.input
         };
       }
-        
-      // Table Query
       case TQueryType.pkQuery:
       case TQueryType.skQuery: {
-        const command = queryTable<Type>(getOptions, strategy, this.metrics, this.propMap);
+        const command = queryTable<Type>(
+          getOptions,
+          strategy,
+          this.metrics,
+          this.propMap
+        );
         const result = await this.client.send(command);
 
         return {
@@ -197,10 +204,12 @@ export class DynoModel<Type> {
           command: command.input
         };
       }
-
-      // Get Item
       case TQueryType.getItem: {
-        const command = getItem<Type>(options, strategy, this.metrics);
+        const command = getItem<Type>(
+          options,
+          strategy,
+          this.metrics
+        );
         const result = await this.client.send(command);
 
         return {
@@ -234,9 +243,13 @@ export class DynoModel<Type> {
     const getOptions: GetManyOptions<Type> = { limit: 250, ...options };
 
     switch (strategy.type) {
-
       case TQueryType.tableScan: {
-        const command: QueryCommand = scanTable<Type>(options, strategy, this.metrics, this.propMap);
+        const command: QueryCommand = scanTable<Type>(
+          options,
+          strategy,
+          this.metrics,
+          this.propMap
+        );
         const result = await this.client.send(command);
 
         return {
@@ -251,7 +264,12 @@ export class DynoModel<Type> {
       case TQueryType.pkQuery:
       case TQueryType.skQuery:
       case TQueryType.getItem: {
-        const command = queryTable<Type>(options, strategy, this.metrics, this.propMap);
+        const command = queryTable<Type>(
+          options,
+          strategy,
+          this.metrics,
+          this.propMap
+        );
         const result = await this.client.send(command);
 
         return {

@@ -381,5 +381,88 @@ describe('Query E2E', () => {
     expect(result2.strategy).toEqual('pkQuery');
   });
 
+  // ----------------------------------------------------------------
+
+  it(`get documents in reverse order`, async () => {
+    const model = dyno.model(Entity4Mock);
+    const docs: Entity4Mock[] = [];
+
+    for (let i = 0; i < 10; i++) {
+      docs.push(Item4Mock({
+        repoId: 'reverseQuery',
+        docId: `reverse${i}`
+      }));
+    }
+    await model.putMany(docs);
+
+    const result1 = await model.getMany({
+      where: {
+        repoId: 'reverseQuery',
+        docId: { $between: ['reverse3', 'reverse7']}
+      },
+      order: 'desc'
+    });
+
+    expect(result1.docs.length).toEqual(5);
+    expect(result1.docs.map(doc => doc.docId)).toEqual([
+      'reverse7', 'reverse6', 'reverse5', 'reverse4', 'reverse3'
+    ]);
+    expect(result1.strategy).toEqual('skQuery');
+    expect(result1.next).toEqual(undefined);
+  });
+
+  // ----------------------------------------------------------------
+
+  it(`limit and paginate documents`, async () => {
+    const model = dyno.model(Entity4Mock);
+    const docs: Entity4Mock[] = [];
+
+    for (let i = 0; i < 9; i++) {
+      docs.push(Item4Mock({
+        repoId: 'limitQuery',
+        docId: `limit${i}`
+      }));
+    }
+    await model.putMany(docs);
+
+    const result1 = await model.getMany({
+      where: {
+        repoId: 'limitQuery'
+      },
+      limit: 4
+    });
+
+    expect(result1.docs.length).toEqual(4);
+    expect(result1.next).toEqual({
+      docId: "limit3",
+      repoId: "limitQuery"
+    });
+
+    const result2 = await model.getMany({
+      where: {
+        repoId: 'limitQuery'
+      },
+      limit: 4,
+      start: result1.next
+    });
+
+    expect(result2.docs.length).toEqual(4);
+    expect(result2.next).toEqual({
+      docId: "limit7",
+      repoId: "limitQuery"
+    });
+
+    const result3 = await model.getMany({
+      where: {
+        repoId: 'limitQuery'
+      },
+      limit: 4,
+      start: result2.next
+    });
+
+    expect(result3.docs.length).toEqual(1);
+    expect(result3.next).toEqual(undefined);
+  });
+
 });
 

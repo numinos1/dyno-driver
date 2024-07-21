@@ -4,6 +4,7 @@ import { TStrategy } from "../to-strategy";
 import { toExpression } from "../to-expression";
 import { TPropMap } from "@/types";
 import { propObject } from "@/utils";
+import { toStartKey } from "../marshall/to-start-key";
 
 /**
  * Scan Table 
@@ -14,7 +15,7 @@ export function scanTable<Type>(
   metrics: boolean,
   propMap: TPropMap
 ): ScanCommand {
-  const { consistent, order, limit } = options;
+  const { consistent, start, limit } = options;
   const { table, index, filter } = strategy;
   const names = {}, values = {};
   
@@ -23,7 +24,7 @@ export function scanTable<Type>(
     IndexName: index,
     Select: "ALL_ATTRIBUTES",
     Limit: limit,
-    //ExclusiveStartKey: {},
+    ExclusiveStartKey: start && toStartKey(start, propMap),
     ReturnConsumedCapacity: metrics ? 'TOTAL' : 'NONE',
     FilterExpression: toExpression(filter, propMap, names, values),
     ExpressionAttributeNames: propObject(names),

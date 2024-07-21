@@ -1,7 +1,7 @@
 import { GetManyOptions } from "@/classes/dyno-model";
 import { TStrategy } from "../to-strategy";
 import { GetItemCommand } from "@aws-sdk/client-dynamodb";
-import { toKeys } from "../to-keys";
+import { toKeys } from "@/helpers/to-keys";
 
 /**
  * Get Item
