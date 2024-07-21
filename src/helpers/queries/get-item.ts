@@ -1,4 +1,4 @@
-import { GetOptions } from "@/classes/dyno-model";
+import { GetManyOptions } from "@/classes/dyno-model";
 import { TStrategy } from "../to-strategy";
 import { GetItemCommand } from "@aws-sdk/client-dynamodb";
 import { toKeys } from "../to-keys";
@@ -7,11 +7,11 @@ import { toKeys } from "../to-keys";
  * Get Item
  */
 export function getItem<Type>(
-  options: GetOptions<Type>,
+  options: GetManyOptions<Type>,
   strategy: TStrategy<Type>,
   metrics: boolean
 ): GetItemCommand {
-  const { where, consistent } = options;
+  const { consistent } = options;
   const { table, index, keys, query } = strategy;
 
   return new GetItemCommand({

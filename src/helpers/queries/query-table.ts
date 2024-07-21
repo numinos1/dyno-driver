@@ -1,5 +1,5 @@
 import { QueryCommand } from "@aws-sdk/client-dynamodb";
-import { GetOptions } from "@/classes/dyno-model";
+import { GetManyOptions } from "@/classes/dyno-model";
 import { TStrategy } from "../to-strategy";
 import { toExpression } from "../to-expression";
 import { TPropMap } from "@/types";
@@ -9,11 +9,10 @@ import { propObject } from '../../utils';
  * Query Table
  */
 export function queryTable<Type>(
-  { consistent, order }: GetOptions<Type>,
+  { consistent, order, limit }: GetManyOptions<Type>,
   strategy: TStrategy<Type>,
   metrics: boolean,
   propMap: TPropMap,
-  limit: number,
 ): QueryCommand {
   const names = {}, values = {};
   const { table, index, filter, query } = strategy;

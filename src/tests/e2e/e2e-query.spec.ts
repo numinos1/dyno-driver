@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { describe, expect, it, jest } from '@jest/globals';
-import { DynoModel, GetOptions } from '@/classes/dyno-model';
+import { DynoModel } from '@/classes/dyno-model';
 import { DynoDriver } from '@/classes/dyno-driver';
 import { EntityMock } from '@/tests/mocks/entity.mock';
 import { Entity2Mock } from '@/tests/mocks/entity-2.mock';
@@ -335,6 +335,50 @@ describe('Query E2E', () => {
 
     expect(result1.docs.length).toEqual(15);
     expect(result1.strategy).toEqual('pkQuery');
+  });
+
+  // ----------------------------------------------------------------
+
+  it(`get documents with nested or conditions`, async () => {
+    const model = dyno.model(Entity4Mock);
+    const docs: Entity4Mock[] = [];
+
+    for (let i = 0; i < 30; i++) {
+      docs.push(Item4Mock({
+        repoId: 'orQuery',
+        docId: `or${i}`,
+        total: i + 100
+      }));
+    }
+    await model.putMany(docs);
+
+    const result1 = await model.getMany({
+      where: {
+        repoId: 'orQuery',
+        $or: [
+          { total: { $gt: 120 } },
+          { total: { $le: 105 } }
+        ]
+      }
+    });
+
+    expect(result1.docs.length).toEqual(15);
+    expect(result1.strategy).toEqual('pkQuery');
+
+    const result2 = await model.getMany({
+      where: {
+        repoId: 'orQuery',
+        total: {
+          $or: [
+            { total: { $gt: 120 } },
+            { total: { $le: 105 } }
+          ]
+        }
+      }
+    });
+
+    expect(result2.docs.length).toEqual(15);
+    expect(result2.strategy).toEqual('pkQuery');
   });
 
 });

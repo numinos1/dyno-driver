@@ -1,5 +1,5 @@
 import { ScanCommand } from "@aws-sdk/client-dynamodb";
-import { GetOptions } from "@/classes/dyno-model";
+import { GetManyOptions } from "@/classes/dyno-model";
 import { TStrategy } from "../to-strategy";
 import { toExpression } from "../to-expression";
 import { TPropMap } from "@/types";
@@ -9,13 +9,12 @@ import { propObject } from "@/utils";
  * Scan Table 
  */
 export function scanTable<Type>( 
-  options: GetOptions<Type>,
+  options: GetManyOptions<Type>,
   strategy: TStrategy<Type>,
   metrics: boolean,
-  propMap: TPropMap,
-  limit: number,
+  propMap: TPropMap
 ): ScanCommand {
-  const { consistent, order } = options;
+  const { consistent, order, limit } = options;
   const { table, index, filter } = strategy;
   const names = {}, values = {};
   
