@@ -129,7 +129,7 @@ export type TComparison<P> = {
   $exists?: boolean;
   $type?: TPropTypes;
   $begins?: string;
-  $contains?: string;
+  $contains?: string | number;
 }
 
 export type TSizeComparison = {

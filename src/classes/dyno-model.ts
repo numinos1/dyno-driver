@@ -19,7 +19,7 @@ export interface GetOneOptions<T> {
 }
 
 export interface GetManyOptions<T> {
-  where: TExpression<T>,
+  where?: TExpression<T>,
   consistent?: boolean;
   order?: TOrder;
   limit?: number;

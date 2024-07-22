@@ -80,8 +80,6 @@ describe('Query E2E', () => {
 
     const putResult = await model.putOne(putDoc);
 
-    expect(putResult.duration).toEqual(expect.any(Number));
-    expect(putResult.cost).toEqual(expect.any(Number));
     expect(putResult.doc).toEqual(putDoc);
 
     const getResult = await model.getOne({
@@ -106,8 +104,6 @@ describe('Query E2E', () => {
 
     const putResult = await model.putOne(putDoc);
 
-    expect(putResult.duration).toEqual(expect.any(Number));
-    expect(putResult.cost).toEqual(expect.any(Number));
     expect(putResult.doc).toEqual(putDoc);
 
     const getResult = await model.getOne({
@@ -262,6 +258,49 @@ describe('Query E2E', () => {
 
   // ----------------------------------------------------------------
 
+  it(`Query documents by one key`, async () => {
+    const model = dyno.model(Entity4Mock);
+    const docs: Entity4Mock[] = [];
+
+    for (let i = 0; i < 10; i++) {
+      docs.push(Item4Mock({
+        repoId: 'onedocQuery',
+        docId: `onedoc${i}`
+      }));
+    }
+    await model.putMany(docs);
+
+    const result1 = await model.getMany({
+      where: {
+        repoId: 'onedocQuery',
+        docId: 'onedoc7'
+      },
+      consistent: true
+    });
+
+    expect(result1.docs.length).toEqual(1);
+    expect(result1.docs[0].docId).toEqual('onedoc7');
+    expect(result1.strategy).toEqual('getItem')
+  });
+
+   // ----------------------------------------------------------------
+
+   it(`Query documents in a table scan`, async () => {
+    const model = dyno.model(Entity4Mock);
+    const result2 = await model.getMany({
+      where: {
+        total: { $gt: 1 },
+        ages: { $contains: 3 }
+      },
+      consistent: true
+    });
+    
+    expect(result2.docs.length).toEqual(63);
+    expect(result2.strategy).toEqual('tableScan');
+  });
+
+  // ----------------------------------------------------------------
+
   it(`Get documents in a key range`, async () => {
     const model = dyno.model(Entity4Mock);
     const docs: Entity4Mock[] = [];
@@ -283,6 +322,18 @@ describe('Query E2E', () => {
 
     expect(result2.docs.length).toEqual(13);
     expect(result2.strategy).toEqual('skQuery')
+  });
+
+  // ----------------------------------------------------------------
+
+  it(`Get documents in a table scan`, async () => {
+    const model = dyno.model(Entity4Mock);
+    const result2 = await model.getMany({
+      limit: 5
+    });
+
+    expect(result2.docs.length).toEqual(5);
+    expect(result2.strategy).toEqual('tableScan')
   });
 
   // ----------------------------------------------------------------

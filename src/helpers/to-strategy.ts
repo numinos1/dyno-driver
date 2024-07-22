@@ -36,7 +36,7 @@ export enum TQueryType {
  * To Query Strategy
  */
 export function toStrategy<Type>(
-  where: TExpression<Type>,
+  where: TExpression<Type> = {},
   tableIndex: TIndex[],
   table: string
 ): TStrategy<Type> {
