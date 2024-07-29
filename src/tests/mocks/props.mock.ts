@@ -1,4 +1,4 @@
-import { TProp, TPropTokens } from '@/types';
+import { TProp, TPropMap, TPropTokens } from '@/types';
 
 export const propList: TProp[] = [
   {
@@ -7,6 +7,7 @@ export const propList: TProp[] = [
     prefix: 'DOC#',
     type: TPropTokens.string,
     isRequired: true,
+    isStatic: false,
     isKey: true,
     index: 0
   },
@@ -16,6 +17,7 @@ export const propList: TProp[] = [
     prefix: 'REPO#',
     type: TPropTokens.string,
     isRequired: true,
+    isStatic: false,
     isKey: true,
     index: 0
   },
@@ -25,6 +27,7 @@ export const propList: TProp[] = [
     prefix: '',
     type: TPropTokens.string,
     isRequired: true,
+    isStatic: false,
     isKey: false,
     index: 0
   },
@@ -34,6 +37,7 @@ export const propList: TProp[] = [
     prefix: '',
     type: TPropTokens.string,
     isRequired: true,
+    isStatic: false,
     isKey: false,
     index: 0
   },
@@ -43,6 +47,7 @@ export const propList: TProp[] = [
     prefix: '',
     type: TPropTokens.string,
     isRequired: true,
+    isStatic: false,
     isKey: false,
     index: 0
   },
@@ -52,6 +57,7 @@ export const propList: TProp[] = [
     prefix: '',
     type: TPropTokens.string,
     isRequired: true,
+    isStatic: false,
     isKey: false,
     index: 0
   },
@@ -61,6 +67,7 @@ export const propList: TProp[] = [
     prefix: '',
     type: TPropTokens.number,
     isRequired: true,
+    isStatic: false,
     isKey: false,
     index: 0
   },
@@ -70,6 +77,7 @@ export const propList: TProp[] = [
     prefix: '',
     type: TPropTokens.string,
     isRequired: true,
+    isStatic: false,
     isKey: false,
     index: 0
   },
@@ -79,6 +87,7 @@ export const propList: TProp[] = [
     prefix: '',
     type: TPropTokens.number,
     isRequired: true,
+    isStatic: false,
     isKey: false,
     index: 0
   },
@@ -88,6 +97,7 @@ export const propList: TProp[] = [
     prefix: '',
     type: TPropTokens.number,
     isRequired: false,
+    isStatic: false,
     isKey: false,
     index: 0
   },
@@ -97,6 +107,7 @@ export const propList: TProp[] = [
     prefix: '',
     type: TPropTokens.binary,
     isRequired: false,
+    isStatic: false,
     isKey: false,
     index: 0
   },
@@ -137,4 +148,14 @@ export function newPropList(): TProp[] {
     isRequired: false,
     alias: prop.name,
   }));
+}
+
+/**
+ * Copy Props List to PropMap
+ */
+export function newPropMap(): TPropMap {
+  return propList.reduce((map, prop) =>
+    map.set(prop.name, prop),
+    new Map<string, TProp>()
+  );
 }

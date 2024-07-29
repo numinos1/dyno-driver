@@ -265,7 +265,7 @@ describe('Query E2E', () => {
     expect(result1.strategy).toEqual('getItem')
   });
 
-   // ----------------------------------------------------------------
+  // ----------------------------------------------------------------
 
    it(`Query documents in a table scan`, async () => {
     const model = dyno.model(Entity4Mock);

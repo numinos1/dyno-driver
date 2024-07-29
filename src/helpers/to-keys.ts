@@ -1,6 +1,6 @@
 import { marshall } from "@aws-sdk/util-dynamodb";
 import { AttributeValue } from "@aws-sdk/client-dynamodb";
-import { TExpression, TProp } from '@/types';
+import { TExpression, TProp, TPropMap } from '@/types';
 
 const NO_MARSHALL = new Set(['N', 'S', 'B', 'BOOL', 'NULL']);
 const TO_MARSHALL = new Set(['L', 'M', 'SS', 'NS', 'BS']);
@@ -23,15 +23,11 @@ export type TItem = Record<string, AttributeValue>;
  * Create Keys from 
  */
 export function toKeys<Type>(
-  keys: TProp[],
-  query: TExpression<Type>
+  query: Record<string, any>,
+  propMap: TPropMap
 ): TItem {
-  const len = keys.length;
-  const Item = {};
-
-  for (let i = 0; i < len; ++i) {
-    const prop = keys[i];
-    let val = query[prop.name] || '';
+  return Object.entries(query).reduce((Item, [key, val]) => {
+    const prop = propMap.get(key);
 
     if (prop.prefix) {
       val = prop.prefix + val;
@@ -39,6 +35,7 @@ export function toKeys<Type>(
     Item[prop.alias] = TO_MARSHALL.has(prop.type)
       ? marshall(val)
       : { [prop.type]: val };
-  }
-  return Item;
+
+    return Item;
+  }, {});
 }

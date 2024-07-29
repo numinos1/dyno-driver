@@ -213,7 +213,8 @@ export class DynoModel<Type> {
         const command = getItem<Type>(
           options,
           strategy,
-          this.metrics
+          this.metrics,
+          this.propMap
         );
         const result = await this.client.send(command);
 

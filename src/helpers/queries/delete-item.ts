@@ -18,7 +18,7 @@ export function deleteItem<Type>(
 
   return new DeleteItemCommand({
     TableName: table,
-    Key: toKeys<Type>(keys, query),
+    Key: toKeys<Type>(query, propMap),
     ReturnConsumedCapacity: metrics ? 'TOTAL' : 'NONE',
     ReturnValues: 'ALL_OLD',
     ConditionExpression: toExpression(filter, propMap, names, values),

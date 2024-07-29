@@ -43,6 +43,7 @@ describe('mergeSchemas()', () => {
          "prefix": "USER#",
          "type": TPropTokens.string,
          "isRequired": false,
+         "isStatic": false,
          "isKey": true,
          "index": 2
        },
@@ -52,6 +53,7 @@ describe('mergeSchemas()', () => {
          "type": TPropTokens.string,
          "prefix": "",
          "isRequired": false,
+         "isStatic": false,
          "isKey": true,
          "index": 2
        }

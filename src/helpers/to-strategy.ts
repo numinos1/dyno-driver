@@ -9,8 +9,8 @@ export interface TStrategy<Type> {
   keys: TProp[];
   table: string;
   index?: string;
-  query: TExpression<Type>;
-  filter: TExpression<Type>;
+  query: Record<string, any>;
+  filter: Record<string, any>;
 }
 
 interface TTheory {
@@ -41,8 +41,8 @@ export function toStrategy<Type>(
   table: string
 ): TStrategy<Type> {
   const { keys, type, index } = toTheory(where, tableKeys);
-  const filter = { ...where }; // copy all where props to filter
-  const query = {}; 
+  const filter: Record<string, any> = { ...where }; // copy all where props to filter
+  const query: Record<string, any> = {}; 
 
   // iterate through all the keys in the theory
   keys.forEach(key => {

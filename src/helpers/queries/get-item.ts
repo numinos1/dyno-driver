@@ -2,6 +2,7 @@ import { GetManyOptions } from "@/classes/dyno-model";
 import { TStrategy } from "../to-strategy";
 import { GetItemCommand } from "@aws-sdk/client-dynamodb";
 import { toKeys } from "@/helpers/to-keys";
+import { TPropMap } from "@/types";
 
 /**
  * Get Item
@@ -9,14 +10,15 @@ import { toKeys } from "@/helpers/to-keys";
 export function getItem<Type>(
   options: GetManyOptions<Type>,
   strategy: TStrategy<Type>,
-  metrics: boolean
+  metrics: boolean,
+  propMap: TPropMap
 ): GetItemCommand {
   const { consistent } = options;
   const { table, index, keys, query } = strategy;
 
   return new GetItemCommand({
     TableName: index || table,
-    Key: toKeys<Type>(keys, query),
+    Key: toKeys<Type>(query, propMap),
     ConsistentRead: consistent === true,
     ReturnConsumedCapacity: metrics ? 'TOTAL' : 'NONE'
   });

@@ -194,7 +194,7 @@ describe('toStrategy()', () => {
         table: 'testTable',
         index: undefined,
         query: {
-          repoId: 'abcd1234'
+          '__pk': 'abcd1234'
         },
         filter: {},
       });
@@ -228,7 +228,7 @@ describe('toStrategy()', () => {
         table: 'testTable',
         index: undefined,
         query: {
-          repoId: 'abcd1234'
+          '__pk': 'abcd1234'
         },
         filter: {
           version: 'abcd1234',
@@ -280,7 +280,7 @@ describe('toStrategy()', () => {
         table: 'testTable',
         index: 'testTable-gsi-2',
         query: {
-          version: 'abcd1234',
+          '__vid': 'abcd1234',
         },
         filter: {
           createdOn: 1232423452,
@@ -330,7 +330,7 @@ describe('toStrategy()', () => {
         table: 'testTable',
         index: 'testTable-gsi-1',
         query: {
-          id: 'abcd1234',
+          '__sk': 'abcd1234',
         },
         filter: {
           createdOn: 1232423452
@@ -371,8 +371,8 @@ describe('toStrategy()', () => {
         table: 'testTable',
         index: undefined,
         query: {
-          repoId: 'abcd1234',
-          id: { $gt: 'efgh5678' }
+          '__pk': 'abcd1234',
+          '__sk': { $gt: 'efgh5678' }
         },
         filter: {},
       });
@@ -408,8 +408,8 @@ describe('toStrategy()', () => {
         table: 'testTable',
         index: undefined,
         query: {
-          repoId: 'abcd1234',
-          id: { $gt: 'efgh5678' }
+          '__pk': 'abcd1234',
+          '__sk': { $gt: 'efgh5678' }
         },
         filter: {
           version: 'abcd1234',
@@ -461,8 +461,8 @@ describe('toStrategy()', () => {
         table: 'testTable',
         index: 'testTable-gsi-2',
         query: {
-          version: 'abcd1234',
-          id: { $gt: 'efg567' },
+          '__vid': 'abcd1234',
+          '__sk': { $gt: 'efg567' },
         },
         filter: {
           encoding: 'JSON',
@@ -513,8 +513,8 @@ describe('toStrategy()', () => {
         table: 'testTable',
         index: 'testTable-gsi-1',
         query: {
-          id: 'abcd1234',
-          repoId: { $gt: 'efg567' },
+          '__sk': 'abcd1234',
+          '__pk': { $gt: 'efg567' },
         },
         filter: {
           createdOn: 1232423452
@@ -555,8 +555,8 @@ describe('toStrategy()', () => {
         table: 'testTable',
         index: undefined,
         query: {
-          repoId: 'abcd1234',
-          id: 'efgh5678'
+          '__pk': 'abcd1234',
+          '__sk': 'efgh5678'
         },
         filter: {},
       });
@@ -592,8 +592,8 @@ describe('toStrategy()', () => {
         table: 'testTable',
         index: undefined,
         query: {
-          repoId: 'abcd1234',
-          id: 'efgh5678'
+          '__pk': 'abcd1234',
+          '__sk': 'efgh5678'
         },
         filter: {
           version: 'abcd1234',
@@ -644,8 +644,8 @@ describe('toStrategy()', () => {
         table: 'testTable',
         index: undefined,
         query: {
-          repoId: 'abcd1234',
-          id: 'efgh5678'
+          '__pk': 'abcd1234',
+          '__sk': 'efgh5678'
         },
         filter: {},
       });
@@ -692,8 +692,8 @@ describe('toStrategy()', () => {
         table: 'testTable',
         index: undefined,
         query: {
-          repoId: 'abcd1234',
-          id: 'efgh5678'
+          '__pk': 'abcd1234',
+          '__sk': 'efgh5678'
         },
         filter: {},
       });
@@ -732,7 +732,7 @@ describe('toStrategy()', () => {
         ],
         'testTable'
       )).toEqual({
-        type: TQueryType.getItem,
+        type: TQueryType.skQuery,
         keys: [
           propsMock.get('version'),
           propsMock.get('id')
@@ -740,8 +740,8 @@ describe('toStrategy()', () => {
         table: 'testTable',
         index: 'testTable-gsi-2',
         query: {
-          id: 'efgh5678',
-          version: 'abcd1234',
+          '__sk': 'efgh5678',
+          '__vid': 'abcd1234',
         },
         filter: {},
       });
@@ -781,7 +781,7 @@ describe('toStrategy()', () => {
         ],
         'testTable'
       )).toEqual({
-        type: TQueryType.getItem,
+        type: TQueryType.skQuery,
         keys: [
           propsMock.get('repoId'),
           propsMock.get('createdOn')
@@ -789,8 +789,8 @@ describe('toStrategy()', () => {
         table: 'testTable',
         index: 'testTable-gsi-2',
         query: {
-          repoId: 'abcd1234',
-          createdOn: 1232423452
+          __pk: 'abcd1234',
+          __con: 1232423452,
         },
         filter: {
           version: { $gt: 'efg567' },

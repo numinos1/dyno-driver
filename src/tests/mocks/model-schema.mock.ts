@@ -14,6 +14,7 @@ export const ModelSchemaMock: TModelSchema = {
         "type": TPropTokens.string,
         "prefix": "DOC#",
         "isRequired": true,
+        "isStatic": false,
         "isKey": true,
         "index": 0
       },
@@ -23,6 +24,7 @@ export const ModelSchemaMock: TModelSchema = {
         "type": TPropTokens.string,
         "prefix": "REP#",
         "isRequired": true,
+        "isStatic": false,
         "isKey": true,
         "index": 0
       }
@@ -37,6 +39,7 @@ export const ModelSchemaMock: TModelSchema = {
         "prefix": "REP#",
         "type": TPropTokens.string,
         "isRequired": false,
+        "isStatic": false,
         "isKey": true,
         "index": 1
       },
@@ -46,6 +49,7 @@ export const ModelSchemaMock: TModelSchema = {
         "type": TPropTokens.string,
         "prefix": "VER#",
         "isRequired": false,
+        "isStatic": false,
         "isKey": true,
         "index": 1
       }
