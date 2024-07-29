@@ -62,6 +62,7 @@ export interface TProp {
   prefix: string;         // Table prop value prefix
   type: TPropValues;       // Model prop value type
   isRequired: boolean;    // Is the prop required?
+  isStatic: boolean;      // IS the prop static?
   isKey: boolean;         // Is the prop a key?
   index: number;          // Index index
 }

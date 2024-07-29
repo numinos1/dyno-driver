@@ -11,6 +11,7 @@ import { scanTable } from "@/helpers/queries/scan-table";
 import { queryTable } from "@/helpers/queries/query-table";
 import { getItem } from "@/helpers/queries/get-item";
 import { putItem } from "@/helpers/queries/put-item";
+import { deleteItem } from "@/helpers/queries/delete-item";
 
 export interface GetOneOptions<T> {
   where: TExpression<T>,
@@ -33,10 +34,10 @@ export interface GetManyOptions<T> {
 export class DynoModel<Type> {
   public client: DynamoDBClient;
   public tableName: string;
-  public tableIndex: TIndex[];
-  public propMap: TPropMap;
-  public propStack: TProp[];
-  public propCount: number;
+  public tableIndex: TIndex[]; // 
+  public propMap: TPropMap; // used to map documents to dynamo items
+  public propStack: TProp[]; // used to map dynamo items to documents
+  public propCount: number; // end of the public section of the propMap
   public metrics: boolean;
   public removalPolicy: TRemovalPolicy;
   public billingMode: TBillingMode;
@@ -57,11 +58,11 @@ export class DynoModel<Type> {
     removalPolicy,
     metrics,
   }: {
-    entityName: string; 
-    tableName: string; 
+    entityName: string;
+    tableName: string;
     entity: Function;
-    index: TEntityIndex[];
-    props: TPropMap;
+    index: TEntityIndex[]; // array of index definitions from entity decorator
+    props: TPropMap; // map of property definitions from prop decorators
     client: DynamoDBClient;
     removalPolicy: TRemovalPolicy;
     metrics: boolean;
@@ -73,9 +74,9 @@ export class DynoModel<Type> {
       this.entity = entity;
       this.removalPolicy = removalPolicy;
       this.propMap = props;
-      this.propStack = [...props.values()];
-      this.propCount = props.size;
-      this.tableIndex = toIndex(index, this.propStack);
+      this.propStack = [...props.values()]; // add all props defined in the entity
+      this.propCount = props.size; // record end of entity defined props
+      this.tableIndex = toIndex(index, this.propStack, this.propMap);
     }
     catch (err) {
       err.message = `Entity "${entityName}" ${err.message}`;
@@ -99,7 +100,7 @@ export class DynoModel<Type> {
   async putOne(
     doc: Type,
     where?: TExpression<Type>
-  ) { 
+  ) {
     const timer = this.metrics && Timer();
     const command = putItem<Type>(
       doc,
@@ -183,6 +184,8 @@ export class DynoModel<Type> {
           cost: result.ConsumedCapacity.CapacityUnits || 0,
           doc: this.unmarshall(result.Items?.[0]),
           strategy: TQueryType[strategy.type],
+          table: strategy.table,
+          index: strategy.index,
           command: command.input
         };
       }
@@ -201,6 +204,8 @@ export class DynoModel<Type> {
           cost: result.ConsumedCapacity.CapacityUnits || 0,
           doc: this.unmarshall(result.Items?.[0]),
           strategy: TQueryType[strategy.type],
+          table: strategy.table,
+          index: strategy.index,
           command: command.input
         };
       }
@@ -217,6 +222,8 @@ export class DynoModel<Type> {
           cost: result.ConsumedCapacity.CapacityUnits || 0,
           doc: this.unmarshall(result.Item),
           strategy: TQueryType[strategy.type],
+          table: strategy.table,
+          index: strategy.index,
           command: command.input
         };
       }
@@ -258,6 +265,8 @@ export class DynoModel<Type> {
           docs: result.Items.map(item => this.unmarshall(item)),
           next: this.unmarshall(result.LastEvaluatedKey),
           strategy: TQueryType[strategy.type],
+          table: strategy.table,
+          index: strategy.index,
           command: command.input
         };
       }
@@ -278,6 +287,8 @@ export class DynoModel<Type> {
           docs: result.Items.map(item => this.unmarshall(item)),
           next: this.unmarshall(result.LastEvaluatedKey),
           strategy: TQueryType[strategy.type],
+          table: strategy.table,
+          index: strategy.index,
           command: command.input
         };
       }
@@ -288,7 +299,37 @@ export class DynoModel<Type> {
   //      Delete
   // -------------------------------------------------------------------
 
-  async delete() { }
+  async deleteOne(
+    where: TExpression<Type>
+  ) {
+    const strategy = toStrategy(where, this.tableIndex, this.tableName);
+    const timer = Timer();
+
+    if (strategy.index) {
+      throw new Error(`Invalid delete key`);
+    }
+    switch (strategy.type) {
+      case TQueryType.pkQuery:
+      case TQueryType.skQuery:
+      case TQueryType.getItem: {
+        const command = deleteItem<Type>(
+          strategy,
+          this.metrics,
+          this.propMap
+        );
+        const result = await this.client.send(command);
+
+        return {
+          duration: timer(),
+          cost: result.ConsumedCapacity.CapacityUnits || 0,
+          doc: this.unmarshall(result.Attributes),
+          command: command.input
+        };
+      }
+      default:
+        throw new Error(`Invalid delete expression`);
+    }
+  }
 
   // ----------------------------------------------------------------
   //    Public Migration Methods

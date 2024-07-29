@@ -20,7 +20,7 @@ describe('Migration E2E', () => {
   it('deletes all existing dynamo tables', async () => {
     const dyno = new DynoDriver(DYNO_OPTIONS);
     const namesBefore = await dyno.getDynamoTableNames();
-    await dyno.deleteTables(namesBefore);
+    await dyno.deleteDynamoTables(namesBefore);
 
     const namesAfter = await dyno.getDynamoTableNames();
 
@@ -47,7 +47,7 @@ describe('Migration E2E', () => {
       .filter(schema => schema.diffStatus === 'CREATE')
       .map(schema => schema.modelSchema);
 
-    await dyno.createTables(createTables);
+    await dyno.createDynamoTables(createTables);
 
     const names = await dyno.getDynamoTableNames();
 

@@ -44,6 +44,7 @@ export function DynoProp({
       type: dynamoType,
       prefix: '',
       isRequired: isRequired,
+      isStatic: false,
       isKey: false,
       index: 0
     });

@@ -162,20 +162,69 @@ export class DynoDriver {
   }
 
   // ----------------------------------------------------------------
+  //    High-Level Migration Methods
+  // ----------------------------------------------------------------
+  
+  /**
+   * Re-Create All Tables
+   */
+  async resetTables(): Promise<Record<string, TMigrationSchema[]>> {
+    const deleted = await this.deleteTables();
+    const created = await this.createTables();
+
+    return {
+      ...deleted,
+      ...created
+    };
+  }
+
+  /**
+   * Delete Existing Tables
+   */
+  async deleteTables(): Promise<Record<string, TMigrationSchema[]>> {
+    const schemas = await this.exportMigrationSchemas();
+    const actionable = schemas.filter(schema => schema.diffStatus !== 'CREATE');
+    
+    if (actionable.length) {
+      await this.deleteDynamoTables(
+        actionable.map(schema => schema.tableName)
+      );
+    }
+    return { deleted: actionable };
+  }
+
+  /**
+   * Create Non-Existing Tables
+   */
+  async createTables(allTables = false): Promise<Record<string, TMigrationSchema[]>> {
+    const schemas = await this.exportMigrationSchemas(allTables);
+    const actionable = schemas.filter(schema => schema.diffStatus === 'CREATE');
+    
+    if (actionable.length) {
+      //console.log(JSON.stringify(actionable, null, '  '));
+      await this.createDynamoTables(
+        actionable.map(schema => schema.modelSchema)
+      );
+    }
+    return { created: actionable };
+  }
+
+  // ----------------------------------------------------------------
   //    Export Migration Schemas
   // ----------------------------------------------------------------
 
   /**
    * Export Migration Schemas
    */
-  async exportMigrationSchemas(): Promise<TMigrationSchema[]> {
+  async exportMigrationSchemas(allTables = false): Promise<TMigrationSchema[]> {
     const modelSchemas = this.exportDynamoSchemas();
     const dynamoSchemas = await this.getDynamoTableSchemas();
-
     const dynamoCore = Object.values(dynamoSchemas).map(normalizeDynamoSchema);
     const modelCore = modelSchemas.map(normalizeDynamoSchema);
 
-    return compareSchemas(modelCore, dynamoCore);
+    return compareSchemas(modelCore, dynamoCore).filter(entry => allTables
+      || modelSchemas.find(schema => schema.TableName === entry.tableName)
+    );
   }
 
   /**
@@ -208,7 +257,7 @@ export class DynoDriver {
   }
 
   // ----------------------------------------------------------------
-  //    DynamoDB Migration Methods
+  //    Low-Level DynamoDB Migration Methods
   // ----------------------------------------------------------------
 
   /**
@@ -248,7 +297,7 @@ export class DynoDriver {
   /**
    * Delete Dynamo Db Tables by Name
    */
-  async deleteTables(TableNames: string[]) {
+  async deleteDynamoTables(TableNames: string[]) {
     const results = [];
 
     for (let TableName of TableNames) {
@@ -265,7 +314,7 @@ export class DynoDriver {
   /**
    * Create Dynamo Db Tables
    */
-  async createTables(schemas: CreateTableCommandInput[]) {
+  async createDynamoTables(schemas: CreateTableCommandInput[]) {
     const results = [];
 
     for (let schema of schemas) {

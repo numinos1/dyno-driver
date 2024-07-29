@@ -7,6 +7,7 @@ specifiers:
   '@jest/globals': ^29.7.0
   '@types/jest': ^29.5.12
   '@types/node': ^20.14.10
+  delay: ^6.0.0
   jest: ^29.7.0
   reflect-metadata: ^0.2.1
   ts-jest: ^29.1.2
@@ -24,6 +25,7 @@ devDependencies:
   '@jest/globals': 29.7.0
   '@types/jest': 29.5.12
   '@types/node': 20.14.10
+  delay: 6.0.0
   jest: 29.7.0_@types+node@20.14.10
   ts-jest: 29.1.2_hcdnuvq6duxd4wnppbvtjn7biy
   typescript: 5.4.3
@@ -1949,6 +1951,11 @@ packages:
   /deepmerge/4.3.1:
     resolution: {integrity: sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==}
     engines: {node: '>=0.10.0'}
+    dev: true
+
+  /delay/6.0.0:
+    resolution: {integrity: sha512-2NJozoOHQ4NuZuVIr5CWd0iiLVIRSDepakaovIN+9eIDHEhdCAEvSy2cuf1DCrPPQLvHmbqTHODlhHg8UCy4zw==}
+    engines: {node: '>=16'}
     dev: true
 
   /detect-newline/3.1.0:

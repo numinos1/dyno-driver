@@ -12,14 +12,20 @@ export function toItem<Type>(
   const Item = {};
 
   for (let i = 0; i < len; ++i) {
-    const { name, prefix, alias, type, isRequired } = props[i];
-    let val = doc[name];
-    
-    if (val != undefined) {
-      Item[alias] = toItemAttr(val, type, prefix);
+    const { name, prefix, alias, type, isRequired, isStatic } = props[i];
+
+    if (isStatic) {
+      Item[alias] = toItemAttr('', type, prefix);
     }
-    else if (isRequired) {
-      throw new Error(`${name} is required`);
+    else {
+      let val = doc[name];
+
+      if (val != undefined) {
+        Item[alias] = toItemAttr(val, type, prefix);
+      }
+      else if (isRequired) {
+        throw new Error(`${name} is required`);
+      }
     }
   }
   return Item;

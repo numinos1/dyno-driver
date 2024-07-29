@@ -19,7 +19,7 @@ interface TTheory {
   index: number;
 }
 
-export type TKeyType = 'null' | 'value' | 'query';
+export type TKeyType = 'undefined' | 'static' | 'scalar' | 'query';
 
 export enum TQueryType {
   tableScan = 0,
@@ -33,25 +33,41 @@ export enum TQueryType {
 // ------------------------------------------------------------------
 
 /**
- * To Query Strategy
+ * Analyze where expression to find best query strategy
  */
 export function toStrategy<Type>(
   where: TExpression<Type> = {},
-  tableIndex: TIndex[],
+  tableKeys: TIndex[],
   table: string
 ): TStrategy<Type> {
-  const { keys, type, index } = toTheory(where, tableIndex);
-  const query = {}, filter = {};
-  
-  // Split where into query & filter
-  for (let key in where) {
-    keys.find(k => k.name === key)
-      ? (query[key] = where[key])
-      : (filter[key] = where[key]);
-  }
+  const { keys, type, index } = toTheory(where, tableKeys);
+  const filter = { ...where }; // copy all where props to filter
+  const query = {}; 
+
+  // iterate through all the keys in the theory
+  keys.forEach(key => {
+
+    // add static key to the query
+    if (key.isStatic) {
+      query[key.name] = '';
+    }
+    // move scalar key from filter to query
+    // and rename prop to use the correct index alias
+    else {
+      const value = filter[key.name];
+
+      if (value !== undefined) {
+        query[`__${key.alias}`] = value;
+        delete filter[key.name];
+      }
+    }
+  });
 
   return {
-    type,
+    // GSI's can't use "getItem" strategy
+    type: index && type === TQueryType.getItem
+      ? TQueryType.skQuery
+      : type,
     keys,
     query,
     filter,
@@ -63,41 +79,41 @@ export function toStrategy<Type>(
 }
 
 /**
- * Find the best query theory
+ * Find the best query theory for a where expression
  */
 export function toTheory<Type>(
-  where: TExpression<Type>,
-  tableIndex: TIndex[],
+  where: TExpression<Type>, // Where expression
+  tableKeys: TIndex[], // Array of table keys
 ): TTheory {
 
   // Default theory (full table scan)
   let theory: TTheory = {
     type: TQueryType.tableScan,
-    keys: [],
-    index: 0,
+    keys: [], 
+    index: 0, // Table keys offset
   };
 
-  // Iterate through the key-sets defined on the model
-  for (let index = 0; index < tableIndex.length; ++index) {
-    const { pk, sk } = tableIndex[index];
+  // Iterate through the table keys
+  for (let index = 0; index < tableKeys.length; ++index) {
+    const { pk, sk } = tableKeys[index];
 
-    // Partition key is defined as a value
-    if (toKeyType(pk.name, where) !== 'value') {
+    // Partition key has to be defined as a scalar value
+    if (toKeyType(pk, where) !== 'scalar') {
       continue;
     }
+    // Sort key can be any key type
+    switch (toKeyType(sk, where)) {
 
-    // Sort key is defined as ???
-    switch (toKeyType(sk.name, where)) {
-
-      // Sort key is a value
-      case 'value': {
+      // Sort key is a scalar value
+      case 'static':
+      case 'scalar': {
         return {
           type: TQueryType.getItem,
           keys: [pk, sk],
           index: index,
         }
       }
-      // Sort key is a query
+      // Sort key is a nested query
       case 'query': {
         if (theory.type < TQueryType.skQuery) {
           theory = {
@@ -109,7 +125,7 @@ export function toTheory<Type>(
         break;
       }
       // Sort key is undefined
-      case 'null': {
+      case 'undefined': {
         if (theory.type < TQueryType.pkQuery) {
           theory = {
             type: TQueryType.pkQuery,
@@ -125,27 +141,29 @@ export function toTheory<Type>(
 }
 
 /**
- * To Key Type
+ * Find the specified key within where expression
  */
 export function toKeyType<Type>(
-  key: string,
+  prop: TProp, 
   where: TExpression<Type>
 ): TKeyType {
 
-  // Key with prefix but no name
-  if (key === '') { 
-    return 'value';
+  // Key is a static prefix with no prop name
+  if (prop.isStatic) { 
+    return 'static';
   }
-  // Expression value for key
-  const val = where[key];
+  // Expression value for prop name
+  const queryValue = where[prop.name];
 
   // Key not found in expression
-  if (val == null) {
-    return 'null';
+  if (queryValue === undefined) {
+    return 'undefined';
   }
-  // Expression is a query or a value
-  return (typeof val === 'object')
-    ? 'query'
-    : 'value';
+  // Expression is a nested query object
+  if (typeof queryValue === 'object') {
+    return 'query';
+  }
+  // Expression is a scalar value
+  return 'scalar';
 }
 

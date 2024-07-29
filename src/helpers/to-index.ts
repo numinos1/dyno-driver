@@ -1,10 +1,11 @@
-import { TEntityIndex, TIndex, TProp, TPropTokens } from '@/types';
+import { TEntityIndex, TIndex, TProp, TPropMap, TPropTokens } from '@/types';
 /**
  * Create table index from entity index for model
  */
 export function toIndex(
   index: TEntityIndex[],
-  propStack: TProp[]
+  propStack: TProp[],
+  propMap: TPropMap
 ): TIndex[] {
   return index.map(({ pk, sk, wcu, rcu, project }, i) => {
     if (wcu && !rcu) {
@@ -21,8 +22,8 @@ export function toIndex(
       });
     }
     return {
-      pk: toKey(pk, 'pk', i, propStack),
-      sk: toKey(sk == null ? pk : sk, 'sk', i, propStack),
+      pk: toKey(pk, 'pk', i, propStack, propMap),
+      sk: toKey(sk == null ? pk : sk, 'sk', i, propStack, propMap),
       wcu: wcu || 0,
       rcu: rcu || 0,
       project: project || []
@@ -37,7 +38,8 @@ function toKey(
   propName: string,
   keyName: string,
   index: number,
-  propStack: TProp[]
+  propStack: TProp[],
+  propMap: TPropMap
 ): TProp {
   const alias = keyName + (index ? index : '');
   let prop: TProp | undefined;
@@ -57,18 +59,24 @@ function toKey(
       prefix = `${prefix}#`
     }
   }
+  // Create virtual prop name for key lookups
+  const virtualName = `__${alias}`;
 
   // if prefix but no name
   if (!name) {
     propStack.push(prop = {
-      name: '',
+      name: virtualName,
       alias: alias,
       prefix: prefix,
       type: TPropTokens.string,
+      isStatic: true,
       isRequired: false,
       isKey: true,
       index: index
     });
+
+    // Add a new propMap entry for the virtual name
+    propMap.set(virtualName, prop);
   }
   else {
     // search for existing prop
@@ -93,9 +101,12 @@ function toKey(
         prefix: prefix,
         type: prop.type,
         isRequired: !index,
+        isStatic: false,
         isKey: true,
         index: index
       });
+      // Add a new propMap entry for the virtual name
+      propMap.set(virtualName, prop);
     }
     // make the prop a key
     else {
@@ -104,6 +115,12 @@ function toKey(
       prop.isRequired = !index;
       prop.isKey = true;
       prop.index = index;
+
+      // Add a new propMap entry for the virtual name
+      propMap.set(virtualName, {
+        ...prop,
+        name: virtualName
+      });
     }
   }
   return prop;

@@ -20,25 +20,7 @@ describe('Query E2E', () => {
     entities: [EntityMock, Entity2Mock, Entity4Mock],
   });
 
-  // // ----------------------------------------------------------------
-
-  it('creates dynamo tables', async () => {
-    
-    const namesBefore = await dyno.getDynamoTableNames();
-    await dyno.deleteTables(namesBefore);
-
-    const schemas = await dyno.exportMigrationSchemas();
-
-    const createTables = schemas
-      .filter(schema => schema.diffStatus === 'CREATE')
-      .map(schema => schema.modelSchema);
-
-    await dyno.createTables(createTables);
-
-    const namesAfter = await dyno.getDynamoTableNames();
-
-    expect(namesAfter).toEqual(['test-table', 'types-table']);
-  });
+  beforeAll(() => dyno.resetTables());
 
   // // ----------------------------------------------------------------
 
@@ -513,6 +495,55 @@ describe('Query E2E', () => {
 
     expect(result3.docs.length).toEqual(1);
     expect(result3.next).toEqual(undefined);
+  });
+
+  // ----------------------------------------------------------------
+
+  it(`delete a document by primary key`, async () => {
+    const model = dyno.model(Entity4Mock);
+    const doc: Entity4Mock = Item4Mock({
+      repoId: 'delete1Query',
+      docId: `delete1`
+    });
+
+    await model.putOne(doc);
+
+    const result = await model.deleteOne({
+      repoId: doc.repoId,
+      docId: doc.docId
+    });
+
+    expect(result.doc).toEqual(doc);
+    expect(result.cost).toEqual(1);
+  });
+
+  // ----------------------------------------------------------------
+
+  it(`conditionally delete a document`, async () => {
+    const model = dyno.model(Entity4Mock);
+    const doc: Entity4Mock = Item4Mock({
+      repoId: 'delete1Query',
+      docId: `delete1`
+    });
+
+    await model.putOne(doc);
+
+    await expect(() =>
+      model.deleteOne({
+        repoId: doc.repoId,
+        docId: doc.docId,
+        isBig: true
+      })
+    ).rejects.toThrow('The conditional request failed');
+
+    const result = await model.deleteOne({
+      repoId: doc.repoId,
+      docId: doc.docId,
+      isBig: false
+    })
+
+    expect(result.doc).toEqual(doc);
+    expect(result.cost).toEqual(1);
   });
 
 });
