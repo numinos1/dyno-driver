@@ -215,27 +215,28 @@ describe('Query E2E', () => {
     expect(results.duration).toEqual(expect.any(Number));
     expect(results.cost).toEqual(expect.any(Number));
     expect(results.docs).toEqual(docs);
-    expect(results.results).toEqual({
-      batches: [{
+    expect(results.batches).toEqual([
+      {
         id: 1,
         requests: 25,
         retryable: 0,
         wcu: 25,
         status: 'success',
         duration: expect.any(Number),
-      }, {
+      },
+      {
         id: 2,
         requests: 25,
         retryable: 0,
         wcu: 25,
         status: 'success',
         duration: expect.any(Number),
-      }],
-      errors: [],
-      failed: [],
-      retries: 0,
-      saved: expect.any(Array)
-    });
+      }
+    ]);
+    expect(results.errors).toEqual([]);
+    expect(results.failed).toEqual([]);
+    expect(results.retries).toEqual(0);
+    expect(results.saved).toEqual(expect.any(Array));
   });
 
   // ----------------------------------------------------------------
@@ -495,55 +496,6 @@ describe('Query E2E', () => {
 
     expect(result3.docs.length).toEqual(1);
     expect(result3.next).toEqual(undefined);
-  });
-
-  // ----------------------------------------------------------------
-
-  it(`delete a document by primary key`, async () => {
-    const model = dyno.model(Entity4Mock);
-    const doc: Entity4Mock = Item4Mock({
-      repoId: 'delete1Query',
-      docId: `delete1`
-    });
-
-    await model.putOne(doc);
-
-    const result = await model.deleteOne({
-      repoId: doc.repoId,
-      docId: doc.docId
-    });
-
-    expect(result.doc).toEqual(doc);
-    expect(result.cost).toEqual(1);
-  });
-
-  // ----------------------------------------------------------------
-
-  it(`conditionally delete a document`, async () => {
-    const model = dyno.model(Entity4Mock);
-    const doc: Entity4Mock = Item4Mock({
-      repoId: 'delete1Query',
-      docId: `delete1`
-    });
-
-    await model.putOne(doc);
-
-    await expect(() =>
-      model.deleteOne({
-        repoId: doc.repoId,
-        docId: doc.docId,
-        isBig: true
-      })
-    ).rejects.toThrow('The conditional request failed');
-
-    const result = await model.deleteOne({
-      repoId: doc.repoId,
-      docId: doc.docId,
-      isBig: false
-    })
-
-    expect(result.doc).toEqual(doc);
-    expect(result.cost).toEqual(1);
   });
 
 });

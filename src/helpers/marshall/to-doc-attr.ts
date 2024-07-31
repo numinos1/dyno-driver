@@ -3,8 +3,10 @@ import { AttributeValue } from "@aws-sdk/client-dynamodb";
 /**
  * Convert a Dynamo attribute to a value
  */
-export function toDocAttr
-(entry: AttributeValue, prefix?: string): any {
+export function toDocAttr(
+  entry: AttributeValue,
+  prefix?: string
+): any {
   const kvpair = Object.entries(entry)[0];
   const type = kvpair[0];
   const value = kvpair[1] as unknown;

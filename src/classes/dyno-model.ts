@@ -12,6 +12,8 @@ import { queryTable } from "@/helpers/queries/query-table";
 import { getItem } from "@/helpers/queries/get-item";
 import { putItem } from "@/helpers/queries/put-item";
 import { deleteItem } from "@/helpers/queries/delete-item";
+import { toDocKeys } from "@/helpers/marshall/to-doc-keys";
+import { toItemKeys } from "@/helpers/marshall/to-item-keys";
 
 export interface GetOneOptions<T> {
   where: TExpression<T>,
@@ -84,15 +86,6 @@ export class DynoModel<Type> {
     }
   }
 
-  /**
-   * Unmarshall Document
-   */
-  unmarshall(doc: TItem | undefined): Type | undefined {
-    return doc
-      ? toDoc<Type>(doc, this.propStack, this.propCount)
-      : undefined;
-  }
-
   // -------------------------------------------------------------------
   //      Put One
   // -------------------------------------------------------------------
@@ -138,19 +131,27 @@ export class DynoModel<Type> {
       tableName: this.tableName,
       writeRequests: docs.map(doc => ({
         PutRequest: {
-          Item: toItem<Type>(doc, this.propStack)
+          Item: toItemKeys<Type>(doc, this.tableIndex[0])
         }
       }))
     });
 
-    // TODO - Return processed results
-    // TODO - ids need to be correlated to input docs
-    // TODO - Return an array of status' in the order of the inputs
     return {
       duration: timer(),
-      cost: results.batches.reduce((wcu, batch) => wcu + batch.wcu, 0),
-      results,
-      docs
+      cost: results.batches.reduce((wcu, batch) =>
+        wcu + batch.wcu,
+        0
+      ),
+      docs,
+      saved: results.saved.map(keys =>
+        toDocKeys(keys, this.tableIndex[0])
+      ),
+      failed: results.failed.map(keys =>
+        toDocKeys(keys, this.tableIndex[0])
+      ),
+      errors: results.errors,
+      retries: results.retries,
+      batches: results.batches
     };
   }
 
@@ -332,8 +333,46 @@ export class DynoModel<Type> {
     }
   }
 
+  // -------------------------------------------------------------------
+  //      Delete Many
+  // -------------------------------------------------------------------
+
+  async deleteMany(
+    docs: Type[]
+  ) {
+    const timer = this.metrics && Timer();
+
+    const results = await BatchWrite<Type>({
+      client: this.client,
+      tableName: this.tableName,
+      writeRequests: docs.map(doc => ({
+        DeleteRequest: {
+          Key: toItemKeys<Type>(doc, this.tableIndex[0])
+        }
+      }))
+    });
+
+    return {
+      duration: timer(),
+      cost: results.batches.reduce((wcu, batch) =>
+        wcu + batch.wcu,
+        0
+      ),
+      docs,
+      saved: results.saved.map(keys =>
+        toDocKeys(keys, this.tableIndex[0])
+      ),
+      failed: results.failed.map(keys =>
+        toDocKeys(keys, this.tableIndex[0])
+      ),
+      errors: results.errors,
+      retries: results.retries,
+      batches: results.batches
+    };
+  }
+
   // ----------------------------------------------------------------
-  //    Public Migration Methods
+  //    
   // ----------------------------------------------------------------
 
   /**
@@ -347,5 +386,15 @@ export class DynoModel<Type> {
       removalPolicy: this.removalPolicy,
       tableIndex: this.tableIndex
     };
+  }
+
+
+  /**
+   * Unmarshall Document
+   */
+  unmarshall(doc: TItem | undefined): Type | undefined {
+    return doc
+      ? toDoc<Type>(doc, this.propStack, this.propCount)
+      : undefined;
   }
 }

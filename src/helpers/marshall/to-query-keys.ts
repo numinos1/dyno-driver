@@ -4,7 +4,7 @@ import { toItemAttr } from "./to-item-attr";
 /**
  * Create Keys from an expression
  */
-export function toKeys<Type>(
+export function toQueryKeys<Type>(
   keys: TProp[],
   query: TExpression<Type>
 ): TItem {

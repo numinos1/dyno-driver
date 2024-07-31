@@ -16,8 +16,8 @@ export interface TBatch {
 }
 
 export interface TBatchResults {
-  saved: string[];
-  failed: string[];
+  saved: string[][];
+  failed: string[][];
   errors: TDbError[];
   batches: TBatch[];
   retries: number;
@@ -255,8 +255,8 @@ export function BatchWrite<EntityType>(
           failed.push(toRequestId(request))
         );
         resolve({
-          saved,
-          failed,
+          saved: saved.map(key => key.split('|')),
+          failed: failed.map(key => key.split('|')),
           errors,
           retries,
           batches
