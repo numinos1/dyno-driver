@@ -252,7 +252,7 @@ export class DynoModel<Type> {
 
     switch (strategy.type) {
       case TQueryType.tableScan: {
-        const command: QueryCommand = scanTable<Type>(
+        const command = scanTable<Type>(
           options,
           strategy,
           this.metrics,

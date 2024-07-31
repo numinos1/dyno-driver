@@ -5,7 +5,8 @@ import { DynoProp } from '@/decorators/dyno-prop';
   index: [
     { pk: 'repo#repoId', sk: 'doc#docId' }, 
     { pk: 'doc#docId', sk: 'REPO#', },
-    { pk: 'alias', sk: 'ALIAS#' }
+    { pk: 'alias', sk: 'ALIAS#' },
+    { pk: 'repo#repoId', sk: 'total' }
   ]
 })
 export class Entity5Mock {
@@ -23,7 +24,7 @@ export class Entity5Mock {
   alias: string;
 
   @DynoProp({})
-  total: number;
+  total?: number;
 
   @DynoProp({})
   ages: number[];
