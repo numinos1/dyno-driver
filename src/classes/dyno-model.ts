@@ -131,7 +131,7 @@ export class DynoModel<Type> {
       tableName: this.tableName,
       writeRequests: docs.map(doc => ({
         PutRequest: {
-          Item: toItemKeys<Type>(doc, this.tableIndex[0])
+          Item: toItem<Type>(doc, this.propStack)
         }
       }))
     });
