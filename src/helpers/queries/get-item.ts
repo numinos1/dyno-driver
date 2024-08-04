@@ -1,8 +1,8 @@
 import { GetManyOptions } from "@/classes/dyno-model";
 import { TStrategy } from "../to-strategy";
 import { GetItemCommand } from "@aws-sdk/client-dynamodb";
-import { toKeys } from "@/helpers/to-keys";
 import { TPropMap } from "@/types";
+import { toQueryKeys } from "../marshall/to-query-keys";
 
 /**
  * Get Item
@@ -18,7 +18,7 @@ export function getItem<Type>(
 
   return new GetItemCommand({
     TableName: index || table,
-    Key: toKeys<Type>(query, propMap),
+    Key: toQueryKeys<Type>(query, propMap),
     ConsistentRead: consistent === true,
     ReturnConsumedCapacity: metrics ? 'TOTAL' : 'NONE'
   });

@@ -1,23 +1,19 @@
-import { TExpression, TProp, TItem } from '@/types';
+import { TExpression, TItem, TPropMap } from '@/types';
 import { toItemAttr } from "./to-item-attr";
 
 /**
  * Create Keys from an expression
  */
 export function toQueryKeys<Type>(
-  keys: TProp[],
-  query: TExpression<Type>
+  query: TExpression<Type>,
+  propMap: TPropMap
 ): TItem {
-  const len = keys.length;
-  const Item = {};
+  return Object.entries(query).reduce((Item, [key, val]) => {
+    const prop = propMap.get(key);
 
-  for (let i = 0; i < len; ++i) {
-    const { name, prefix, alias, type } = keys[i];
-    let val = query[name];
-
-    if (val != undefined) {
-      Item[alias] = toItemAttr(val, type, prefix);
+    if (prop) {
+      Item[prop.alias] = toItemAttr(val, prop.type, prop.prefix);
     }
-  }
-  return Item;
+    return Item;
+  }, {});
 }

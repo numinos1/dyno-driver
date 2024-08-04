@@ -5,7 +5,7 @@ import { TProp, TItem, TIndex } from '@/types';
  * Convert Doc Keys to Item Keys
  */
 export function toItemKeys<Type>(
-  doc: Partial<Type>,
+  doc: Record<string, any>,
   index: TIndex,
 ): TItem {
   return toItemKey(
@@ -23,7 +23,7 @@ export function toItemKeys<Type>(
  * Convert Doc Prop to Item Prop
  */
 function toItemKey<Type>(
-  doc: Partial<Type>,
+  doc: Record<string, any>,
   prop: TProp,
   Item: TItem
 ): TItem {

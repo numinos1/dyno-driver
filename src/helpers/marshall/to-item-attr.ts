@@ -1,6 +1,5 @@
 import { TPropTokens } from "@/types";
 import { AttributeValue } from "@aws-sdk/client-dynamodb";
-import { marshall } from "@aws-sdk/util-dynamodb";
 
 /**
  * Convert Document to Item Attribute
@@ -57,18 +56,52 @@ export function toItemAttr(
       };
     }
     case 'L': {
+      if (!Array.isArray) {
+        throw new Error(`Invalid list type "${typeof value}"`)
+      }
       return {
-        // TODO - Hack to get recursive lists to marshall
-        L: marshall(value) as any
+        L: value.map(toPropAttr)
       };
     }
     case 'M': {
       return {
-        M: marshall(value)
+        M: Object.entries(value).reduce((out, [key, val]) => {
+          out[key] = toPropAttr(val);
+          return out;
+        }, {})
       };
     }
     default: {
       return { NULL: true };
     }
+  }
+}
+
+/**
+ * Convert 
+ */
+function toPropAttr(value: any): AttributeValue {
+  switch (typeof value) {
+    case 'undefined':
+      return undefined;
+    case 'number':
+      return toItemAttr(value, TPropTokens.number);
+    case 'string':
+      return toItemAttr(value, TPropTokens.string);
+    case 'boolean':
+      return toItemAttr(value, TPropTokens.boolean);
+    case 'object':
+      if (Array.isArray(value)) {
+        return toItemAttr(value, TPropTokens.list);
+      }
+      if (value instanceof Buffer) {
+        return toItemAttr(value, TPropTokens.binary);
+      }
+      if (value instanceof Set) {
+        return toItemAttr(value, TPropTokens.stringSet);
+      }
+      return toItemAttr(value, TPropTokens.map);
+    default:
+      return undefined;
   }
 }

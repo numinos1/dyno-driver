@@ -65,23 +65,23 @@ describe('deleteOne()', () => {
   // ----------------------------------------------------------------
 
   it('delete one must have pk/sk', async () => {
-    expect(async () => {
-      await model.deleteOne({
+    await expect(() =>
+      model.deleteOne({
         repoId: 'delete-one',
-      });
-    }).rejects.toThrow('The number of conditions on the keys is invalid');
+      })
+    ).rejects.toThrow('The number of conditions on the keys is invalid');
   });
 
   // ----------------------------------------------------------------
 
   it('conditional delete one (fail)', async () => {
-    expect(async () => {
-      await model.deleteOne({
+    await expect(() =>
+      model.deleteOne({
         repoId: 'delete-one',
         docId: 'doc-2',
         isBig: { $eq: true }
-      });
-    }).rejects.toThrow('The conditional request failed');
+      })
+    ).rejects.toThrow('The conditional request failed');
   });
 
   // ----------------------------------------------------------------
