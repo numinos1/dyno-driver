@@ -19,6 +19,9 @@ export function scanTable<Type>(
   const { table, index, filter } = strategy;
   const names = {}, values = {};
   
+  if (options.order) {
+    throw new Error(`ScanTable does not support ordering`);
+  }
   return new ScanCommand({
     TableName: table,
     IndexName: index,

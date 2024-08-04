@@ -22,7 +22,7 @@ export function toItemKeys<Type>(
 /**
  * Convert Doc Prop to Item Prop
  */
-export function toItemKey<Type>(
+function toItemKey<Type>(
   doc: Partial<Type>,
   prop: TProp,
   Item: TItem

@@ -1,4 +1,3 @@
-import { TProp } from "@/types";
 import { AttributeValue } from "@aws-sdk/client-dynamodb";
 /**
  * Convert Value to a Query Attribute

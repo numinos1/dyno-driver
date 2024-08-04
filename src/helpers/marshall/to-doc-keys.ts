@@ -21,7 +21,7 @@ export function toDocKeys<Type>(
 /**
  * Convert an Item key to a Document prop
  */
-export function fromKey<Type>(
+function fromKey<Type>(
   key: string,
   prop: TProp,
   doc: Partial<Type>

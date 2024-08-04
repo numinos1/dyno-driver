@@ -4,7 +4,6 @@ import { DynoDriver } from '@/classes/dyno-driver';
 import { Entity5Mock } from '@/tests/mocks/entity-5.mock';
 import { Item5Mock } from "../mocks/entity-5.item";
 import { DynoModel } from "@/classes/dyno-model";
-import { setTimeout } from 'node:timers/promises';
 
 describe('getOne()', () => {
   let dyno: DynoDriver;

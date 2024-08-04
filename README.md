@@ -1,50 +1,89 @@
-# Example Application
+# Dyno Driver
 
-doc-entity.ts
+Dyno Driver is MongoDB inspired abstraction for AWS DynamoDB. It obfuscates the archaic 
+
+# Define an Entity
+
+- An entity defines the schema for a DynamoDB table.
+- An entity can optionally define a tableName.
+  - Otherwise it inherits the tableName passed to DynoDriver.
+- An entity must define at least one index.
+  - The first index defines the table keys.
+  - Additional indices define GSI table keys.
+- An index consists of two keys:
+  - A partition key "pk".
+  - A sort key "sk".
+- A key must have either a prefix, a property, or both.
+  - A prefix is a static word followed by a "#".
+  - A property defined in the entity.
+- Key props must be a string, number, or a buffer.
 
 ```ts 
+// entity.ts
 import { DynoEntity, DynoProp } from 'dyno-driver';
 
 @DynoEntity({
-  keys: [
-    ['DOC#id', 'REP#repoId'],
-    ['REP#repoId', 'VER#version']
+  tableName: 'docs',
+  index: [
+    { pk: 'repo#repoId', sk: 'doc#docId' }, 
+    { pk: 'doc#docId', sk: 'REPO#', },
+    { pk: 'alias', sk: 'ALIAS#' },
+    { pk: 'repo#repoId', sk: 'total' }
   ]
 })
 export class DocEntity {
 
-  @DynoProp({
-    type: 'string'
-  })
-  id: string;
-
-  @DynoProp({
-    type:  'string'
-  })
+  @DynoProp({})
   repoId: string;
 
-  @DynoProp({
-    type:  'string'
-  })
-  version: string;
+  @DynoProp({})
+  docId: string;
+
+  @DynoProp({})
+  isBig: boolean;
+
+  @DynoProp({})
+  alias: string;
+
+  @DynoProp({})
+  ages: number[];
+
+  @DynoProp({})
+  names: string[];
+
+  @DynoProp({})
+  list: any[];
+
+  @DynoProp({})
+  colors: Set<string>;
+
+  @DynoProp({})
+  deleteOn?: number;
+
+  @DynoProp({})
+  meta: object;
+
+  @DynoProp({})
+  meta2: Record<string, number>;
+
+  @DynoProp({})
+  body: Buffer;
 }
 ```
 
-dyno.ts
+# Instantiate the Driver
 
 ```ts
 import { DynoDriver } from 'dyno-driver';
-import { DocEntity } from './docs-entity';
 
-// Instantiate the Drive
+// Instantiate the Driver
 export const dyno = new DynoDriver({
   tableName: 'test-table',
   endpoint: "http://localhost:8000",
   region: "local",
-  metrics: true
-})
-.on('success', event => console.log('SUCCESS', event))
-.on('failure', event => console.log('FAILURE', event));
+  metrics: true,
+  entities: [DocEntity],
+});
 
 // Instantiate the docs model
 export const docsModel = dyno.entity(DocEntity);
@@ -54,6 +93,12 @@ docs-service.ts
 
 ```ts
 import { docsModel } from './dyno';
+
+
+// Get a document using a full table scan
+const doc = await docsModel.getOne({
+  order: 'asc',
+});
 
 // Get a document using table scan
 const doc = await docsModel.getOne({

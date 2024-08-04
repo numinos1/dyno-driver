@@ -1,4 +1,3 @@
-import { AttributeValue } from "@aws-sdk/client-dynamodb";
 import { toDocAttr } from './to-doc-attr';
 import { TProp, TItem } from '@/types';
 

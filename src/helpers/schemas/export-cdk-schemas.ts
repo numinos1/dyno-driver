@@ -14,7 +14,7 @@ export function exportCdkSchemas(schemas: TModelSchema[]) {
 /**
  * Export the CDK table definitions
  */
-export function toCdkTable(schema: TModelSchema) {
+function toCdkTable(schema: TModelSchema) {
   const { pk, sk, wcu, rcu } = schema.tableIndex[0];
 
   return {
@@ -44,7 +44,7 @@ export function toCdkTable(schema: TModelSchema) {
 /**
  * Export the CDK index definitions
  */
-export function toCdkIndices(schema: TModelSchema) {
+function toCdkIndices(schema: TModelSchema) {
   const indices = schema.tableIndex.slice(1);
   
   return indices.map(({ pk, sk, wcu, rcu, project }, i) => ({
@@ -79,6 +79,6 @@ export function toCdkIndices(schema: TModelSchema) {
 /**
  * Export the CDK index name
  */
-export function toIndexName(schema: TModelSchema, index: number) {
+function toIndexName(schema: TModelSchema, index: number) {
   return `${schema.tableName}-gsi-${index + 1}`;
 }

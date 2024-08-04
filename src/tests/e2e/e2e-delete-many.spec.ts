@@ -43,19 +43,26 @@ describe('deleteMany()', () => {
 
   // // ----------------------------------------------------------------
 
-  // it('delete one document by pk/sk', async () => {
-  //   const result = await model.deleteOne({
-  //     repoId: 'delete-one',
-  //     docId: 'doc-1'
-  //   });
+  it('delete one document by pk/sk', async () => {
+    const docs = [{
+      repoId: 'delete-one',
+      docId: 'doc-1'
+    }, {
+      repoId: 'delete-one',
+      docId: 'doc-20'
+    }, {
+      repoId: 'delete-one',
+      docId: 'doc-30'
+    }];
+    const result = await model.deleteMany(docs);
 
-  //   expect(results.cost).toEqual(525);
-  //   expect(results.batches.length).toEqual(6);
-  //   expect(results.docs).toEqual(docs);
-  //   expect(results.errors).toEqual([]);
-  //   expect(results.saved.length).toEqual(150);
-  //   expect(results.retries).toEqual(0);
-  // });
+    expect(result.cost).toEqual(6);
+    expect(result.batches.length).toEqual(1);
+    expect(result.docs).toEqual(docs);
+    expect(result.errors).toEqual([]);
+    expect(result.deleted.length).toEqual(3);
+    expect(result.retries).toEqual(0);
+  });
 
   // ----------------------------------------------------------------
 });

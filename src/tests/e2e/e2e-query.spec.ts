@@ -309,14 +309,40 @@ describe('Query E2E', () => {
 
   // ----------------------------------------------------------------
 
-  it(`Get documents in a table scan`, async () => {
+  it(`Get documents in a full table scan`, async () => {
     const model = dyno.model(Entity4Mock);
-    const result2 = await model.getMany({
-      limit: 5
-    });
 
-    expect(result2.docs.length).toEqual(5);
-    expect(result2.strategy).toEqual('tableScan')
+    await expect(() =>
+      model.getMany({
+        order: 'asc',
+        limit: 1000
+      })
+    ).rejects.toThrow('ScanTable does not support ordering');
+  });
+
+  // ----------------------------------------------------------------
+
+  it(`Order Documents in a query (forward & reverse)`, async () => {
+    const model = dyno.model(Entity4Mock);
+
+    const resultFwd = await model.getMany({
+      where: { repoId: '123Query' },
+      order: 'asc'
+    });
+    expect(resultFwd.strategy).toEqual('pkQuery');
+    expect(resultFwd.docs.length).toEqual(50);
+
+    const resultRev = await model.getMany({
+      where: { repoId: '123Query' },
+      order: 'desc'
+    });
+    expect(resultRev.strategy).toEqual('pkQuery');
+    expect(resultRev.docs.length).toEqual(50);
+
+    const fwd = resultFwd.docs.map(doc => doc.docId);
+    const rev = resultRev.docs.map(doc => doc.docId);
+
+    expect(fwd).toEqual(rev.reverse());
   });
 
   // ----------------------------------------------------------------

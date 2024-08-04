@@ -1,6 +1,6 @@
 import { marshall } from "@aws-sdk/util-dynamodb";
 import { AttributeValue } from "@aws-sdk/client-dynamodb";
-import { TExpression, TProp, TPropMap } from '@/types';
+import { TPropMap } from '@/types';
 
 const NO_MARSHALL = new Set(['N', 'S', 'B', 'BOOL', 'NULL']);
 const TO_MARSHALL = new Set(['L', 'M', 'SS', 'NS', 'BS']);

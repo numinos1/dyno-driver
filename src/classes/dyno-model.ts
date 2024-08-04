@@ -338,7 +338,7 @@ export class DynoModel<Type> {
   // -------------------------------------------------------------------
 
   async deleteMany(
-    docs: Type[]
+    docs: Partial<Type>[]
   ) {
     const timer = this.metrics && Timer();
 
@@ -359,7 +359,7 @@ export class DynoModel<Type> {
         0
       ),
       docs,
-      saved: results.saved.map(keys =>
+      deleted: results.saved.map(keys =>
         toDocKeys(keys, this.tableIndex[0])
       ),
       failed: results.failed.map(keys =>
