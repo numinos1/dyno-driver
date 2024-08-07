@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 export * from '@/classes/dyno-driver';
 export * from '@/classes/dyno-model';
 
