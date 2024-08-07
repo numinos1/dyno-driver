@@ -55,6 +55,11 @@ export function toItemAttr(
         NS: [...value].map(val => `${val}`)
       };
     }
+    case 'BS': {
+      return {
+        BS: [...value].map(val => val)
+      };
+    }
     case 'L': {
       if (!Array.isArray) {
         throw new Error(`Invalid list type "${typeof value}"`)

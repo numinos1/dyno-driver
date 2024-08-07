@@ -1,6 +1,6 @@
 {
   "name": "dyno-driver",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "DynamoDb Node Driver",
   "author": "Andrew Bunker",
   "main": "index.js",
@@ -24,7 +24,6 @@
   ],
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.540.0",
-    "@aws-sdk/lib-dynamodb": "^3.540.0",
     "reflect-metadata": "^0.2.1",
     "tsyringe": "^4.8.0"
   },
