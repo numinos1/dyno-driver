@@ -62,7 +62,8 @@ export function BatchGet<EntityType>(
     batchSize = 100,
     concurrency = 3,
     maxBackoff = 60 * 1000,
-    retryBackoff = 50
+    retryBackoff = 50,
+    consistent = false
   }: {
     client: DynamoDBClient;
     docKeys: Partial<EntityType>[];
@@ -71,11 +72,16 @@ export function BatchGet<EntityType>(
     concurrency?: number;
     maxBackoff?: number;
     retryBackoff?: number;
+    consistent?: boolean;
   }
 ): Promise<TBatchResults> {
   return new Promise<TBatchResults>(resolve => {
     let queue = splitBatch(docKeys, batchSize)
-      .map(batch => toBatchKeys(batch, tableIndex));
+      .map(batch => toBatchKeys(
+        batch,
+        tableIndex,
+        consistent
+      ));
     
     let state = TState.active;
 

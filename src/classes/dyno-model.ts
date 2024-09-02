@@ -325,6 +325,7 @@ export class DynoModel<Type> {
       client: this.client,
       docKeys: options.keys,
       tableIndex: this.tableIndex,
+      consistent: options.consistent === true,
       batchSize: options.batchSize || 100,
       concurrency: options.concurrency || 3,
       maxBackoff: options.maxBackoff || (60 * 1000),

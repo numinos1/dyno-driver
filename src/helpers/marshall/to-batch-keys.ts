@@ -10,6 +10,7 @@ import { AttributeValue, KeysAndAttributes } from '@aws-sdk/client-dynamodb';
 export function toBatchKeys<Type>(
   docs: Partial<Type>[],
   tableKeys: TIndex[], // Array of table keys
+  consistent: boolean = true
 ): TBatchItems {
   const RequestItems: TBatchItems = {};
   const searchKeys = sortIndex(tableKeys);
@@ -35,7 +36,10 @@ export function toBatchKeys<Type>(
           items.Keys.push(itemKeys);
         }
         else {
-          RequestItems[name] = { Keys: [itemKeys] };
+          RequestItems[name] = {
+            Keys: [itemKeys],
+            ConsistentRead: consistent
+          };
         }
         break;
       }

@@ -43,7 +43,7 @@ describe('getOne()', () => {
 
   // ----------------------------------------------------------------
 
-  it('fetches saved docs as a batch', async () => {
+  it('fetches saved docs (non-consistent)', async () => {
     const results = await model.getBatch({
       keys: docs.map(doc => ({
         repoId: doc.repoId,
@@ -52,6 +52,24 @@ describe('getOne()', () => {
     });
 
     expect(results.cost).toEqual(5);
+    expect(results.docs.length).toEqual(10);
+    expect(results.errors).toEqual([]);
+    expect(results.retries).toEqual(0);
+    expect(results.batches.length).toEqual(1);
+  });
+
+  // ----------------------------------------------------------------
+
+  it('fetches saved docs (consistent)', async () => {
+    const results = await model.getBatch({
+      keys: docs.map(doc => ({
+        repoId: doc.repoId,
+        docId: doc.docId
+      })),
+      consistent: true
+    });
+
+    expect(results.cost).toEqual(10);
     expect(results.docs.length).toEqual(10);
     expect(results.errors).toEqual([]);
     expect(results.retries).toEqual(0);
