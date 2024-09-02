@@ -1,8 +1,8 @@
-import { TIndex, TItem } from '@/types';
+import { TBatchItems, TIndex, TItem } from '@/types';
 import { BatchGetItemCommand, BatchGetItemCommandOutput, DynamoDBClient, KeysAndAttributes } from "@aws-sdk/client-dynamodb";
 import { toError, TDbError, toCapacityUnits, toRequestId, splitBatch, countBatch } from './batch-utils';
 import { Timer, TTimer } from '../../utils';
-import { BatchKeys, toBatchKeys } from "../marshall/to-batch-keys";
+import { toBatchKeys } from "../marshall/to-batch-keys";
 
 // ----------------------------------------------------------------------
 //                                Types
@@ -17,8 +17,8 @@ export interface TBatch {
 }
 
 export interface TBatchResults {
-  results: string[][];
-  failed: string[][];
+  results: TItem[];
+  failed: TItem[];
   errors: TDbError[];
   batches: TBatch[];
   retries: number;
@@ -222,7 +222,7 @@ export function BatchGet<EntityType>(
      */
     function onFailure(
       dbError: any,
-      requests: BatchKeys,
+      requests: TBatchItems,
       batch: TBatch,
       timer: TTimer
     ) {
@@ -232,11 +232,10 @@ export function BatchGet<EntityType>(
         queue.push(requests);
       }
       else {
-        Object.values(requests).forEach(list =>
-          failed = failed.concat(list)
-        )
+        Object.values(requests).forEach(entry =>
+          failed = failed.concat(entry.Keys)
+        );
       }
-
       errors.push(toError(dbError));
 
       batch.duration = timer();
@@ -257,11 +256,13 @@ export function BatchGet<EntityType>(
     function onFinish() {
       if (!active) {
         queue.forEach(request =>
-          failed.push(toRequestId(request))
+          Object.values(request).forEach(entry =>
+            failed = failed.concat(entry.Keys)
+          )
         );
         resolve({
-          results: results.map(key => key.split('|')),
-          failed: failed.map(key => key.split('|')),
+          results,
+          failed,
           errors,
           retries,
           batches

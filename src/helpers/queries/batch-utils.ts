@@ -1,5 +1,5 @@
 import { BatchWriteItemCommandOutput, KeysAndAttributes, WriteRequest } from "@aws-sdk/client-dynamodb";
-import { BatchKeys } from "../marshall/to-batch-keys";
+import { TBatchItems } from "@/types";
 
 // Error Object
 // {
@@ -116,7 +116,7 @@ export function splitBatch<Type>(
  * Count Batch
  */
 export function countBatch(
-  batch: BatchKeys
+  batch: TBatchItems
 ): number {
   return Object.values(batch)
     .reduce((total, list) =>

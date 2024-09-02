@@ -14,6 +14,16 @@ import { putItem } from "@/helpers/queries/put-item";
 import { deleteItem } from "@/helpers/queries/delete-item";
 import { toDocKeys } from "@/helpers/marshall/to-doc-keys";
 import { toItemKeys } from "@/helpers/marshall/to-item-keys";
+import { BatchGet } from "@/helpers/queries/batch-get";
+
+export interface GetBatchOptions<T> {
+  keys: Partial<T>[],
+  consistent?: boolean;
+  batchSize?: number,
+  concurrency?: number,
+  maxBackoff?: number,
+  retryBackoff?: number
+}
 
 export interface GetOneOptions<T> {
   where: TExpression<T>,
@@ -300,6 +310,39 @@ export class DynoModel<Type> {
         };
       }
     }
+  }
+
+  // -------------------------------------------------------------------
+  //      Get Batch
+  // -------------------------------------------------------------------
+
+  async getBatch(
+    options: GetBatchOptions<Type>
+  ) {
+    const timer = this.metrics && Timer();
+
+    const results = await BatchGet<Type>({
+      client: this.client,
+      docKeys: options.keys,
+      tableIndex: this.tableIndex,
+      batchSize: options.batchSize || 100,
+      concurrency: options.concurrency || 3,
+      maxBackoff: options.maxBackoff || (60 * 1000),
+      retryBackoff: options.retryBackoff || 50
+    });
+    return {
+      duration: timer(),
+      cost: results.batches.reduce((rcu, batch) =>
+        rcu + batch.rcu,
+        0
+      ),
+      docs: results.results.map(item => 
+        toDoc<Type>(item, this.propStack, this.propCount)
+      ),
+      errors: results.errors,
+      retries: results.retries,
+      batches: results.batches
+    };
   }
 
   // -------------------------------------------------------------------

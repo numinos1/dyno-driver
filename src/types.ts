@@ -1,4 +1,4 @@
-import { AttributeValue, CreateTableCommandInput } from "@aws-sdk/client-dynamodb";
+import { AttributeValue, CreateTableCommandInput, KeysAndAttributes } from "@aws-sdk/client-dynamodb";
 
 // --------------------------------------------------
 //                    Primitives
@@ -6,13 +6,17 @@ import { AttributeValue, CreateTableCommandInput } from "@aws-sdk/client-dynamod
 
 export type Constructor<T> = new (...args: any[]) => T;
 
-export type TItem = Record<string, AttributeValue>;
-
 export interface TPutOneResult<Type> {
   duration: number,
   wcu: number,
   doc: Type
 };
+
+// DynamoDb Document Item
+export type TItem = Record<string, AttributeValue>;
+
+// DynamoDb Batch of Items (grouped by table)
+export type TBatchItems = Record<string, KeysAndAttributes>;
 
 // --------------------------------------------------
 //                    Enums
