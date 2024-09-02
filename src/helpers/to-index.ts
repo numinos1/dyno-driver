@@ -5,25 +5,29 @@ import { TEntityIndex, TIndex, TProp, TPropMap, TPropTokens } from '@/types';
 export function toIndex(
   index: TEntityIndex[],
   propStack: TProp[],
-  propMap: TPropMap
+  propMap: TPropMap,
+  tableName: string
 ): TIndex[] {
-  return index.map(({ pk, sk, wcu, rcu, project }, i) => {
+  return index.map(({ pk, sk, wcu, rcu, project }, index) => {
     if (wcu && !rcu) {
-      throw new Error(`key[${i}] missing rcu`);
+      throw new Error(`key[${index}] missing rcu`);
     }
     if (!wcu && rcu) {
-      throw new Error(`key[${i}] missing wcu`);
+      throw new Error(`key[${index}] missing wcu`);
     }
     if (Array.isArray(project)) {
       project.forEach(name => {
         if (!propStack.find(prop => prop.name === name)) {
-          throw new Error(`key[${i}] invalid projection prop "${name}"`);
+          throw new Error(`key[${index}] invalid projection prop "${name}"`);
         }
       });
     }
     return {
-      pk: toKey(pk, 'pk', i, propStack, propMap),
-      sk: toKey(sk == null ? pk : sk, 'sk', i, propStack, propMap),
+      name: index
+        ? `${tableName}-gsi-${index}`
+        : tableName,
+      pk: toKey(pk, 'pk', index, propStack, propMap),
+      sk: toKey(sk == null ? pk : sk, 'sk', index, propStack, propMap),
       wcu: wcu || 0,
       rcu: rcu || 0,
       project: project || []

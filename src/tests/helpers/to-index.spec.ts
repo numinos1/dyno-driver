@@ -31,7 +31,7 @@ describe('toIndex()', () => {
     const props = newPropList();
     const propMap = newPropMap();
 
-    expect(() => toIndex([{ pk: '' }], props, propMap))
+    expect(() => toIndex([{ pk: '' }], props, propMap, 'table-name'))
       .toThrow("key[0] missing prop name");
   });
 
@@ -39,11 +39,11 @@ describe('toIndex()', () => {
     const props = newPropList();
     const propMap = newPropMap();
 
-    expect(() => toIndex([{ pk: '' }], props, propMap))
+    expect(() => toIndex([{ pk: '' }], props, propMap, 'table-name'))
       .toThrow("key[0] missing prop name");
-    expect(() => toIndex([{ pk: '', sk: 'repoId' }], props, propMap))
+    expect(() => toIndex([{ pk: '', sk: 'repoId' }], props, propMap, 'table-name'))
       .toThrow("key[0] missing prop name");
-    expect(() => toIndex([{ pk: 'repoId', sk: '' }], props, propMap))
+    expect(() => toIndex([{ pk: 'repoId', sk: '' }], props, propMap, 'table-name'))
       .toThrow("key[0] missing prop name");
   });
 
@@ -51,13 +51,13 @@ describe('toIndex()', () => {
     const props = newPropList();
     const propMap = newPropMap();
 
-    expect(() => toIndex([{ pk: 'xxx' }], props, propMap))
+    expect(() => toIndex([{ pk: 'xxx' }], props, propMap, 'table-name'))
       .toThrow("key[0] xxx is not a prop");
-    expect(() => toIndex([{ pk: 'docs#xxx' }], props, propMap))
+    expect(() => toIndex([{ pk: 'docs#xxx' }], props, propMap, 'table-name'))
       .toThrow("key[0] xxx is not a prop");
-    expect(() => toIndex([{ pk: 'repoId', sk: 'yyy' }], props, propMap))
+    expect(() => toIndex([{ pk: 'repoId', sk: 'yyy' }], props, propMap, 'table-name'))
       .toThrow("key[0] yyy is not a prop");
-    expect(() => toIndex([{ pk: 'repoId', sk: 'docs#yyy' }], props, propMap))
+    expect(() => toIndex([{ pk: 'repoId', sk: 'docs#yyy' }], props, propMap, 'table-name'))
       .toThrow("key[0] yyy is not a prop");
   });
 
@@ -69,7 +69,7 @@ describe('toIndex()', () => {
     const props = newPropList();
     const propMap = newPropMap();
 
-    expect(toNames(toIndex([{ pk: 'repoId' }], props, propMap)))
+    expect(toNames(toIndex([{ pk: 'repoId' }], props, propMap, 'table-name')))
       .toEqual([{ pk: 'repoId', sk: 'repoId' }]);
 
     expect(props.find(p => p.name === 'repoId')).toEqual({
@@ -98,7 +98,7 @@ describe('toIndex()', () => {
     const props = newPropList();
     const propMap = newPropMap();
 
-    expect(toNames(toIndex([{ pk: 'DOC#repoId' }], props, propMap)))
+    expect(toNames(toIndex([{ pk: 'DOC#repoId' }], props, propMap, 'table-name')))
       .toEqual([{ pk: 'repoId', sk: 'repoId' }]);
 
     expect(props.find(p => p.name === 'repoId')).toEqual({
@@ -131,7 +131,7 @@ describe('toIndex()', () => {
     const props = newPropList();
     const propMap = newPropMap();
 
-    expect(toNames(toIndex([{ pk: 'repoId', sk: 'DOC#' }], props, propMap)))
+    expect(toNames(toIndex([{ pk: 'repoId', sk: 'DOC#' }], props, propMap, 'table-name')))
       .toEqual([{ pk: 'repoId', sk: '__sk' }]);
 
     expect(props.find(p => p.name === 'repoId')).toEqual({
@@ -160,7 +160,7 @@ describe('toIndex()', () => {
     const props = newPropList();
     const propMap = newPropMap();
 
-    expect(toNames(toIndex([{ pk: 'DOC#', sk: 'repoId' }], props, propMap)))
+    expect(toNames(toIndex([{ pk: 'DOC#', sk: 'repoId' }], props, propMap, 'table-name')))
       .toEqual([{ pk: '__pk', sk: 'repoId' }]);
 
     expect(props[props.length - 1]).toEqual({
@@ -193,7 +193,7 @@ describe('toIndex()', () => {
     const props = newPropList();
     const propMap = newPropMap();
 
-    expect(toNames(toIndex([{ pk: 'repoId', sk: 'id' }], props, propMap)))
+    expect(toNames(toIndex([{ pk: 'repoId', sk: 'id' }], props, propMap, 'table-name')))
       .toEqual([{ pk: 'repoId', sk: 'id' }]);
 
     expect(props.find(p => p.name === 'repoId')).toEqual({
@@ -226,7 +226,7 @@ describe('toIndex()', () => {
     const props = newPropList();
     const propMap = newPropMap();
 
-    expect(toNames(toIndex([{ pk: 'repoId', sk: 'id' }, { pk: 'id', sk: 'repoId' }], props, propMap)))
+    expect(toNames(toIndex([{ pk: 'repoId', sk: 'id' }, { pk: 'id', sk: 'repoId' }], props, propMap, 'table-name')))
       .toEqual([{ pk: 'repoId', sk: 'id' }, { pk: 'id', sk: 'repoId' }]);
 
     expect(props.find(p => p.name === 'repoId')).toEqual({

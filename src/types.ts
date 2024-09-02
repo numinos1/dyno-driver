@@ -46,9 +46,8 @@ export interface TEntityIndex {
 //                    Model
 // --------------------------------------------------
 
-export type TPropMap = Map<string, TProp>;
-
 export interface TIndex {
+  name: string; // Table Name
   pk: TProp; // Partition Key Property
   sk: TProp; // Sort Key Property
   wcu: number; // Allocated WCU to index
@@ -66,6 +65,8 @@ export interface TProp {
   isKey: boolean;         // Is the prop a key?
   index: number;          // Index index
 }
+
+export type TPropMap = Map<string, TProp>;
 
 export type TOrder = 'asc' | 'desc';
 

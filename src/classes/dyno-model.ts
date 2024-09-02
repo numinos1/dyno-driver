@@ -78,7 +78,12 @@ export class DynoModel<Type> {
       this.propMap = props;
       this.propStack = [...props.values()]; // add all props defined in the entity
       this.propCount = props.size; // record end of entity defined props
-      this.tableIndex = toIndex(index, this.propStack, this.propMap);
+      this.tableIndex = toIndex(
+        index,
+        this.propStack,
+        this.propMap,
+        tableName
+      );
     }
     catch (err) {
       err.message = `Entity "${entityName}" ${err.message}`;

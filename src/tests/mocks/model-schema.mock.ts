@@ -5,6 +5,7 @@ export const ModelSchemaMock: TModelSchema = {
   "removalPolicy": "destroy",
   "tableIndex": [
     {
+      name: 'test-table',
       rcu: 0,
       wcu: 0,
       project: [],
@@ -30,6 +31,7 @@ export const ModelSchemaMock: TModelSchema = {
       }
     },
     {
+      name: 'test-table-gsi-1',
       rcu: 0,
       wcu: 0,
       project: [],

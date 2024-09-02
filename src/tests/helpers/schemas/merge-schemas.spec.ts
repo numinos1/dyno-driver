@@ -34,6 +34,7 @@ describe('mergeSchemas()', () => {
     const schema2 = copyObject(ModelSchemaMock);
 
      const extraProp: TIndex = {
+      name: 'table-name',
        wcu: 0,
        rcu: 0,
        project: [],

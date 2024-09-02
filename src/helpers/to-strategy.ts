@@ -17,6 +17,7 @@ interface TTheory {
   type: TQueryType;
   keys: TProp[];
   index: number;
+  name: string;
 }
 
 export type TKeyType = 'undefined' | 'static' | 'scalar' | 'query';
@@ -40,7 +41,7 @@ export function toStrategy<Type>(
   tableKeys: TIndex[],
   table: string
 ): TStrategy<Type> {
-  const { keys, type, index } = toTheory(where, tableKeys);
+  const { keys, type, index, name } = toTheory(where, tableKeys);
   const filter: Record<string, any> = { ...where }; // copy all where props to filter
   const query: Record<string, any> = {}; 
 
@@ -72,9 +73,7 @@ export function toStrategy<Type>(
     query,
     filter,
     table,
-    index: index
-      ? `${table}-gsi-${index}`
-      : undefined
+    index: index ? name : undefined
   };
 }
 
@@ -91,11 +90,12 @@ export function toTheory<Type>(
     type: TQueryType.tableScan,
     keys: [], 
     index: 0, // Table keys offset
+    name: ''
   };
 
   // Iterate through the table keys
   for (let index = 0; index < tableKeys.length; ++index) {
-    const { pk, sk } = tableKeys[index];
+    const { pk, sk, name } = tableKeys[index];
 
     // Partition key has to be defined as a scalar value
     if (toKeyType(pk, where) !== 'scalar') {
@@ -111,6 +111,7 @@ export function toTheory<Type>(
           type: TQueryType.getItem,
           keys: [pk, sk],
           index: index,
+          name: name
         }
       }
       // Sort key is a nested query
@@ -119,7 +120,8 @@ export function toTheory<Type>(
           theory = {
             type: TQueryType.skQuery,
             keys: [pk, sk],
-            index: index
+            index: index,
+            name: name
           };
         }
         break;
@@ -130,7 +132,8 @@ export function toTheory<Type>(
           theory = {
             type: TQueryType.pkQuery,
             keys: [pk],
-            index: index
+            index: index,
+            name: name
           };
         }
       }

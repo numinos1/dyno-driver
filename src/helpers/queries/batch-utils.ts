@@ -1,4 +1,5 @@
-import { BatchWriteItemCommandOutput, WriteRequest } from "@aws-sdk/client-dynamodb";
+import { BatchWriteItemCommandOutput, KeysAndAttributes, WriteRequest } from "@aws-sdk/client-dynamodb";
+import { BatchKeys } from "../marshall/to-batch-keys";
 
 // Error Object
 // {
@@ -95,3 +96,30 @@ export function toCapacityUnits(
   ) || 0;
 }
 
+/**
+ * Split Batch
+ */
+export function splitBatch<Type>(
+  docs: Type[],
+  batchSize: number
+): Type[][] {
+  const batches: Type[][] = [];
+
+  for (let i = 0; i < docs.length; i += batchSize) {
+    batches.push(docs.slice(i, i + batchSize)); 
+  }
+
+  return batches;
+}
+
+/**
+ * Count Batch
+ */
+export function countBatch(
+  batch: BatchKeys
+): number {
+  return Object.values(batch)
+    .reduce((total, list) =>
+      total + list.Keys.length
+    , 0);
+}

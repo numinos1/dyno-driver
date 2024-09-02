@@ -202,6 +202,7 @@ describe('DynoDriver()', () => {
       "removalPolicy": "destroy",
       "tableIndex": [
         {
+          name: 'test-table',
           wcu: 0,
           rcu: 0,
           project: [],
@@ -227,6 +228,7 @@ describe('DynoDriver()', () => {
           },
         },
         {
+          name: 'test-table-gsi-1',
           wcu: 0,
           rcu: 0,
           project: [],
@@ -252,6 +254,7 @@ describe('DynoDriver()', () => {
           },
         },
         {
+          name: 'test-table-gsi-2',
           wcu: 0,
           rcu: 0,
           project: [],
@@ -277,6 +280,7 @@ describe('DynoDriver()', () => {
           },
         },
         {
+          name: 'test-table-gsi-3',
           wcu: 0,
           rcu: 0,
           project: [],
@@ -302,6 +306,7 @@ describe('DynoDriver()', () => {
           },
         },
         {
+          name: 'test-table-gsi-4',
           wcu: 0,
           rcu: 0,
           project: [],
@@ -327,6 +332,7 @@ describe('DynoDriver()', () => {
           },
         },
         {
+          name: 'test-table-gsi-5',
           wcu: 0,
           rcu: 0,
           project: [],

@@ -5,13 +5,6 @@ import { TQueryType, toStrategy } from '@/helpers/to-strategy';
 import { TProp } from '@/types';
 
 /**
- * Helper to convert TProp to string[][]
- */
-function toNames(keys: TProp[][]): string[][] {
-  return keys.map(key => key.map(k => k.name));
-}
-
-/**
  * Tests
  */
 describe('toStrategy()', () => {
@@ -32,6 +25,7 @@ describe('toStrategy()', () => {
         {},
         [
           {
+            name: 'testTable',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -59,6 +53,7 @@ describe('toStrategy()', () => {
         },
         [
           {
+            name: 'testTable',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -96,6 +91,7 @@ describe('toStrategy()', () => {
         },
         [
           {
+            name: 'testTable',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -131,6 +127,7 @@ describe('toStrategy()', () => {
         {},
         [
           {
+            name: 'testTable',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -138,6 +135,7 @@ describe('toStrategy()', () => {
             sk: propsMock.get('id')
           },
           {
+            name: 'testTable-gsi-1',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -145,6 +143,7 @@ describe('toStrategy()', () => {
             sk: propsMock.get('repoId')
           },
           {
+            name: 'testTable-gsi-2',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -178,6 +177,7 @@ describe('toStrategy()', () => {
         },
         [
           {
+            name: 'testTable',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -212,6 +212,7 @@ describe('toStrategy()', () => {
         },
         [
           {
+            name: 'testTable',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -250,6 +251,7 @@ describe('toStrategy()', () => {
         },
         [
           {
+            name: 'testTable',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -257,6 +259,7 @@ describe('toStrategy()', () => {
             sk: propsMock.get('id')
           },
           {
+            name: 'testTable-gsi-1',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -264,6 +267,7 @@ describe('toStrategy()', () => {
             sk: propsMock.get('repoId')
           },
           {
+            name: 'testTable-gsi-2',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -300,6 +304,7 @@ describe('toStrategy()', () => {
         },
         [
           {
+            name: 'testTable',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -307,6 +312,7 @@ describe('toStrategy()', () => {
             sk: propsMock.get('id')
           },
           {
+            name: 'testTable-gsi-1',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -314,6 +320,7 @@ describe('toStrategy()', () => {
             sk: propsMock.get('repoId')
           },
           {
+            name: 'testTable-gsi-2',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -354,6 +361,7 @@ describe('toStrategy()', () => {
         },
         [
           {
+            name: 'testTable',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -391,6 +399,7 @@ describe('toStrategy()', () => {
         },
         [
           {
+            name: 'testTable',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -431,6 +440,7 @@ describe('toStrategy()', () => {
         },
         [
           {
+            name: 'testTable',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -438,13 +448,16 @@ describe('toStrategy()', () => {
             sk: propsMock.get('id')
           },
           {
+            name: 'testTable-gsi-1',
             wcu: 0,
             rcu: 0,
             project: [],
             pk: propsMock.get('id'),
             sk: propsMock.get('repoId')
           },
-          { wcu: 0,
+          {
+            name: 'testTable-gsi-2',
+            wcu: 0,
             rcu: 0,
             project: [],
             pk: propsMock.get('version'),
@@ -482,6 +495,7 @@ describe('toStrategy()', () => {
         },
         [
           {
+            name: 'testTable',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -489,6 +503,7 @@ describe('toStrategy()', () => {
             sk: propsMock.get('id')
           },
           {
+            name: 'testTable-gsi-1',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -496,6 +511,7 @@ describe('toStrategy()', () => {
             sk: propsMock.get('repoId')
           }, 
           {
+            name: 'testTable-gsi-2',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -538,6 +554,7 @@ describe('toStrategy()', () => {
         },
         [
           {
+            name: 'testTable',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -575,6 +592,7 @@ describe('toStrategy()', () => {
         },
         [
           {
+            name: 'testTable',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -613,6 +631,7 @@ describe('toStrategy()', () => {
         },
         [
           {
+            name: 'testTable',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -620,6 +639,7 @@ describe('toStrategy()', () => {
             sk: propsMock.get('id')
           }, 
           {
+            name: 'testTable-gsi-1',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -627,6 +647,7 @@ describe('toStrategy()', () => {
             sk: propsMock.get('repoId')
           },
           {
+            name: 'testTable-gsi-2',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -661,6 +682,7 @@ describe('toStrategy()', () => {
         },
         [
           {
+            name: 'testTable',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -668,6 +690,7 @@ describe('toStrategy()', () => {
             sk: propsMock.get('id')
           },
           {
+            name: 'testTable-gsi-1',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -675,6 +698,7 @@ describe('toStrategy()', () => {
             sk: propsMock.get('repoId')
           }, 
           {
+            name: 'testTable-gsi-2',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -709,6 +733,7 @@ describe('toStrategy()', () => {
         },
         [
           {
+            name: 'testTable',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -716,6 +741,7 @@ describe('toStrategy()', () => {
             sk: propsMock.get('id')
           }, 
           {
+            name: 'testTable-gsi-1',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -723,6 +749,7 @@ describe('toStrategy()', () => {
             sk: propsMock.get('repoId')
           }, 
           {
+            name: 'testTable-gsi-2',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -758,6 +785,7 @@ describe('toStrategy()', () => {
         },
         [
           {
+            name: 'testTable',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -765,6 +793,7 @@ describe('toStrategy()', () => {
             sk: propsMock.get('id')
           },
           {
+            name: 'testTable-gsi-1',
             wcu: 0,
             rcu: 0,
             project: [],
@@ -772,6 +801,7 @@ describe('toStrategy()', () => {
             sk: propsMock.get('version')
           },
           {
+            name: 'testTable-gsi-2',
             wcu: 0,
             rcu: 0,
             project: [],

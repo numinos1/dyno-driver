@@ -5,6 +5,7 @@ import { TIndex, TPropTokens } from '@/types';
 import { describe, expect, it } from '@jest/globals';
 
 const index: TIndex = {
+  name: 'table-name',
   pk: {
     name: 'repoId',
     alias: 'pk',

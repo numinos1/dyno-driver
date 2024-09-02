@@ -14,7 +14,7 @@ export function getItem<Type>(
   propMap: TPropMap
 ): GetItemCommand {
   const { consistent } = options;
-  const { table, index, keys, query } = strategy;
+  const { table, index, query } = strategy;
 
   return new GetItemCommand({
     TableName: index || table,
