@@ -171,6 +171,33 @@ export class DynoModel<Type> {
   }
 
   // -------------------------------------------------------------------
+  //      Update One
+  // -------------------------------------------------------------------
+
+  async updateOne(
+    doc: Type,
+    where?: TExpression<Type>
+  ) {
+    const timer = this.metrics && Timer();
+    const command = putItem<Type>(
+      doc,
+      where,
+      this.metrics,
+      this.tableName,
+      this.propMap,
+      this.propStack
+    );
+    const result = await this.client.send(command);
+
+    return {
+      duration: timer(),
+      cost: result.ConsumedCapacity?.CapacityUnits || 0,
+      doc: doc,
+      command: command.input
+    };
+  }
+
+  // -------------------------------------------------------------------
   //        Get One
   // -------------------------------------------------------------------
 
