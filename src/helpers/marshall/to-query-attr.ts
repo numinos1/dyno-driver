@@ -29,7 +29,7 @@ export function toQueryAttr(
     }
     if (value instanceof Set) {
       const list = [...value];
-      const first = value[0];
+      const first = list[0];
 
       if (typeof first === 'string') {
         return { 'SS': list };
@@ -41,7 +41,7 @@ export function toQueryAttr(
         return { 'BS': list };
       }
       else {
-        throw new Error(`Invalid Set values ${value}`);
+        throw new Error(`Invalid Set values ${JSON.stringify(value)}`);
       }
     }
     return {

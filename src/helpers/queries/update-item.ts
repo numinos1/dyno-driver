@@ -1,6 +1,5 @@
 import { TExpression, TProp, TPropMap } from "@/types";
 import { UpdateItemCommand } from "@aws-sdk/client-dynamodb";
-import { toItem } from "../marshall/to-item";
 import { toExpression } from "../to-expression";
 import { propObject } from "@/utils";
 
@@ -8,12 +7,11 @@ import { propObject } from "@/utils";
  * Update Item
  */
 export function updateItem<Type>(
-  doc: Type,
+  updates: any,
   where: TExpression<Type>,
   metrics: boolean,
   tableName: string,
   propMap: TPropMap,
-  propStack: TProp[]
 ): UpdateItemCommand {
   const names = {}, values = {};
 
