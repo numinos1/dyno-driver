@@ -167,10 +167,10 @@ describe('toUpdate()', () => {
           ages: 2
         },
         $append: {
-          names: [4,5,6]
+          names: ['a','b','c']
         },
         $prepend: {
-          names: [7,8,9]
+          names: ['d','e']
         },
         $increment: {
           total: 10

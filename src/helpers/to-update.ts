@@ -25,7 +25,7 @@ export type TUpdateExpr<T> = {
   $create?: Partial<T>;
   $set?: Partial<T>;
   $unset?: {
-    [P in keyof T]: any
+    [P in keyof T]?: any
   };
   $setPath?: {
     [P in ObjectKeys<T>]?: {
@@ -34,10 +34,7 @@ export type TUpdateExpr<T> = {
     }
   };
   $unsetPath?:{
-    [P in ObjectKeys<T>]?: {
-      path: string;
-      value: any;
-    }
+    [P in ObjectKeys<T>]?: string;
   };
   $setIndex?: {
     [P in ArrayKeys<T>]?: {
@@ -46,16 +43,13 @@ export type TUpdateExpr<T> = {
     }
   };
   $unsetIndex?: {
-    [P in ArrayKeys<T>]?: {
-      index: number;
-      value: ArrayType<T[P]>;
-    }
+    [P in ArrayKeys<T>]?: number;
   };
   $append?: {
-    [P in ArrayKeys<T>]?: ArrayType<T[P]>;
+    [P in ArrayKeys<T>]?: ArrayType<T[P]> | ArrayType<T[P]>[];
   };
   $prepend?: {
-    [P in ArrayKeys<T>]?: ArrayType<T[P]>;
+    [P in ArrayKeys<T>]?: ArrayType<T[P]> | ArrayType<T[P]>[];
   };
   $increment?: {
     [P in NumberKeys<T>]?: number;
@@ -71,56 +65,66 @@ export type TUpdateExpr<T> = {
   };
 }
 
-// interface Example {
-//   id: number;
-//   name: string;
-//   map: Record<string, any>;
-//   names: string[];
-//   ages: number[];
-//   colors: Set<string>;
-//   tokens: Set<number>;
-// };
+interface Example {
+  id: number;
+  name: string;
+  map: Record<string, any>;
+  names: string[];
+  ages: number[];
+  colors: Set<string>;
+  tokens: Set<number>;
+};
 
-// const x: TUpdateExpr<Example> = {
-//   $set: {
-//     name: 'andrew',
-//     id: 10,
-//   },
-//   $setPath: {
-//     map: {
-//       path: 'path.here',
-//       value: 10,
-//     }
-//   },
-//   $setIndex: {
-//     names: {
-//       index: 2,
-//       value: 'aaaa'
-//     },
-//     ages: {
-//       index: 3,
-//       value: 53
-//     }
-//   },
-//   $append: {
-//     names: 'andrew',
-//     ages: 10
-//   },
-//   $prepend: {
-//     names: 'bunker',
-//     ages: 2
-//   },
-//   $increment: {
-//     id: 10
-//   },
-//   $decrement: {
-//     id: 10,
-//   },
-//   $add: {
-//     colors: ['green', 'yellow'],
-//     tokens: 10
-//   }
-// };
+const x: TUpdateExpr<Example> = {
+  $set: {
+    name: 'andrew',
+    id: 10,
+  },
+  $unset: {
+    name: '',
+    id: ''
+  },
+  $setPath: {
+    map: {
+      path: 'path.here',
+      value: 10,
+    }
+  },
+  $unsetPath: {
+    map: 'one.two'
+  },
+  $setIndex: {
+    names: {
+      index: 2,
+      value: 'aaaa'
+    },
+    ages: {
+      index: 3,
+      value: 53
+    }
+  },
+  $unsetIndex: {
+    names: 3
+  },
+  $append: {
+    names: 'andrew',
+    ages: 10
+  },
+  $prepend: {
+    names: 'bunker',
+    ages: 2
+  },
+  $increment: {
+    id: 10
+  },
+  $decrement: {
+    id: 10,
+  },
+  $add: {
+    colors: ['green', 'yellow'],
+    tokens: 10
+  }
+};
 
 // ------------------------------------------------------------------
 //      Update Method
