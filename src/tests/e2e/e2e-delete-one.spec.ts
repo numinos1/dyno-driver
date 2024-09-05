@@ -53,10 +53,8 @@ describe('deleteOne()', () => {
     expect(result.doc).toEqual(docs[1]);
 
     const result2 = await model.getOne({
-      where: {
-        repoId: 'delete-one',
-        docId: 'doc-1'
-      }
+      repoId: 'delete-one',
+      docId: 'doc-1'
     });
 
     expect(result2.doc).toEqual(undefined);

@@ -65,10 +65,9 @@ describe('Query E2E', () => {
     expect(putResult.doc).toEqual(putDoc);
 
     const getResult = await model.getOne({
-      where: {
-        id: '12345678',
-        repoId: 'abunker',
-      },
+      id: '12345678',
+      repoId: 'abunker',
+    }, {
       consistent: true
     });
 
@@ -89,10 +88,9 @@ describe('Query E2E', () => {
     expect(putResult.doc).toEqual(putDoc);
 
     const getResult = await model.getOne({
-      where: {
-        repoId: putDoc.repoId,
-        docId: putDoc.docId
-      },
+      repoId: putDoc.repoId,
+      docId: putDoc.docId
+    }, {
       consistent: true
     });
 
@@ -121,10 +119,9 @@ describe('Query E2E', () => {
     expect(putResult2.doc).toEqual(putDoc2);
 
     const getResult1 = await model.getOne({
-      where: {
-        repoId: putDoc2.repoId,
-        docId: putDoc2.docId
-      },
+      repoId: putDoc2.repoId,
+      docId: putDoc2.docId
+    }, {
       consistent: true
     });
 
@@ -162,10 +159,9 @@ describe('Query E2E', () => {
     expect(result1.doc).toEqual(putDoc2);
 
     const getResult1 = await model.getOne({
-      where: {
-        repoId: putDoc1.repoId,
-        docId: putDoc1.docId
-      },
+      repoId: putDoc1.repoId,
+      docId: putDoc1.docId
+    }, {
       consistent: true
     });
 

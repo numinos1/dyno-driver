@@ -32,7 +32,6 @@ export interface GetBatchOptions<T> {
 }
 
 export interface GetOneOptions<T> {
-  where: TExpression<T>,
   consistent?: boolean;
   order?: TOrder;
 }
@@ -218,9 +217,10 @@ export class DynoModel<Type> {
    * Note - Table Scan does not support "order"
    */
   async getOne(
-    options: GetOneOptions<Type>
+    where: TExpression<Type>,
+    options: GetOneOptions<Type> = {}
   ) {
-    const strategy = toStrategy(options.where, this.tableIndex, this.tableName);
+    const strategy = toStrategy(where, this.tableIndex, this.tableName);
     const getOptions: GetManyOptions<Type> = { ...options, limit: 1 };
     const timer = Timer();
 

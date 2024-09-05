@@ -47,11 +47,10 @@ describe('getOne()', () => {
 
   it('get one by PK/SK (consistent)', async () => {
     const getResult = await model.getOne({
+      repoId: docs[0].repoId,
+      docId: docs[0].docId
+    }, {
       consistent: true,
-      where: {
-        repoId: docs[0].repoId,
-        docId: docs[0].docId
-      }
     });
 
     expect(getResult.cost).toEqual(1);
@@ -65,11 +64,10 @@ describe('getOne()', () => {
 
   it('get one by PK/SK (not consistent)', async () => {
     const getResult = await model.getOne({
+      repoId: docs[0].repoId,
+      docId: docs[0].docId
+    }, {
       consistent: false,
-      where: {
-        repoId: docs[0].repoId,
-        docId: docs[0].docId
-      }
     });
 
     expect(getResult.cost).toEqual(0.5);
@@ -83,9 +81,7 @@ describe('getOne()', () => {
 
   it('get one by GSI 1 (skQuery)', async () => {
     const getResult = await model.getOne({
-      where: {
-        docId: docs[0].docId
-      }
+      docId: docs[0].docId
     });
     expect(getResult.cost).toEqual(0.5);
     expect(getResult.doc).toEqual(docs[0]);
@@ -98,9 +94,7 @@ describe('getOne()', () => {
 
   it('get one by GSI 2 (skQuery)', async () => {
     const getResult = await model.getOne({
-      where: {
-        alias: docs[0].alias
-      }
+      alias: docs[0].alias
     });
 
     expect(getResult.cost).toEqual(0.5);
@@ -114,10 +108,8 @@ describe('getOne()', () => {
 
    it('get one by GSI 3 (skQuery)', async () => {
     const getResult = await model.getOne({
-      where: {
-        repoId: docs[1].repoId,
-        total: docs[1].total
-      }
+      repoId: docs[1].repoId,
+      total: docs[1].total
     });
 
     expect(getResult.cost).toEqual(0.5);
@@ -132,10 +124,9 @@ describe('getOne()', () => {
   it('get one should throw if consistency = true', async () => {
     expect(async () => {
       await model.getOne({
+        docId: docs[0].docId
+      }, {
         consistent: true,
-        where: {
-          docId: docs[0].docId
-        }
       });
     }).rejects.toThrow(
       'Consistent read cannot be true when querying a GSI'
@@ -146,11 +137,9 @@ describe('getOne()', () => {
 
   it('get one PK/SK query should ignore filtered query params', async () => {
     const getResult = await model.getOne({
-      where: {
-        repoId: docs[0].repoId,
-        docId: docs[0].docId,
-        ages: { $contains: 2 }
-      }
+      repoId: docs[0].repoId,
+      docId: docs[0].docId,
+      ages: { $contains: 2 }
     });
 
     expect(getResult.cost).toEqual(0.5);
