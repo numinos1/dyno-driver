@@ -14,7 +14,6 @@ type KeysOfType<T, ValueType> = {
 }[keyof T];
 
 type ArrayType<T> = T extends Array<infer U> ? U : T;
-type SetType<T> = T extends Set<infer U> ? U : T;
 
 type ObjectKeys<T> = KeysOfType<T, object>;
 type ArrayKeys<T> = KeysOfType<T, Array<any>>;
@@ -58,72 +57,6 @@ export type TUpdateExpr<T> = {
     [P in SetKeys<T>]?: T[P];
   };
 }
-
-interface Example {
-  id: number;
-  name: string;
-  map: Record<string, any>;
-  names: string[];
-  ages: number[];
-  colors: Set<string>;
-  tokens: Set<number>;
-};
-
-const x: TUpdateExpr<Example> = {
-  $set: {
-    name: 'andrew',
-    id: 10,
-  },
-  $unset: {
-    name: '',
-    id: ''
-  },
-  $setPath: {
-    map: {
-      'path.here': 10,
-      'path.there': 20
-    }
-  },
-  $unsetPath: {
-    map: {
-      'one.two': 3,
-      'two.three': 4
-    }
-  },
-  $setIndex: {
-    names: {
-      2: 'aaaa',
-      10: 'bbbb'
-    },
-    ages: {
-      3: 10,
-      33: 20
-    }
-  },
-  $unsetIndex: {
-    names: {
-      3: 'cccc'
-    }
-  },
-  $append: {
-    names: 'andrew',
-    ages: 10
-  },
-  $prepend: {
-    names: 'bunker',
-    ages: 2
-  },
-  $increment: {
-    id: 10
-  },
-  $decrement: {
-    id: 10,
-  },
-  $add: {
-    colors: new Set(['green', 'yellow']),
-    tokens: new Set([10])
-  }
-};
 
 // ------------------------------------------------------------------
 //      Update Method
