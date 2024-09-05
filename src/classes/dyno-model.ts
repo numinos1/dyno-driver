@@ -1,4 +1,4 @@
-import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb"; // ES Modules import
+import { DynamoDBClient, QueryCommand, ReturnValue } from "@aws-sdk/client-dynamodb"; // ES Modules import
 import { singleton } from 'tsyringe';
 import { TBillingMode, TEntityIndex, TExpression, TIndex, TItem, TModelSchema, TOrder, TProp, TPropMap, TRemovalPolicy } from '@/types';
 import { TQueryType, toStrategy } from '@/helpers/to-strategy';
@@ -15,6 +15,13 @@ import { deleteItem } from "@/helpers/queries/delete-item";
 import { toDocKeys } from "@/helpers/marshall/to-doc-keys";
 import { toItemKeys } from "@/helpers/marshall/to-item-keys";
 import { BatchGet } from "@/helpers/queries/batch-get";
+import { updateItem } from "@/helpers/queries/update-item";
+import { TUpdateExpr } from "@/helpers/to-update";
+
+export interface UpdateOneOptions<Type> {
+  where?: TExpression<Type>,
+  returns?: ReturnValue
+}
 
 export interface GetBatchOptions<T> {
   keys: Partial<T>[],
@@ -175,24 +182,27 @@ export class DynoModel<Type> {
   // -------------------------------------------------------------------
 
   async updateOne(
-    doc: Type,
-    where?: TExpression<Type>
+    keys: Partial<Type>,
+    updates: TUpdateExpr<Type>,
+    options: UpdateOneOptions<Type> = {}
   ) {
     const timer = this.metrics && Timer();
-    const command = putItem<Type>(
-      doc,
-      where,
+
+    const command = updateItem<Type>(
+      keys,
+      updates,
+      options.where,
+      options.returns,
       this.metrics,
       this.tableName,
       this.propMap,
-      this.propStack
+      this.tableIndex
     );
     const result = await this.client.send(command);
 
     return {
       duration: timer(),
       cost: result.ConsumedCapacity?.CapacityUnits || 0,
-      doc: doc,
       command: command.input
     };
   }

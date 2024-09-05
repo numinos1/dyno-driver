@@ -25,6 +25,7 @@ describe('to-batch-keys()', () => {
 
     expect(result).toEqual({
       "tableName": {
+        ConsistentRead: true,
         Keys: [
           {
             pk: { S: "repo#123" },
@@ -41,6 +42,7 @@ describe('to-batch-keys()', () => {
         ]
       },
       "tableName-gsi-2": {
+        ConsistentRead: true,
         Keys: [
           {
             pk2: { S: 'aaaa' },
@@ -49,6 +51,7 @@ describe('to-batch-keys()', () => {
         ]
       },
       "tableName-gsi-1": {
+        ConsistentRead: true,
         Keys: [
           {
             pk1: { S: "doc#abc3" },
@@ -61,6 +64,7 @@ describe('to-batch-keys()', () => {
         ]
       },
       "tableName-gsi-3": {
+        ConsistentRead: true,
         Keys: [
           {
             pk3: { S: "repo#456" },
