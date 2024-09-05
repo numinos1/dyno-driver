@@ -5,30 +5,27 @@ import { TProp, TItem, TIndex } from '@/types';
  * Convert Doc Keys to Item Keys
  */
 export function toItemKeys<Type>(
-  doc: Record<string, any>,
+  doc: Partial<Type>,
   index: TIndex,
+  delDocKeys = false
 ): TItem {
-  return toItemKey(
-    doc,
-    index.pk,
-    toItemKey(
-      doc,
-      index.sk,
-      {}
-    )
-  );
+  const Keys: TItem = {};
+
+  toItemKey(index.pk, doc, Keys, delDocKeys);
+  toItemKey(index.sk, doc, Keys, delDocKeys);
+
+  return Keys;
 }
 
 /**
  * Convert Doc Prop to Item Prop
  */
 function toItemKey<Type>(
+  { name, prefix, alias, type, isRequired, isStatic }: TProp,
   doc: Record<string, any>,
-  prop: TProp,
-  Item: TItem
+  Item: TItem,
+  delDocKeys: boolean
 ): TItem {
-  const { name, prefix, alias, type, isRequired, isStatic } = prop;
-
   if (isStatic) {
     Item[alias] = toItemAttr('', type, prefix);
   }
@@ -40,6 +37,9 @@ function toItemKey<Type>(
     }
     else if (isRequired) {
       throw new Error(`${name} is required`);
+    }
+    if (delDocKeys) {
+      delete doc[name];
     }
   }
   return Item;

@@ -19,7 +19,6 @@ import { updateItem } from "@/helpers/queries/update-item";
 import { TUpdateExpr } from "@/helpers/to-update";
 
 export interface UpdateOneOptions<Type> {
-  where?: TExpression<Type>,
   returns?: ReturnValue
 }
 
@@ -182,16 +181,15 @@ export class DynoModel<Type> {
   // -------------------------------------------------------------------
 
   async updateOne(
-    keys: Partial<Type>,
+    where: TExpression<Type>,
     updates: TUpdateExpr<Type>,
     options: UpdateOneOptions<Type> = {}
   ) {
     const timer = this.metrics && Timer();
 
     const command = updateItem<Type>(
-      keys,
+      where,
       updates,
-      options.where,
       options.returns,
       this.metrics,
       this.tableName,

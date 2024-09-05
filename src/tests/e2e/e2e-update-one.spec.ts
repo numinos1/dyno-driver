@@ -452,16 +452,12 @@ describe('updateOne()', () => {
       expect(() => model.updateOne(
         {
           repoId: 'update-one',
-          docId: 'doc-6'
+          docId: 'doc-6',
+          total: { $eq: 5 }
         },
         {
           $set: {
             alias: 'NEW-ALIAS'
-          }
-        },
-        {
-          where: {
-            total: { $eq: 5 }
           }
         }
       )).rejects.toThrow('The conditional request failed');
@@ -473,16 +469,12 @@ describe('updateOne()', () => {
       const result = await model.updateOne(
         {
           repoId: 'update-one',
-          docId: 'doc-6'
+          docId: 'doc-6',
+          total: { $eq: 6 }
         },
         {
           $set: {
             alias: 'NEW-ALIAS'
-          }
-        },
-        {
-          where: {
-            total: { $eq: 6 }
           }
         }
       );
