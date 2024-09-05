@@ -444,4 +444,51 @@ describe('updateOne()', () => {
   //        Conditional Checks
   // ----------------------------------------------------------------
 
+  describe('conditional checks', () => {
+
+    it('condtionally throws', async () => {
+      const { repoId, docId, ...updates } = DOC_UPDATE;
+    
+      expect(() => model.updateOne(
+        {
+          repoId: 'update-one',
+          docId: 'doc-6'
+        },
+        {
+          $set: {
+            alias: 'NEW-ALIAS'
+          }
+        },
+        {
+          where: {
+            total: { $eq: 5 }
+          }
+        }
+      )).rejects.toThrow('The conditional request failed');
+    });
+
+    it('condtionally updates', async () => {
+      const { repoId, docId, ...updates } = DOC_UPDATE;
+    
+      const result = await model.updateOne(
+        {
+          repoId: 'update-one',
+          docId: 'doc-6'
+        },
+        {
+          $set: {
+            alias: 'NEW-ALIAS'
+          }
+        },
+        {
+          where: {
+            total: { $eq: 6 }
+          }
+        }
+      );
+      expect(result.doc.alias).toEqual('NEW-ALIAS');
+    });
+
+  });
+
 });
