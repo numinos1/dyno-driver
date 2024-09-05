@@ -23,7 +23,7 @@ export function updateItem<Type>(
   return new UpdateItemCommand({
     TableName: tableName,
     Key: toItemKeys(keys, tableIndex[0]),
-    ReturnValues: returns || 'NONE', 
+    ReturnValues: returns || 'ALL_NEW', 
     ReturnConsumedCapacity: metrics ? 'TOTAL' : 'NONE',
     ReturnItemCollectionMetrics: metrics ? 'SIZE' : 'NONE',
     ReturnValuesOnConditionCheckFailure: 'NONE',

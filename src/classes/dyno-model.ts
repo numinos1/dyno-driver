@@ -198,11 +198,15 @@ export class DynoModel<Type> {
       this.propMap,
       this.tableIndex
     );
+
+    // console.log(JSON.stringify(command.input, null, '  '));
+
     const result = await this.client.send(command);
 
     return {
       duration: timer(),
       cost: result.ConsumedCapacity?.CapacityUnits || 0,
+      doc: this.unmarshall(result.Attributes) as Partial<Type>,
       command: command.input
     };
   }

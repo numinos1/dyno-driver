@@ -28,22 +28,16 @@ export type TUpdateExpr<T> = {
     [P in keyof T]?: any
   };
   $setPath?: {
-    [P in ObjectKeys<T>]?: {
-      path: string;
-      value: any;
-    }
+    [P in ObjectKeys<T>]?: Record<string, any>
   };
   $unsetPath?:{
-    [P in ObjectKeys<T>]?: string;
+    [P in ObjectKeys<T>]?: Record<string, any>
   };
   $setIndex?: {
-    [P in ArrayKeys<T>]?: {
-      index: number;
-      value: ArrayType<T[P]>;
-    }
+    [P in ArrayKeys<T>]?: Record<number, ArrayType<T[P]>>
   };
   $unsetIndex?: {
-    [P in ArrayKeys<T>]?: number;
+    [P in ArrayKeys<T>]?: Record<number, any>
   };
   $append?: {
     [P in ArrayKeys<T>]?: ArrayType<T[P]> | ArrayType<T[P]>[];
@@ -58,10 +52,10 @@ export type TUpdateExpr<T> = {
     [P in NumberKeys<T>]?: number;
   };
   $add?: {
-    [P in SetKeys<T>]?: SetType<T[P]> | SetType<T[P]>[];
+    [P in SetKeys<T>]?: T[P];
   };
   $delete?: {
-    [P in SetKeys<T>]?: SetType<T[P]> | SetType<T[P]>[];
+    [P in SetKeys<T>]?: T[P];
   };
 }
 
@@ -86,25 +80,30 @@ const x: TUpdateExpr<Example> = {
   },
   $setPath: {
     map: {
-      path: 'path.here',
-      value: 10,
+      'path.here': 10,
+      'path.there': 20
     }
   },
   $unsetPath: {
-    map: 'one.two'
+    map: {
+      'one.two': 3,
+      'two.three': 4
+    }
   },
   $setIndex: {
     names: {
-      index: 2,
-      value: 'aaaa'
+      2: 'aaaa',
+      10: 'bbbb'
     },
     ages: {
-      index: 3,
-      value: 53
+      3: 10,
+      33: 20
     }
   },
   $unsetIndex: {
-    names: 3
+    names: {
+      3: 'cccc'
+    }
   },
   $append: {
     names: 'andrew',
@@ -121,8 +120,8 @@ const x: TUpdateExpr<Example> = {
     id: 10,
   },
   $add: {
-    colors: ['green', 'yellow'],
-    tokens: 10
+    colors: new Set(['green', 'yellow']),
+    tokens: new Set([10])
   }
 };
 
@@ -203,8 +202,8 @@ export function toUpdate<Type>(
   //      Helper Methods
   // ------------------------------------------------------
 
-  function toName(alias: string) {
-    const nameKey = `#${alias}`;
+  function toName(alias: string, key?: string) {
+    const nameKey = `#${key || alias}`;
 
     if (!names[nameKey]) {
       names[nameKey] = alias;
@@ -244,36 +243,56 @@ export function toUpdate<Type>(
   }
 
   function $setPath(value: any, prop: TProp) {
-    const nkey = toName(`${prop.alias}.${value.path}`);
-    const vkey = toValue(value.value, prop);
-    sets.push(`${nkey} = ${vkey}`);
+    const nkey = toName(prop.alias);
+
+    Object.entries(value).forEach(([path, val]) => {
+      const pkeys = path.split('.').map(part => toName(part)).join('.');
+      const vkey = toValue(val, prop);
+      sets.push(`${nkey}.${pkeys} = ${vkey}`);
+    });
   }
 
   function $unsetPath(value: any, prop: TProp) {
-    const nkey = toName(`${prop.alias}.${value.path}`);
-    deletes.push(nkey);
+    const nkey = toName(prop.alias);
+
+    Object.entries(value).forEach(([path]) => {
+      const pkeys = path.split('.').map(part => toName(part)).join('.');
+      removes.push(`${nkey}.${pkeys}`);
+    });
   }
 
   function $setIndex(value: any, prop: TProp) {
-    const nkey = toName(`${prop.alias}[${value.index}]`);
-    const vkey = toValue(value.value, prop);
-    sets.push(`${nkey} = ${vkey}`);
+    const nkey = toName(prop.alias);
+
+    Object.entries(value).forEach(([index, val]) => {
+      const vkey = toValue(val, prop);
+      sets.push(`${nkey}[${index}] = ${vkey}`);
+    });
   }
 
   function $unsetIndex(value: any, prop: TProp) {
-    const nkey = toName(`${prop.alias}[${value.index}]`);
-    deletes.push(nkey);
+    const nkey = toName(prop.alias);
+
+    Object.entries(value).forEach(([index, val]) => {
+      removes.push(`${nkey}[${index}]`);
+    });
   }
 
   function $append(value: any, prop: TProp) {
     const nkey = toName(prop.alias);
-    const vkey = toValue(value, prop);
+    const vkey = toValue(
+      Array.isArray(value) ? value : [value],
+      prop
+    );
     sets.push(`${nkey} = list_append(${nkey}, ${vkey})`);
   }
 
   function $prepend(value: any, prop: TProp) {
     const nkey = toName(prop.alias);
-    const vkey = toValue(value, prop);
+    const vkey = toValue(
+      Array.isArray(value) ? value : [value],
+      prop
+    );
     sets.push(`${nkey} = list_append(${vkey}, ${nkey})`);
   }
 

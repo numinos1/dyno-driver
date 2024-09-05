@@ -155,16 +155,19 @@ describe('toUpdate()', () => {
           }
         },
         $unsetPath: {
-          meta: 'path.delprop'
+          meta: {
+            'path.delprop': true
+          }
         },
         $setIndex: {
           ages: {
-            index: 1,
-            value: 10
+            1: 10
           }
         },
         $unsetIndex: {
-          ages: 2
+          ages: {
+            2: true
+          }
         },
         $append: {
           names: ['a','b','c']
@@ -179,10 +182,10 @@ describe('toUpdate()', () => {
           total: 10
         },
         $add: {
-          years: [4,5,6]
+          years: new Set([4,5,6])
         },
         $delete: {
-          years: [1, 2]
+          years: new Set([1, 2])
         }
       },
       props5Mock,
@@ -190,14 +193,23 @@ describe('toUpdate()', () => {
       values
     );
 
-    expect(expr).toEqual("SET #pk = if_not_exists(#pk, :v1), "
-      + "#sk = :v2, #meta.path.newprop = :v3, "
-      + "#ages[1] = :v4, #names = list_append(#names, :v5), "
-      + "#names = list_append(:v6, #names), "
-      + "#total = #total + :v7, #total = #total - :v8 "
-      + "REMOVE #isBig ADD #years :v9 "
-      + "DELETE #meta.undefined, #ages[undefined], "
-      + "#years :v10"
+    expect(expr).toEqual("SET "
+      + "#pk = if_not_exists(#pk, :v1), "
+      + "#sk = :v2, "
+      + "#meta.#path = :v3, "
+      + "#meta.#value = :v4, "
+      + "#ages[1] = :v5, "
+      + "#names = list_append(#names, :v6), "
+      + "#names = list_append(:v7, #names), "
+      + "#total = #total + :v8, "
+      + "#total = #total - :v9 "
+      + "REMOVE #isBig, "
+      + "#meta.#path.#delprop, "
+      + "#ages[2] "
+      + "ADD "
+      + "#years :v10 "
+      + "DELETE "
+      + "#years :v11"
     );
   });
 
