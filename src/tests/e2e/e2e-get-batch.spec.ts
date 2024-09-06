@@ -44,12 +44,12 @@ describe('getOne()', () => {
   // ----------------------------------------------------------------
 
   it('fetches saved docs (non-consistent)', async () => {
-    const results = await model.getBatch({
-      keys: docs.map(doc => ({
+    const results = await model.getBatch(
+      docs.map(doc => ({
         repoId: doc.repoId,
         docId: doc.docId
       }))
-    });
+    );
 
     expect(results.cost).toEqual(5);
     expect(results.docs.length).toEqual(10);
@@ -61,13 +61,13 @@ describe('getOne()', () => {
   // ----------------------------------------------------------------
 
   it('fetches saved docs (consistent)', async () => {
-    const results = await model.getBatch({
-      keys: docs.map(doc => ({
+    const results = await model.getBatch(
+      docs.map(doc => ({
         repoId: doc.repoId,
         docId: doc.docId
       })),
-      consistent: true
-    });
+      { consistent: true }
+    );
 
     expect(results.cost).toEqual(10);
     expect(results.docs.length).toEqual(10);
@@ -79,13 +79,13 @@ describe('getOne()', () => {
   // ----------------------------------------------------------------
 
   it('fetches docs with small batch size', async () => {
-    const results = await model.getBatch({
-      keys: docs.map(doc => ({
+    const results = await model.getBatch(
+      docs.map(doc => ({
         repoId: doc.repoId,
         docId: doc.docId
       })),
-      batchSize: 2
-    });
+      { batchSize: 2 }
+    );
 
     expect(results.cost).toEqual(5);
     expect(results.docs.length).toEqual(10);
@@ -97,12 +97,12 @@ describe('getOne()', () => {
   // ----------------------------------------------------------------
 
   it(`returns no results when docs aren't found`, async () => {
-    const results = await model.getBatch({
-      keys: docs.map(doc => ({
+    const results = await model.getBatch(
+      docs.map(doc => ({
         repoId: doc.repoId,
         docId: doc.docId + 'abc'
       }))
-    });
+    );
 
     expect(results.cost).toEqual(0);
     expect(results.docs.length).toEqual(0);

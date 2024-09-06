@@ -1,6 +1,6 @@
 {
   "name": "dyno-driver",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "DynamoDb Node Driver",
   "author": "Andrew Bunker",
   "main": "index.js",

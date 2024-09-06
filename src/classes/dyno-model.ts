@@ -18,12 +18,11 @@ import { BatchGet } from "@/helpers/queries/batch-get";
 import { updateItem } from "@/helpers/queries/update-item";
 import { TUpdateExpr } from "@/helpers/to-update";
 
-export interface UpdateOneOptions<Type> {
+export interface UpdateOneOptions {
   returns?: ReturnValue
 }
 
 export interface GetBatchOptions<T> {
-  keys: Partial<T>[],
   consistent?: boolean;
   batchSize?: number,
   concurrency?: number,
@@ -37,7 +36,6 @@ export interface GetOneOptions<T> {
 }
 
 export interface GetManyOptions<T> {
-  where?: TExpression<T>,
   consistent?: boolean;
   order?: TOrder;
   limit?: number;
@@ -181,14 +179,14 @@ export class DynoModel<Type> {
 
   async updateOne(
     where: TExpression<Type>,
-    updates: TUpdateExpr<Type>,
-    options: UpdateOneOptions<Type> = {}
+    update: TUpdateExpr<Type>,
+    options: UpdateOneOptions = {}
   ) {
     const timer = this.metrics && Timer();
 
     const command = updateItem<Type>(
       where,
-      updates,
+      update,
       options.returns,
       this.metrics,
       this.tableName,
@@ -295,10 +293,11 @@ export class DynoModel<Type> {
    * Note - Table Scan does not support "order"
    */
   async getMany(
-    options: GetManyOptions<Type>
+    where: TExpression<Type>,
+    options: GetManyOptions<Type> = {}
   ) {
     const strategy = toStrategy(
-      options.where,
+      where,
       this.tableIndex,
       this.tableName
     );
@@ -356,13 +355,14 @@ export class DynoModel<Type> {
   // -------------------------------------------------------------------
 
   async getBatch(
-    options: GetBatchOptions<Type>
+    keys: Partial<Type>[],
+    options: GetBatchOptions<Type> = {}
   ) {
     const timer = this.metrics && Timer();
 
     const results = await BatchGet<Type>({
       client: this.client,
-      docKeys: options.keys,
+      docKeys: keys,
       tableIndex: this.tableIndex,
       consistent: options.consistent === true,
       batchSize: options.batchSize || 100,

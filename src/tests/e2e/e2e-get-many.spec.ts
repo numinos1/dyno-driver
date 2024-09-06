@@ -45,9 +45,7 @@ describe('getMany()', () => {
 
   it('get many with constraint on PK', async () => {
     const result = await model.getMany({
-      where: {
-        repoId: 'get-one',
-      }
+      repoId: 'get-one',
     });
 
     expect(result.cost).toEqual(2.5);
@@ -61,11 +59,9 @@ describe('getMany()', () => {
 
   it('get many with constraint on PK/SK (filter)', async () => {
     const result = await model.getMany({
-      where: {
-        repoId: 'get-one',
-        docId: {
-          $between: ['doc-10', 'doc-20']
-        }
+      repoId: 'get-one',
+      docId: {
+        $between: ['doc-10', 'doc-20']
       }
     });
 
@@ -80,9 +76,7 @@ describe('getMany()', () => {
 
   it('get many with constraint on GSI 1 PK (static SK)', async () => {
     const result = await model.getMany({
-      where: {
-        docId: 'doc-10'
-      }
+      docId: 'doc-10'
     });
 
     expect(result.cost).toEqual(0.5);
@@ -96,10 +90,8 @@ describe('getMany()', () => {
 
   it('get many with constraint on GSI-1 PK (filter SK)', async () => {
     const result = await model.getMany({
-      where: {
-        docId: 'doc-10',
-        repoId: { $eq: 'get-one' }
-      }
+      docId: 'doc-10',
+      repoId: { $eq: 'get-one' }
     });
 
     expect(result.cost).toEqual(0.5);
@@ -113,9 +105,7 @@ describe('getMany()', () => {
 
   it('get many with constraint on GSI 2 PK (static SK)', async () => {
     const result = await model.getMany({
-      where: {
-        alias: docs[0].alias
-      }
+      alias: docs[0].alias
     });
 
     expect(result.cost).toEqual(0.5);
@@ -129,10 +119,8 @@ describe('getMany()', () => {
 
   it('get many with constraint on GSI 3 PK/SK', async () => {
     const result = await model.getMany({
-      where: {
-        repoId: 'get-one',
-        total: { $ge: 10 }
-      }
+      repoId: 'get-one',
+      total: { $ge: 10 }
     });
 
     expect(result.cost).toEqual(1);

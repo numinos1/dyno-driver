@@ -250,10 +250,9 @@ describe('Query E2E', () => {
     await model.putMany(docs);
 
     const result1 = await model.getMany({
-      where: {
-        repoId: 'onedocQuery',
-        docId: 'onedoc7'
-      },
+      repoId: 'onedocQuery',
+      docId: 'onedoc7'
+    }, {
       consistent: true
     });
 
@@ -267,10 +266,9 @@ describe('Query E2E', () => {
    it(`Query documents in a table scan`, async () => {
     const model = dyno.model(Entity4Mock);
     const result2 = await model.getMany({
-      where: {
-        total: { $gt: 1 },
-        ages: { $contains: 3 }
-      },
+      total: { $gt: 1 },
+      ages: { $contains: 3 }
+    }, {
       consistent: true
     });
     
@@ -293,10 +291,8 @@ describe('Query E2E', () => {
     await model.putMany(docs);
 
     const result2 = await model.getMany({
-      where: {
-        repoId: '123Query',
-        docId: { $between: ['BBB0', 'BBB2']}
-      }
+      repoId: '123Query',
+      docId: { $between: ['BBB0', 'BBB2']}
     });
 
     expect(result2.docs.length).toEqual(13);
@@ -309,7 +305,7 @@ describe('Query E2E', () => {
     const model = dyno.model(Entity4Mock);
 
     await expect(() =>
-      model.getMany({
+      model.getMany({}, {
         order: 'asc',
         limit: 1000
       })
@@ -321,17 +317,17 @@ describe('Query E2E', () => {
   it(`Order Documents in a query (forward & reverse)`, async () => {
     const model = dyno.model(Entity4Mock);
 
-    const resultFwd = await model.getMany({
-      where: { repoId: '123Query' },
-      order: 'asc'
-    });
+    const resultFwd = await model.getMany(
+      { repoId: '123Query' },
+      { order: 'asc' }
+    );
     expect(resultFwd.strategy).toEqual('pkQuery');
     expect(resultFwd.docs.length).toEqual(50);
 
-    const resultRev = await model.getMany({
-      where: { repoId: '123Query' },
-      order: 'desc'
-    });
+    const resultRev = await model.getMany(
+      { repoId: '123Query' },
+      { order: 'desc' }
+    );
     expect(resultRev.strategy).toEqual('pkQuery');
     expect(resultRev.docs.length).toEqual(50);
 
@@ -357,10 +353,8 @@ describe('Query E2E', () => {
     await model.putMany(docs);
 
     const result1 = await model.getMany({
-      where: {
-        repoId: 'xxxQuery',
-        names: { $contains: 'drew' }
-      }
+      repoId: 'xxxQuery',
+      names: { $contains: 'drew' }
     });
 
     expect(result1.docs.length).toEqual(30);
@@ -383,10 +377,8 @@ describe('Query E2E', () => {
     await model.putMany(docs);
 
     const result1 = await model.getMany({
-      where: {
-        repoId: 'sizeQuery',
-        alias: { $size: { $gt: 15 }}
-      }
+      repoId: 'sizeQuery',
+      alias: { $size: { $gt: 15 }}
     });
 
     expect(result1.docs.length).toEqual(15);
@@ -409,27 +401,23 @@ describe('Query E2E', () => {
     await model.putMany(docs);
 
     const result1 = await model.getMany({
-      where: {
-        repoId: 'orQuery',
-        $or: [
-          { total: { $gt: 120 } },
-          { total: { $le: 105 } }
-        ]
-      }
+      repoId: 'orQuery',
+      $or: [
+        { total: { $gt: 120 } },
+        { total: { $le: 105 } }
+      ]
     });
 
     expect(result1.docs.length).toEqual(15);
     expect(result1.strategy).toEqual('pkQuery');
 
     const result2 = await model.getMany({
-      where: {
-        repoId: 'orQuery',
-        total: {
-          $or: [
-            { total: { $gt: 120 } },
-            { total: { $le: 105 } }
-          ]
-        }
+      repoId: 'orQuery',
+      total: {
+        $or: [
+          { total: { $gt: 120 } },
+          { total: { $le: 105 } }
+        ]
       }
     });
 
@@ -452,10 +440,9 @@ describe('Query E2E', () => {
     await model.putMany(docs);
 
     const result1 = await model.getMany({
-      where: {
-        repoId: 'reverseQuery',
-        docId: { $between: ['reverse3', 'reverse7']}
-      },
+      repoId: 'reverseQuery',
+      docId: { $between: ['reverse3', 'reverse7']}
+    }, {
       order: 'desc'
     });
 
@@ -481,12 +468,10 @@ describe('Query E2E', () => {
     }
     await model.putMany(docs);
 
-    const result1 = await model.getMany({
-      where: {
-        repoId: 'limitQuery'
-      },
-      limit: 4
-    });
+    const result1 = await model.getMany(
+      { repoId: 'limitQuery' },
+      { limit: 4 }
+    );
 
     expect(result1.docs.length).toEqual(4);
     expect(result1.next).toEqual({
@@ -494,13 +479,13 @@ describe('Query E2E', () => {
       repoId: "limitQuery"
     });
 
-    const result2 = await model.getMany({
-      where: {
-        repoId: 'limitQuery'
-      },
-      limit: 4,
-      start: result1.next
-    });
+    const result2 = await model.getMany(
+      { repoId: 'limitQuery' },
+      {
+        limit: 4,
+        start: result1.next
+      }
+    );
 
     expect(result2.docs.length).toEqual(4);
     expect(result2.next).toEqual({
@@ -508,13 +493,13 @@ describe('Query E2E', () => {
       repoId: "limitQuery"
     });
 
-    const result3 = await model.getMany({
-      where: {
-        repoId: 'limitQuery'
-      },
-      limit: 4,
-      start: result2.next
-    });
+    const result3 = await model.getMany(
+      { repoId: 'limitQuery' },
+      {
+        limit: 4,
+        start: result2.next
+      }
+    );
 
     expect(result3.docs.length).toEqual(1);
     expect(result3.next).toEqual(undefined);
