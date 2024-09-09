@@ -20,9 +20,9 @@ function toCdkTable(schema: TModelSchema) {
   return {
     tableName: schema.tableName,
     removalPolicy: schema.removalPolicy,
-    billingMode: (wcu || rcu) 
+    billingMode: ((wcu || rcu) 
       ? BillingMode.PROVISIONED
-      : BillingMode.PAY_PER_REQUEST,
+      : BillingMode.PAY_PER_REQUEST) as BillingMode,
     provisionedThroughput: (wcu || rcu) 
       ? {
           ReadCapacityUnits: rcu,

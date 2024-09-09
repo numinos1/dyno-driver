@@ -88,7 +88,7 @@ function toKey(
 
     // throw if prop not defined
     if (!prop) {
-      throw new Error(`key[${index}] ${name} is not a prop`);
+      throw new Error(`key[${index}] "${name}" is not a prop`);
     }
     // throw if not a proper index types
     if (prop.type !== 'S'
