@@ -1,3 +1,4 @@
+import { TPropValues } from './../../types';
 import { TModelSchema } from "@/types";
 import { BillingMode, ProjectionType } from "@aws-sdk/client-dynamodb";
 
@@ -12,6 +13,28 @@ export function exportCdkSchemas(schemas: TModelSchema[]) {
 }
 
 /**
+ * TAttributeType (compatible with CDK Type)
+ */
+export declare enum TAttrType {
+  BINARY = "B",
+  NUMBER = "N",
+  STRING = "S"
+}
+
+/**
+ * Convert TPropValue to TAttrType
+ */
+export function toAttributeType(type: TPropValues): TAttrType {
+  switch (type) {
+    case 'B': return TAttrType.BINARY;
+    case 'N': return TAttrType.NUMBER;
+    case 'S': return TAttrType.STRING;
+    default:
+      throw new Error(`Invalid Table Key Type: "${type}"`);
+  }
+}
+
+/**
  * Export the CDK table definitions
  */
 function toCdkTable(schema: TModelSchema) {
@@ -22,7 +45,7 @@ function toCdkTable(schema: TModelSchema) {
     removalPolicy: schema.removalPolicy,
     billingMode: ((wcu || rcu) 
       ? BillingMode.PROVISIONED
-      : BillingMode.PAY_PER_REQUEST) as BillingMode,
+      : BillingMode.PAY_PER_REQUEST),
     provisionedThroughput: (wcu || rcu) 
       ? {
           ReadCapacityUnits: rcu,
@@ -31,11 +54,11 @@ function toCdkTable(schema: TModelSchema) {
       : undefined,
     partitionKey: {
       name: 'pk',
-      type: pk.type
+      type: toAttributeType(pk.type)
     },
     sortKey: {
       name: 'sk',
-      type: sk.type
+      type: toAttributeType(sk.type)
     },
     timeToLiveAttribute: 'ttl'
   };
