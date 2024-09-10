@@ -14,7 +14,7 @@ export function exportCdkSchemas(schemas: TModelSchema[]) {
 /**
  * Export the CDK table definitions
  */
-function toCdkTable(schema: TModelSchema): unknown {
+function toCdkTable(schema: TModelSchema) {
   const { pk, sk, wcu, rcu } = schema.tableIndex[0];
 
   return {
@@ -31,11 +31,11 @@ function toCdkTable(schema: TModelSchema): unknown {
       : undefined,
     partitionKey: {
       name: 'pk',
-      type: pk.type
+      type: pk.type as string
     },
     sortKey: {
       name: 'sk',
-      type: sk.type
+      type: sk.type as string
     },
     timeToLiveAttribute: 'ttl'
   };
@@ -44,7 +44,7 @@ function toCdkTable(schema: TModelSchema): unknown {
 /**
  * Export the CDK index definitions
  */
-function toCdkIndices(schema: TModelSchema): unknown {
+function toCdkIndices(schema: TModelSchema) {
   const indices = schema.tableIndex.slice(1);
   
   return indices.map(({ pk, sk, wcu, rcu, project }, i) => ({
@@ -66,11 +66,11 @@ function toCdkIndices(schema: TModelSchema): unknown {
     },
     partitionKey: {
       name: `pk${i + 1}`,
-      type: pk.type
+      type: pk.type as string
     },
     sortKey: {
       name: `sk${i + 1}`,
-      type: sk.type
+      type: sk.type as string
     },
     projectionType: 'ALL'
   }));
