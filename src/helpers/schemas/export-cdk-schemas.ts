@@ -1,4 +1,3 @@
-import { TPropValues } from './../../types';
 import { TModelSchema } from "@/types";
 import { BillingMode, ProjectionType } from "@aws-sdk/client-dynamodb";
 
@@ -13,31 +12,9 @@ export function exportCdkSchemas(schemas: TModelSchema[]) {
 }
 
 /**
- * TAttributeType (compatible with CDK Type)
- */
-export declare enum TAttrType {
-  BINARY = "B",
-  NUMBER = "N",
-  STRING = "S"
-}
-
-/**
- * Convert TPropValue to TAttrType
- */
-export function toAttributeType(type: TPropValues): TAttrType {
-  switch (type) {
-    case 'B': return TAttrType.BINARY;
-    case 'N': return TAttrType.NUMBER;
-    case 'S': return TAttrType.STRING;
-    default:
-      throw new Error(`Invalid Table Key Type: "${type}"`);
-  }
-}
-
-/**
  * Export the CDK table definitions
  */
-function toCdkTable(schema: TModelSchema) {
+function toCdkTable(schema: TModelSchema): unknown {
   const { pk, sk, wcu, rcu } = schema.tableIndex[0];
 
   return {
@@ -54,11 +31,11 @@ function toCdkTable(schema: TModelSchema) {
       : undefined,
     partitionKey: {
       name: 'pk',
-      type: toAttributeType(pk.type)
+      type: pk.type
     },
     sortKey: {
       name: 'sk',
-      type: toAttributeType(sk.type)
+      type: sk.type
     },
     timeToLiveAttribute: 'ttl'
   };
@@ -67,7 +44,7 @@ function toCdkTable(schema: TModelSchema) {
 /**
  * Export the CDK index definitions
  */
-function toCdkIndices(schema: TModelSchema) {
+function toCdkIndices(schema: TModelSchema): unknown {
   const indices = schema.tableIndex.slice(1);
   
   return indices.map(({ pk, sk, wcu, rcu, project }, i) => ({
