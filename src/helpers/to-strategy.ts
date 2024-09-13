@@ -96,9 +96,12 @@ export function toTheory<Type>(
   // Iterate through the table keys
   for (let index = 0; index < tableKeys.length; ++index) {
     const { pk, sk, name } = tableKeys[index];
+    const pkType = toKeyType(pk, where);
 
-    // Partition key has to be defined as a scalar value
-    if (toKeyType(pk, where) !== 'scalar') {
+    // Partition key has to be defined as a scalar or static
+    if (pkType !== 'scalar'
+      && pkType !== 'static'
+    ) {
       continue;
     }
     // Sort key can be any key type

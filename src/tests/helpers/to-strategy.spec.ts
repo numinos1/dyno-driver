@@ -3,6 +3,7 @@ import { Entity6Mock } from '../mocks/entity-6.mock';
 import { propsMock } from '../mocks/props.mock';
 import { describe, expect, it } from '@jest/globals';
 import { TQueryType, toStrategy } from '@/helpers/to-strategy';
+import { props6Mock, TableIndex6 } from '../mocks/entity-6.props';
 
 /**
  * Tests
@@ -831,41 +832,61 @@ describe('toStrategy()', () => {
   });
 
   // ----------------------------------------------------------------
-  //    Get Query
+  //    Identitify sk when pk is static
   // ----------------------------------------------------------------
 
-  // describe('STATIC_PK', () => {
+  describe('STATIC_KEYS', () => {
 
-  //   it('identifies static primary key', () => {
-  //     expect(toStrategy<Entity6Mock>(
-  //       {
-  //         id: 'efgh5678'
-  //       },
-  //       [
-  //         {
-  //           name: 'testTable',
-  //           wcu: 0,
-  //           rcu: 0,
-  //           project: [],
-  //           pk: propsMock.get('repoId'),
-  //           sk: propsMock.get('id')
-  //         }
-  //       ],
-  //       'testTable'
-  //     )).toEqual({
-  //       type: TQueryType.getItem,
-  //       keys: [
-  //         propsMock.get('repoId'),
-  //         propsMock.get('id')
-  //       ],
-  //       table: 'testTable',
-  //       index: undefined,
-  //       query: {
-  //         '__pk': 'abcd1234',
-  //         '__sk': 'efgh5678'
-  //       },
-  //       filter: {},
-  //     });
-  // });
+    it('identifies sk on static pk', () => {
+      const result = toStrategy<Entity6Mock>(
+        {
+          id: 'efgh5678'
+        },
+        TableIndex6,
+        'testTable'
+      );
+
+      expect(result).toEqual({
+        type: TQueryType.getItem,
+        keys: [
+          props6Mock.get('__pk'),
+          props6Mock.get('id')
+        ],
+        table: 'testTable',
+        index: undefined,
+        query: {
+          '__pk': '',
+          '__sk': 'efgh5678'
+        },
+        filter: {},
+      });
+    });
+
+    it('identifies sk1 on static pk1', () => {
+      const result = toStrategy<Entity6Mock>(
+        {
+          emailHash: 'efgh5678'
+        },
+        TableIndex6,
+        'testTable'
+      );
+
+      expect(result).toEqual({
+        type: TQueryType.skQuery,
+        keys: [
+          props6Mock.get('__pk1'),
+          props6Mock.get('emailHash')
+        ],
+        table: 'testTable',
+        index: 'delta-sync-gsi-1',
+        query: {
+          '__pk1': '',
+          '__sk1': 'efgh5678'
+        },
+        filter: {},
+      });
+    });
+
+  });
 
 });
