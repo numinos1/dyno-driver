@@ -131,30 +131,6 @@ export class DynoDriver {
   }
 
   /**
-   * To Document Client
-   */
-  // private toClient(): DynamoDBDocumentClient {
-  //   return DynamoDBDocumentClient.from(
-  //     new DynamoDBClient(
-  //       pruneObject({
-  //         endpoint: this.endpoint,
-  //         region: this.region
-  //       })
-  //     ),
-  //     {
-  //       marshallOptions: {
-  //         convertEmptyValues: false, // if not false explicitly, we set it to true.
-  //         removeUndefinedValues: false, // false, by default.
-  //         convertClassInstanceToMap: false, // false, by default.
-  //       },
-  //       unmarshallOptions: {
-  //         wrapNumbers: false, // false, by default.
-  //       }
-  //     }
-  //   );
-  // }
-
-  /**
    * Get instantiated model from a constructor
    */
   model<T>(entity: Constructor<T>): DynoModel<T> {
@@ -207,6 +183,27 @@ export class DynoDriver {
       );
     }
     return { created: actionable };
+  }
+
+  // ----------------------------------------------------------------
+  //    Export Model Details
+  // ----------------------------------------------------------------
+
+  /**
+   * Export as JSON object
+   */
+  toJSON() {
+    return {
+      tableName: this.tableName,
+      endpoint: this.endpoint,
+      region: this.region,
+      metrics: this.metrics,
+      removalPolicy: this.removalPolicy,
+      models: [...this.models.entries()].map(([name, model]) => ({
+        name: name,
+        model: model.toJSON()
+      }))
+    };
   }
 
   // ----------------------------------------------------------------

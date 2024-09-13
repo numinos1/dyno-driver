@@ -1,8 +1,8 @@
 import { EntityMock } from '../mocks/entity.mock';
+import { Entity6Mock } from '../mocks/entity-6.mock';
 import { propsMock } from '../mocks/props.mock';
 import { describe, expect, it } from '@jest/globals';
 import { TQueryType, toStrategy } from '@/helpers/to-strategy';
-import { TProp } from '@/types';
 
 /**
  * Tests
@@ -829,5 +829,43 @@ describe('toStrategy()', () => {
     });
   
   });
+
+  // ----------------------------------------------------------------
+  //    Get Query
+  // ----------------------------------------------------------------
+
+  // describe('STATIC_PK', () => {
+
+  //   it('identifies static primary key', () => {
+  //     expect(toStrategy<Entity6Mock>(
+  //       {
+  //         id: 'efgh5678'
+  //       },
+  //       [
+  //         {
+  //           name: 'testTable',
+  //           wcu: 0,
+  //           rcu: 0,
+  //           project: [],
+  //           pk: propsMock.get('repoId'),
+  //           sk: propsMock.get('id')
+  //         }
+  //       ],
+  //       'testTable'
+  //     )).toEqual({
+  //       type: TQueryType.getItem,
+  //       keys: [
+  //         propsMock.get('repoId'),
+  //         propsMock.get('id')
+  //       ],
+  //       table: 'testTable',
+  //       index: undefined,
+  //       query: {
+  //         '__pk': 'abcd1234',
+  //         '__sk': 'efgh5678'
+  //       },
+  //       filter: {},
+  //     });
+  // });
 
 });

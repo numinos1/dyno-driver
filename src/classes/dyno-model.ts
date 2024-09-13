@@ -104,6 +104,22 @@ export class DynoModel<Type> {
     }
   }
 
+  /**
+   * Export details as JSON object
+   */
+  toJSON() {
+    return {
+      tableName: this.tableName,
+      metrics: this.metrics,
+      entity: this.entity,
+      removalPolicy: this.removalPolicy,
+      propMap: this.propMap,
+      propStack: this.propStack,
+      propCount: this.propCount,
+      tableIndex: this.tableIndex
+    };
+  }
+
   // -------------------------------------------------------------------
   //      Put One
   // -------------------------------------------------------------------
